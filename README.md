@@ -38,11 +38,11 @@
 * [Contributing](#contributing)
 * [License](#license)
 
-## ✅ About
+## About
 
 Medica HealthCare digitizes everyday hospital workflows. From appointment scheduling to billing and notifications, everything is handled securely using JWT-based authentication and role-based access control.
 
-## 🚀 Features
+## Features
 
 * Super Admin can register hospitals and manage onboarding.
 * Admin can manage hospital users (Doctors, Receptionists).
@@ -55,7 +55,7 @@ Medica HealthCare digitizes everyday hospital workflows. From appointment schedu
 * Role-based API access.
 * HIPAA-compliant security design.
 
-## 🛠️ Tech Stack
+## 🛠Tech Stack
 
 * **Backend:** Java 17, Spring Boot, Spring Security, JWT, Hibernate
 * **Database:** MySQL (production) / H2 (local testing)
@@ -65,7 +65,7 @@ Medica HealthCare digitizes everyday hospital workflows. From appointment schedu
 * **Notifications:** WebSocket + Redis (for real-time persistent notifications)
 * **APIs:** Paid APIs for WhatsApp & SMS integration
 
-## 📂 Modules
+## Modules
 
 | Module           | Description                                                                |
 | ---------------- | -------------------------------------------------------------------------- |
@@ -78,7 +78,7 @@ Medica HealthCare digitizes everyday hospital workflows. From appointment schedu
 | **Notification** | Real-time notifications for system events (login/logout/updates)           |
 | **Settings**     | System-wide configurations & environment setups                            |
 
-## ⚙️ Installation
+## Installation
 
 1. **Clone the repository**
 
@@ -104,7 +104,7 @@ Medica HealthCare digitizes everyday hospital workflows. From appointment schedu
    ./mvnw spring-boot:run
    ```
 
-## 🔑 Environment Variables
+## Environment Variables
 
 Create an `.env` or configure your environment variables:
 
@@ -117,7 +117,7 @@ Create an `.env` or configure your environment variables:
 * `SMS_API_KEY` — Paid SMS API Key
 * `WHATSAPP_API_KEY` — Paid WhatsApp API Key
 
-## ▶️ Usage
+## Usage
 
 * Access the app at: `http://localhost:8080`
 * Use default SUPER\_ADMIN credentials:
@@ -125,11 +125,11 @@ Create an `.env` or configure your environment variables:
   **Password:** `superadmin123`
 * Test APIs using Postman or the provided HTML forms.
 
-## 📑 API Documentation
+## API Documentation
 
 * API specs will be available soon.
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository.
 2. Create a feature branch.
@@ -137,7 +137,7 @@ Create an `.env` or configure your environment variables:
 4. Push to your fork.
 5. Create a Pull Request.
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License.
 
