@@ -1,0 +1,3802 @@
+{
+	"info": {
+		"_postman_id": "9efc83e7-b1c9-4eb1-9bd4-5a0c5808bc54",
+		"name": "medica-healthcare",
+		"description": "**Medica Healthcare** is a cloud-based **healthcare practice management system** designed to streamline **patient care, clinic efficiency, and administrative tasks** while ensuring **HIPAA-compliant security**.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29468164"
+	},
+	"item": [
+		{
+			"name": "OTP",
+			"item": [
+				{
+					"name": "generate otp",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/otp/generate/private.admin.pune@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"otp",
+								"generate",
+								"private.admin.pune@gmail.com"
+							]
+						},
+						"description": "### Generate OTP\n\nThe endpoint triggers an HTTP POST request to generate a one-time password (OTP) for the provided email address.\n\n#### **Access Control:**\n\n- **Role Required:** No Role Required\n    \n\n#### Request Body\n\n- email (string): The email address for which the OTP needs to be generated.\n    \n\n#### Response Body\n\nThe response will be in JSON format with the following schema:\n\n``` json\n{\n  \"id\": {\n    \"type\": \"integer\"\n  },\n  \"email\": {\n    \"type\": \"string\"\n  },\n  \"otp\": {\n    \"type\": \"string\"\n  },\n  \"createdDateTime\": {\n    \"type\": \"string\",\n    \"format\": \"date-time\"\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "verify otp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"otp\":\"562851\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/otp/verify/private.admin.pune@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"otp",
+								"verify",
+								"private.admin.pune@gmail.com"
+							]
+						},
+						"description": "### Verify OTP\n\nThis HTTP POST request is used to verify a one-time password (OTP) for a specific user. The request should be sent to [http://localhost:8080/otp/verify/swapnilsudrik.s@gmail.com](http://localhost:8080/otp/verify/swapnilsudrik.s@gmail.com) with a raw request body containing the OTP value in JSON format.\n\n#### **Access Control:**\n\n- **Role Required:** No Access Required\n    \n\n### Request Body\n\n- `otp` (text): The one-time password to be verified.\n    \n\n### Response\n\nThe response for this request can be represented with the following JSON schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": { \"type\": \"number\" },\n    \"content-type\": { \"type\": \"string\" },\n    \"message\": { \"type\": \"string\" }\n  }\n}\n\n ```\n\nUpon successful execution, the server responds with a status code of 200 and a content type of text/plain, along with the message \"OTP Successfully Verified!\"."
+					},
+					"response": []
+				}
+			],
+			"description": "The OTP module is responsible for generating, sending, and verifying One-Time Passwords (OTP) for authentication and security."
+		},
+		{
+			"name": "Hospital",
+			"item": [
+				{
+					"name": "Add Hospital By Super Admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"private Hospital\",\r\n    \"address\": \"word no 20, Pune\",\r\n    \"contactNumber\": \"1234567890\",\r\n    \"emailId\": \"private@gmail.com\",\r\n    \"openingTime\": \"09:30 AM\",\r\n    \"closingTime\": \"09:00 PM\",\r\n    \"workingDays\": \"Monday - Saturday\",\r\n    \"offDays\": \"Sunday\",\r\n    \"numberOfUsers\": 90,\r\n    \"branch\": \"Mumbai, Pune, jalgaon, dhule\",\r\n    \"departments\": \"Surgical, Dermatology\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/hospital/addHospital",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"addHospital"
+							]
+						},
+						"description": "### Add Hospital\n\nThis API endpoint is used to create a new hospital in the system.\n\n#### **Access**\n\n- Super Admin\n    \n\n#### Request Body\n\n- Form-Data\n    \n    - No parameters required.\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"string\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Hospital By Super Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNjM3NTM4fQ.F-ynvIzOb0S27U9SctcL_qSq9FYV84iUVIG10uCOl6U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Choudhary Hospital",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "kalakhadak, Mumbai",
+									"type": "text"
+								},
+								{
+									"key": "contactNumber",
+									"value": "1234567800",
+									"type": "text"
+								},
+								{
+									"key": "emailId",
+									"value": "lokesh.choudhary@gmail.in",
+									"type": "text"
+								},
+								{
+									"key": "openingTime",
+									"value": "12:00 AM",
+									"type": "text"
+								},
+								{
+									"key": "closingTime",
+									"value": "11:00 PM",
+									"type": "text"
+								},
+								{
+									"key": "workingDays",
+									"value": "Monday - Sunday",
+									"type": "text"
+								},
+								{
+									"key": "offDays",
+									"value": "Sunday",
+									"type": "text"
+								},
+								{
+									"key": "numberOfUsers",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "branch",
+									"value": "Mumbai, Indore",
+									"type": "text"
+								},
+								{
+									"key": "departments",
+									"value": "Cardio",
+									"type": "text"
+								},
+								{
+									"key": "letterhead",
+									"type": "file",
+									"src": "/C:/Users/DELL/Desktop/4a04e9a5-ea81-413f-90bb-c27cde0e36a3.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/hospital/updateHospital/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"updateHospital",
+								"9"
+							]
+						},
+						"description": "This API allows you to update hospital details using the hospital ID. It ensures that the existing hospital information is modified as needed.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Active Hospital",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNzM3MDQ4fQ.Ek16Fx5M3rLWGnKfd1EIYVdpUxMLdiEGhUBXCVj0N6Y",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/hospital/allActiveHospitals/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"hospital",
+								"allActiveHospitals",
+								"1"
+							]
+						},
+						"description": "This API allows you to retrieve a list of all active hospitals registered in the system.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Deactivated Hospital",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNzM3MDQ4fQ.Ek16Fx5M3rLWGnKfd1EIYVdpUxMLdiEGhUBXCVj0N6Y",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8085/hospital/allDeactivatedHospitals/0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"hospital",
+								"allDeactivatedHospitals",
+								"0"
+							]
+						},
+						"description": "This API allows you to retrieve a list of all deactivated hospitals in the system.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Hospital By Id by Super Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNjM3NTM4fQ.F-ynvIzOb0S27U9SctcL_qSq9FYV84iUVIG10uCOl6U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospital/getHospitalById/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"getHospitalById",
+								"9"
+							]
+						},
+						"description": "This API allows you to retrieve hospital details using the hospital ID. It fetches specific hospital information from the system.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Reactive Hospital By Hospital Id By Super Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNjM3NTM4fQ.F-ynvIzOb0S27U9SctcL_qSq9FYV84iUVIG10uCOl6U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospital/reactivateHospital/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"reactivateHospital",
+								"3"
+							]
+						},
+						"description": "This API allows you to reactivate a hospital using its ID. It restores the hospital's status in the system.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Hospital By Id By Super Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNjM3NTM4fQ.F-ynvIzOb0S27U9SctcL_qSq9FYV84iUVIG10uCOl6U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospital/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"3"
+							]
+						},
+						"description": "This API allows you to deactivate hospital using its ID. It deactivate the hospital record from the system.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Hospital By Name By Super Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNjM3NTM4fQ.F-ynvIzOb0S27U9SctcL_qSq9FYV84iUVIG10uCOl6U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospital/getHospitalByName/lok",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"getHospitalByName",
+								"lok"
+							]
+						},
+						"description": "This API allows you to retrieve hospital details using the hospital name. It helps in finding specific hospitals registered in the system.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Hospital by Super Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQwNjM3NTM4fQ.F-ynvIzOb0S27U9SctcL_qSq9FYV84iUVIG10uCOl6U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospital/getAllHospital",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospital",
+								"getAllHospital"
+							]
+						},
+						"description": "This API allows you to retrieve all hospitals registered in the system. It provides a complete list of available hospitals.\n\n#### **Access**\n\n- Super Admin"
+					},
+					"response": []
+				}
+			],
+			"description": "The **Hospital** module manages hospital creation, updates, and retrieval within the system. It is primarily handled by **SUPER_ADMIN** to register and manage hospitals."
+		},
+		{
+			"name": "Setting",
+			"item": [
+				{
+					"name": "get all setting",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzd2Fwbmlsc3VkcmlrLnNAZ21haWwuY29tIiwiaWF0IjoxNzQyMzAxMDM1fQ.33ENmMyF0e1raPWiZdXBYwYUCFMXaK7WV654Pe-hu0I",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/settings/getAllSettings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"settings",
+								"getAllSettings"
+							]
+						},
+						"description": "### **Endpoint:**\n\n**GET** `/settings/getSettings`\n\n### **Description:**\n\nFetches all available hospital settings.\n\n### **Authorization:**\n\n**SUPER_ADMIN** access required."
+					},
+					"response": [
+						{
+							"name": "get all setting",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/settings/getSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"settings",
+										"getSettings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Mar 2025 18:12:29 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"hospitalOpeningTime\": \"10:00:00.000000\",\n        \"hospitalClosingTime\": \"23:59:00.000000\",\n        \"hospitalWorkingDays\": \"Monday,Tuesday,wednesday,thursday,friday\",\n        \"hospitalOffDays\": \"Saturday,Sunday\",\n        \"hospital\": {\n            \"id\": 1,\n            \"name\": \"Punawala Hospital\",\n            \"address\": \"cHVuZSA2NzQzNjcu\",\n            \"contactNumber\": \"8889995566\",\n            \"emailId\": \"punawalahospital@gmail.com\",\n            \"openingTime\": \"09:30:00\",\n            \"closingTime\": \"09:00:00\",\n            \"branch\": \"TXVtYmFpLCBQdW5l\",\n            \"workingDays\": \"Monday - Saturday\",\n            \"offDays\": \"Sunday\",\n            \"numberOfUsers\": \"32\",\n            \"departments\": \"U3VyZ2ljYWwsIERlcm1hdG9sb2d5\",\n            \"createdUser\": {\n                \"id\": 1,\n                \"username\": \"swapnilsudrik.s@gmail.com\",\n                \"name\": \"swapnil\",\n                \"password\": \"$2a$10$qPDBWY/pHgDY7brEZtMpzOEvZHvjUQk8mnFJZMgNbgtfInsWPnF6y\",\n                \"branch\": null,\n                \"roles\": \"SUPER_ADMIN\",\n                \"hospital\": null,\n                \"createdUser\": 1,\n                \"modifiedUser\": 1,\n                \"createdDate\": \"2025-03-03\",\n                \"modifiedDate\": \"2025-03-03\",\n                \"status\": 1\n            },\n            \"modifiedUser\": 1,\n            \"createdDate\": \"2025-03-03\",\n            \"modifiedDate\": \"2025-03-03\",\n            \"status\": 1\n        },\n        \"noOfAmbulances\": 0,\n        \"ambulanceContactNumber\": \"1234567800\",\n        \"ambulanceBookingTime\": \"24 Hours\",\n        \"ambulanceCharges\": 1200,\n        \"createdUser\": 1,\n        \"modifiedUser\": 1,\n        \"createdDate\": \"2025-03-03T10:22:28.291+00:00\",\n        \"modifiedDate\": \"2025-03-04T10:49:11.061+00:00\",\n        \"status\": 1\n    },\n    {\n        \"id\": 2,\n        \"hospitalOpeningTime\": \"10:00\",\n        \"hospitalClosingTime\": \"23:59\",\n        \"hospitalWorkingDays\": \"Monday,Tuesday,wednesday,thursday,friday\",\n        \"hospitalOffDays\": \"Saturday,Sunday\",\n        \"hospital\": {\n            \"id\": 3,\n            \"name\": \"CitHospital\",\n            \"address\": \"cHVuZSA2NzQzNjcu\",\n            \"contactNumber\": \"8889995566\",\n            \"emailId\": \"cithospital@gmail.com\",\n            \"openingTime\": \"09:30:00\",\n            \"closingTime\": \"09:00:00\",\n            \"branch\": \"TXVtYmFpLCBQdW5l\",\n            \"workingDays\": \"Monday - Saturday\",\n            \"offDays\": \"Sunday\",\n            \"numberOfUsers\": \"32\",\n            \"departments\": \"U3VyZ2ljYWwsIERlcm1hdG9sb2d5\",\n            \"createdUser\": 1,\n            \"modifiedUser\": 1,\n            \"createdDate\": \"2025-03-04\",\n            \"modifiedDate\": \"2025-03-04\",\n            \"status\": 1\n        },\n        \"noOfAmbulances\": 7687,\n        \"ambulanceContactNumber\": \"1234567800\",\n        \"ambulanceBookingTime\": \"24 Hours\",\n        \"ambulanceCharges\": 123,\n        \"createdUser\": 1,\n        \"modifiedUser\": 1,\n        \"createdDate\": \"2025-03-04T12:44:50.251+00:00\",\n        \"modifiedDate\": \"2025-03-04T12:57:23.632+00:00\",\n        \"status\": 1\n    },\n    {\n        \"id\": 3,\n        \"hospitalOpeningTime\": \"10:00\",\n        \"hospitalClosingTime\": \"23:59\",\n        \"hospitalWorkingDays\": \"Monday,Tuesday,wednesday,thursday,friday\",\n        \"hospitalOffDays\": \"Saturday,Sunday\",\n        \"hospital\": {\n            \"id\": 5,\n            \"name\": \"CHospital\",\n            \"address\": \"cHVuZSA2NzQzNjcu\",\n            \"contactNumber\": \"8889995566\",\n            \"emailId\": \"chospital@gmail.com\",\n            \"openingTime\": \"09:30:00\",\n            \"closingTime\": \"09:00:00\",\n            \"branch\": \"TXVtYmFpLCBQdW5l\",\n            \"workingDays\": \"Monday - Saturday\",\n            \"offDays\": \"Sunday\",\n            \"numberOfUsers\": \"32\",\n            \"departments\": \"U3VyZ2ljYWwsIERlcm1hdG9sb2d5\",\n            \"createdUser\": 1,\n            \"modifiedUser\": 1,\n            \"createdDate\": \"2025-03-04\",\n            \"modifiedDate\": \"2025-03-04\",\n            \"status\": 1\n        },\n        \"noOfAmbulances\": 12,\n        \"ambulanceContactNumber\": \"1234567800\",\n        \"ambulanceBookingTime\": \"24 Hours\",\n        \"ambulanceCharges\": 123,\n        \"createdUser\": 1,\n        \"modifiedUser\": 1,\n        \"createdDate\": \"2025-03-04T18:11:41.171+00:00\",\n        \"modifiedDate\": null,\n        \"status\": 1\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "get setting by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdmluYXNoQGdtYWlsLmNvbSIsImlhdCI6MTc0Mjg5NzQzOX0.dq_JTD17L-7BVtsWLtJog792YzSChu9ANuAsexmlPcI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/settings/getSettingsByHospitalId/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"settings",
+								"getSettingsByHospitalId",
+								"4"
+							]
+						},
+						"description": "**GET** `/settings/{id}`\n\n### **Description:**\n\nRetrieves hospital settings based on the provided settings ID.\n\n### **Authorization:**\n\n**ADMIN** access required."
+					},
+					"response": [
+						{
+							"name": "get setting by id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/settings/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"settings",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Mar 2025 18:13:23 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"hospitalOpeningTime\": \"10:00:00.000000\",\n    \"hospitalClosingTime\": \"23:59:00.000000\",\n    \"hospitalWorkingDays\": \"Monday,Tuesday,wednesday,thursday,friday\",\n    \"hospitalOffDays\": \"Saturday,Sunday\",\n    \"hospital\": {\n        \"id\": 1,\n        \"name\": \"Punawala Hospital\",\n        \"address\": \"cHVuZSA2NzQzNjcu\",\n        \"contactNumber\": \"8889995566\",\n        \"emailId\": \"punawalahospital@gmail.com\",\n        \"openingTime\": \"09:30:00\",\n        \"closingTime\": \"09:00:00\",\n        \"branch\": \"TXVtYmFpLCBQdW5l\",\n        \"workingDays\": \"Monday - Saturday\",\n        \"offDays\": \"Sunday\",\n        \"numberOfUsers\": \"32\",\n        \"departments\": \"U3VyZ2ljYWwsIERlcm1hdG9sb2d5\",\n        \"createdUser\": {\n            \"id\": 1,\n            \"username\": \"swapnilsudrik.s@gmail.com\",\n            \"name\": \"swapnil\",\n            \"password\": \"$2a$10$qPDBWY/pHgDY7brEZtMpzOEvZHvjUQk8mnFJZMgNbgtfInsWPnF6y\",\n            \"branch\": null,\n            \"roles\": \"SUPER_ADMIN\",\n            \"hospital\": null,\n            \"createdUser\": 1,\n            \"modifiedUser\": 1,\n            \"createdDate\": \"2025-03-03\",\n            \"modifiedDate\": \"2025-03-03\",\n            \"status\": 1\n        },\n        \"modifiedUser\": 1,\n        \"createdDate\": \"2025-03-03\",\n        \"modifiedDate\": \"2025-03-03\",\n        \"status\": 1\n    },\n    \"noOfAmbulances\": 0,\n    \"ambulanceContactNumber\": \"1234567800\",\n    \"ambulanceBookingTime\": \"24 Hours\",\n    \"ambulanceCharges\": 1200,\n    \"createdUser\": 1,\n    \"modifiedUser\": 1,\n    \"createdDate\": \"2025-03-03T10:22:28.291+00:00\",\n    \"modifiedDate\": \"2025-03-04T10:49:11.061+00:00\",\n    \"status\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "get letterHead or logo by setting id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdmluYXNoQGdtYWlsLmNvbSIsImlhdCI6MTc0Mjg5NzQzOX0.dq_JTD17L-7BVtsWLtJog792YzSChu9ANuAsexmlPcI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/settings/byType/letterHead/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"settings",
+								"byType",
+								"letterHead",
+								"2"
+							]
+						},
+						"description": "### **Endpoint:**\n\n**GET** `/settings/byType/{type}/{id}`\n\n### **Description:**\n\nFetches the hospital's logo or letterhead as an image file.\n\n### **Authorization:**\n\n**ADMIN** access required.\n\n### **Path Parameters:**\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `type` | `String` | Yes | Either `logo` or `letterhead`. |\n| `id` | `Long` | Yes | The settings ID. |"
+					},
+					"response": []
+				},
+				{
+					"name": "add and update setting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "hospitalOpeningTime",
+									"value": "10:00",
+									"type": "text"
+								},
+								{
+									"key": "hospitalClosingTime",
+									"value": "23:59",
+									"type": "text"
+								},
+								{
+									"key": "hospitalWorkingDays",
+									"value": "Monday,Tuesday,wednesday,thursday,friday",
+									"type": "text"
+								},
+								{
+									"key": "hospitalOffDays",
+									"value": "Saturday,Sunday",
+									"type": "text"
+								},
+								{
+									"key": "letterHead",
+									"type": "file",
+									"src": "/C:/Users/DELL/Downloads/logo 4.jpg"
+								},
+								{
+									"key": "logo",
+									"type": "file",
+									"src": "/C:/Users/DELL/Downloads/logo 3.png"
+								},
+								{
+									"key": "hospital.id",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "noOfAmbulances",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "ambulanceContactNumber",
+									"value": "1234567823",
+									"type": "text"
+								},
+								{
+									"key": "ambulanceBookingTime",
+									"value": "24 Hours",
+									"type": "text"
+								},
+								{
+									"key": "ambulanceCharges",
+									"value": "23",
+									"type": "text"
+								},
+								{
+									"key": "gstNumber",
+									"value": "22AAAAA1234A1Z5",
+									"type": "text"
+								},
+								{
+									"key": "applyGst",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/settings/createOrUpdateSettings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"settings",
+								"createOrUpdateSettings"
+							]
+						},
+						"description": "### **Endpoint:**\n\n**POST** `/settings/createOrUpdateSettings`\n\n### **Description:**\n\nThis API is used to create or update hospital settings, including hospital opening/closing time, working/off days, ambulance details, and logo/letterhead.\n\n### **Authorization:**\n\n**SUPER_ADMIN** access required.\n\n### **Request Parameters (Multipart Form-Data):**\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `hospital.id` | `Long` | Yes | The ID of the hospital to which the settings belong. |\n| `hospitalOpeningTime` | `String` | Yes | Opening time in `HH:mm` format (between `06:00` and `10:00`). |\n| `hospitalClosingTime` | `String` | Yes | Closing time in `HH:mm` format. |\n| `hospitalWorkingDays` | `String` | Yes | Comma-separated days (e.g., `Monday, Tuesday`). |\n| `hospitalOffDays` | `String` | Yes | Comma-separated off days (e.g., `Sunday`). |\n| `letterHead` | `File` | Yes | Hospital letterhead (JPG, JPEG, PNG). |\n| `logo` | `File` | Yes | Hospital logo (JPG, JPEG, PNG). |\n| `noOfAmbulances` | `Integer` | Yes | Number of ambulances (Non-negative integer). |\n| `ambulanceCharges` | `Double` | Yes | Ambulance charges (Required if `noOfAmbulances` > 0). |\n| `ambulanceBookingTime` | `String` | Yes | Booking time for ambulances. |\n| `ambulanceContactNumber` | `String` | Yes | Contact number for ambulance services. |"
+					},
+					"response": [
+						{
+							"name": "add and update setting",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "hospitalOpeningTime",
+											"value": "10:00",
+											"type": "text"
+										},
+										{
+											"key": "hospitalClosingTime",
+											"value": "23:59",
+											"type": "text"
+										},
+										{
+											"key": "hospitalWorkingDays",
+											"value": "Monday,Tuesday,wednesday,thursday,friday",
+											"type": "text"
+										},
+										{
+											"key": "hospitalOffDays",
+											"value": "Saturday,Sunday",
+											"type": "text"
+										},
+										{
+											"key": "letterHead",
+											"type": "file",
+											"src": "/C:/Users/DELL/Downloads/new jpg image.jpg"
+										},
+										{
+											"key": "logo",
+											"type": "file",
+											"src": "/C:/Users/DELL/Downloads/new jpg image.jpg"
+										},
+										{
+											"key": "hospital.id",
+											"value": "5",
+											"type": "text"
+										},
+										{
+											"key": "noOfAmbulances",
+											"value": "12",
+											"type": "text"
+										},
+										{
+											"key": "ambulanceContactNumber",
+											"value": "1234567800",
+											"type": "text"
+										},
+										{
+											"key": "ambulanceBookingTime",
+											"value": "24 Hours",
+											"type": "text"
+										},
+										{
+											"key": "ambulanceCharges",
+											"value": "123",
+											"type": "text"
+										},
+										{
+											"key": "",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8080/settings/createOrUpdateSettings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"settings",
+										"createOrUpdateSettings"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 04 Mar 2025 18:11:41 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"hospitalOpeningTime\": \"10:00\",\n    \"hospitalClosingTime\": \"23:59\",\n    \"hospitalWorkingDays\": \"Monday,Tuesday,wednesday,thursday,friday\",\n    \"hospitalOffDays\": \"Saturday,Sunday\",\n    \"hospital\": {\n        \"id\": 5,\n        \"name\": \"CHospital\",\n        \"address\": \"cHVuZSA2NzQzNjcu\",\n        \"contactNumber\": \"8889995566\",\n        \"emailId\": \"chospital@gmail.com\",\n        \"openingTime\": \"09:30:00\",\n        \"closingTime\": \"09:00:00\",\n        \"branch\": \"TXVtYmFpLCBQdW5l\",\n        \"workingDays\": \"Monday - Saturday\",\n        \"offDays\": \"Sunday\",\n        \"numberOfUsers\": \"32\",\n        \"departments\": \"U3VyZ2ljYWwsIERlcm1hdG9sb2d5\",\n        \"createdUser\": {\n            \"id\": 1,\n            \"username\": \"swapnilsudrik.s@gmail.com\",\n            \"name\": \"swapnil\",\n            \"password\": \"$2a$10$qPDBWY/pHgDY7brEZtMpzOEvZHvjUQk8mnFJZMgNbgtfInsWPnF6y\",\n            \"branch\": null,\n            \"roles\": \"SUPER_ADMIN\",\n            \"hospital\": null,\n            \"createdUser\": 1,\n            \"modifiedUser\": 1,\n            \"createdDate\": \"2025-03-03\",\n            \"modifiedDate\": \"2025-03-03\",\n            \"status\": 1\n        },\n        \"modifiedUser\": 1,\n        \"createdDate\": \"2025-03-04\",\n        \"modifiedDate\": \"2025-03-04\",\n        \"status\": 1\n    },\n    \"noOfAmbulances\": 12,\n    \"ambulanceContactNumber\": \"1234567800\",\n    \"ambulanceBookingTime\": \"24 Hours\",\n    \"ambulanceCharges\": 123,\n    \"createdUser\": 1,\n    \"modifiedUser\": 1,\n    \"createdDate\": \"2025-03-04T18:11:41.171+00:00\",\n    \"modifiedDate\": null,\n    \"status\": 1\n}"
+						}
+					]
+				}
+			],
+			"description": "The **Setting** module manages **hospital-wide configurations.**"
+		},
+		{
+			"name": "Patient",
+			"item": [
+				{
+					"name": "Get details by contact(Receptionist,Doctor)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/byContact/705",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"byContact",
+								"705"
+							]
+						},
+						"description": "## Get Patient Details by Contact\n\nThis endpoint retrieves the details of a patient based on their contact number.\n\n### Request\n\n#### Endpoint\n\n```\nGET http://localhost:8080/patients/byContact/7\n\n ```\n\n#### Headers\n\n- No specific headers provided\n    \n\n#### Parameters\n\n- No specific parameters provided\n    \n\n### Response\n\n#### Body\n\nThe response will be in JSON format and will contain an array of patient objects with the following fields:\n\n- id (number): The unique identifier for the patient\n    \n- name (string): The name of the patient\n    \n- contactNumber (string): The contact number of the patient\n    \n- whatsAppNumber (string): The WhatsApp number of the patient\n    \n- emailId (string): The email ID of the patient\n    \n- dateOfBirth (string): The date of birth of the patient\n    \n- gender (string): The gender of the patient\n    \n- bloodGroup (string): The blood group of the patient\n    \n- createdUser (object): Details of the user who created the patient record\n    \n    - id (number): The unique identifier for the user\n        \n    - username (string): The username of the user\n        \n    - name (string): The name of the user\n        \n    - password (string): The password of the user\n        \n    - branch (string): The branch of the user\n        \n    - roles (string): The roles assigned to the user\n        \n    - hospital (object): Details of the hospital associated with the user\n        \n        - id (number): The unique identifier for the hospital\n            \n        - name (string): The name of the hospital\n            \n        - address (string): The address of the hospital\n            \n        - contactNumber (string): The contact number of the hospital\n            \n        - emailId (string): The email ID of the hospital\n            \n        - openingTime (string): The opening time of the hospital\n            \n        - closingTime (string): The closing time of the hospital\n            \n        - branch (string): The branch of the hospital\n            \n        - workingDays (string): The working days of the hospital\n            \n        - offDays (string): The off days of the hospital\n            \n        - numberOfUsers (string): The number of users associated with the hospital\n            \n        - departments (string): The departments available in the hospital\n            \n        - createdUser (object): Details of the user who created the hospital record\n            \n            - (attributes similar to createdUser above)\n                \n        - modifiedUser (number): The unique identifier for the user who modified the hospital record\n            \n        - createdDate (string): The date when the hospital record was created\n            \n        - modifiedDate (string): The date when the hospital record was modified\n            \n        - status (number): The status of the hospital record\n            \n    - createdUser (object): Details of the user who created the patient record (similar attributes as above)\n        \n    - modifiedUser (number): The unique identifier for the user who modified the patient record\n        \n    - createdDate (string): The date when the patient record was created\n        \n    - modifiedDate (string): The date when the patient record was modified\n        \n    - status (number): The status of the patient record\n        \n- currentStatus (number): The current status of the patient\n    \n- diet (string): The diet prescribed for the patient\n    \n- currentDoctor (object): Details of the current doctor attending to the patient\n    \n    - (attributes similar to createdUser above)\n        \n- age (number): The age of the patient\n    \n\n#### Status\n\n- 200: OK. The request was successful and the response body contains the requested patient details."
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Name(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczODgzMDA0OSwiZXhwIjoxNzM4ODMwOTQ5fQ.K0QGfZxGcby4S_MOIJ2RGEwErk1NDoVXQ0RQjcNcVaM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/byName?name=A",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"byName"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "A"
+								}
+							]
+						},
+						"description": "This endpoint retrieves patient information based on the name provided in the URL. If a single letter is provided, the endpoint will return a list of patients whose names begin with that specific letter. This functionality allows for efficient searching and filtering of patients by name, enabling quick access to a group of patients that match the initial character of their names."
+					},
+					"response": []
+				},
+				{
+					"name": "Get patients by id(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTc0MDcyNzQzMX0.H1B5ny_L3O4BA0yK5nx9NGWWkQ3MwW5HtALS9GcZjFg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/byPatientId/1.5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"byPatientId",
+								"1.5"
+							]
+						},
+						"description": "This endpoint retrieves patient information based on the ID provided in the URL. It fetches the details of a specific patient identified by their unique ID. This functionality allows for precise and direct retrieval of a patient's information, ensuring quick access to the requested data associated with the provided patient ID.\n\n."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active patients Status(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczODU2Mzg1NSwiZXhwIjoxNzM4NTY0NzU1fQ.ntOlcF0LP1eTHNXYESiAACob9Me587-dp8BHxb1Phlk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/getActivePatientsList",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"getActivePatientsList"
+							]
+						},
+						"description": "### GET /patients/activePatients\n\nThis endpoint retrieves the active status of patients based on the provided URL. If there are active patients, it returns a list of those active patients. If no active patients are found, the response will indicate \"No active patients.\" This functionality helps in tracking and identifying patients who are currently active, ensuring efficient management of patient data based on their status.\n\n#### Request\n\nThis is a GET request to the endpoint `http://localhost:8080/patients/activePatients`.\n\n#### Response\n\nThe response is a JSON array containing objects with the following properties:\n\n- `id` (number): The unique identifier of the patient.\n    \n- `name` (string): The name of the patient.\n    \n- `contactNumber` (string): The contact number of the patient.\n    \n- `whatsAppNumber` (string): The WhatsApp number of the patient.\n    \n- `emailId` (string): The email address of the patient.\n    \n- `dateOfBirth` (string): The date of birth of the patient.\n    \n- `gender` (string): The gender of the patient.\n    \n- `bloodGroup` (string): The blood group of the patient.\n    \n- `createdUser` (object): The user who created the patient record, with sub-properties `id`, `username`, `name`, `password`, and more.\n    \n- `modifiedUser` (number): The ID of the user who last modified the patient record.\n    \n- `createdDate` (string): The date and time when the patient record was created.\n    \n- `modifiedDate` (string): The date and time when the patient record was last modified.\n    \n- `currentStatus` (number): The current status of the patient.\n    \n- `diet` (string): The diet plan of the patient.\n    \n- `currentDoctor` (object): The current doctor assigned to the patient.\n    \n- `age` (number): The age of the patient.\n    \n\nThe response status for this request is 200, and the content type is `application/json`.\n\n``` json\n[\n  {\n    \"id\": 0,\n    \"name\": \"\",\n    \"contactNumber\": \"\",\n    \"whatsAppNumber\": \"\",\n    \"emailId\": \"\",\n    \"dateOfBirth\": \"\",\n    \"gender\": \"\",\n    \"bloodGroup\": \"\",\n    \"createdUser\": {\n      \"id\": 0,\n      \"username\": \"\",\n      \"name\": \"\",\n      \"password\": \"\",\n      \"branch\": \"\",\n      \"roles\": \"\",\n      \"hospital\": {\n        \"id\": 0,\n        \"name\": \"\",\n        \"address\": \"\",\n        \"contactNumber\": \"\",\n        \"emailId\": \"\",\n        \"openingTime\": \"\",\n        \"closingTime\": \"\",\n        \"branch\": \"\",\n        \"workingDays\": \"\",\n        \"offDays\": \"\",\n        \"numberOfUsers\": \"\",\n        \"departments\": \"\",\n        \"createdUser\": {\n          \"id\": 0,\n          \"username\": \"\",\n          \"name\": \"\",\n          \"password\": \"\",\n          \"branch\": null,\n          \"roles\": \"\",\n          \"hospital\": null,\n          \"createdUser\": 0,\n          \"modifiedUser\": 0,\n          \"createdDate\": \"\",\n          \"modifiedDate\": \"\",\n          \"status\": 0\n        },\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n      },\n      \"createdUser\": {\n        \"id\": 0,\n        \"username\": \"\",\n        \"name\": \"\",\n        \"password\": \"\",\n        \"branch\": \"\",\n        \"roles\": \"\",\n        \"hospital\": {\n          \"id\": 0,\n          \"name\": \"\",\n          \"address\": \"\",\n          \"contactNumber\": \"\",\n          \"emailId\": \"\",\n          \"openingTime\": \"\",\n          \"closingTime\": \"\",\n          \"branch\": \"\",\n          \"workingDays\": \"\",\n          \"offDays\": \"\",\n          \"numberOfUsers\": \"\",\n          \"departments\": \"\",\n          \"createdUser\": 0,\n          \"modifiedUser\": 0,\n          \"createdDate\": \"\",\n          \"modifiedDate\": \"\",\n          \"status\": 0\n        },\n        \"createdUser\": 0,\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n      },\n      \"modifiedUser\": 0,\n      \"createdDate\": \"\",\n      \"modifiedDate\": \"\",\n      \"status\": 0\n    },\n    \"modifiedUser\": 0,\n    \"createdDate\": \"\",\n    \"modifiedDate\": \"\",\n    \"status\": 0,\n    \"currentStatus\": 0,\n    \"diet\": \"\",\n    \"currentDoctor\": null,\n    \"age\": 0\n  }\n]\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Inactive patients Status(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczODU2Mzg1NSwiZXhwIjoxNzM4NTY0NzU1fQ.ntOlcF0LP1eTHNXYESiAACob9Me587-dp8BHxb1Phlk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/inactivePatients",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"inactivePatients"
+							]
+						},
+						"description": "This endpoint retrieves the inactive status of patients based on the provided URL. If there are inactive patients, it returns a list of those inactive patients. If no inactive patients are found, the response will indicate \"No inactive patients.\" This functionality helps in tracking and identifying patients who are currently inactive, providing clarity in the management of patient data based on their status."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Active patients Status(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczODU2Mzg1NSwiZXhwIjoxNzM4NTY0NzU1fQ.ntOlcF0LP1eTHNXYESiAACob9Me587-dp8BHxb1Phlk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/currentStatus/activePatients",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"currentStatus",
+								"activePatients"
+							]
+						},
+						"description": "This endpoint retrieves the current active status of patients based on the provided URL. If there are currently active patients, it returns a list of those active patients. If no patients are currently active, the response will indicate \"No current active patients.\" This functionality allows for the identification and management of patients who are presently active, offering insight into the current status of patients within the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current InActive patients Status(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczODgzMDA0OSwiZXhwIjoxNzM4ODMwOTQ5fQ.K0QGfZxGcby4S_MOIJ2RGEwErk1NDoVXQ0RQjcNcVaM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/patients/currentStatus/inactivePatients",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"patients",
+								"currentStatus",
+								"inactivePatients"
+							]
+						},
+						"description": "This endpoint retrieves the current inactive status of patients based on the provided URL. If there are currently inactive patients, it returns a list of those inactive patients. If no patients are currently inactive, the response will indicate \"No current inactive patients.\" This feature helps in identifying and managing patients who are currently inactive, providing a clear overview of their status within the system."
+					},
+					"response": []
+				},
+				{
+					"name": "add report(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczOTE4MTkxOSwiZXhwIjoxNzM5MTgyODE5fQ.JteJxmmolP5KCU9DxP9UBDJBCpvWduA71pRvC6oQNFk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "medicalReport",
+									"type": "file",
+									"src": [
+										"/C:/Users/Dell/Downloads/medical reports/Nexon Diesel.pdf",
+										"/C:/Users/Dell/Downloads/4849.pdf"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/reports/addReport/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reports",
+								"addReport",
+								"1"
+							]
+						},
+						"description": "This endpoint allows users to create a new report by sending a request with the report details. It supports the upload of a ZIP file along with individual report files in the following formats: PDF, JPG, JPEG, and PNG. This feature enables users to submit reports in various formats, ensuring flexibility and ease of use when adding new reports to the system."
+					},
+					"response": []
+				},
+				{
+					"name": "get report(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczODY2MzM3MCwiZXhwIjoxNzM4NjY0MjcwfQ.hB0gcZovW-Gq-LoEwDecfYsuUQBzMZuJAv-WiejIxCw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/reports/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reports",
+								"1"
+							]
+						},
+						"description": "This endpoint allows users to retrieve a specific report by providing the unique patient ID. It returns all the reports associated with that particular patient ID, ensuring that all relevant reports for the patient are easily accessible."
+					},
+					"response": []
+				},
+				{
+					"name": "update-report(Receptionist,Doctor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFuamFsQGdtYWlsLmNvbSIsImlhdCI6MTczOTE4NTAwNywiZXhwIjoxNzM5MTg1OTA3fQ.1Ih-t633paeiRE89-YvhkA415nBgQkBJsz1UWASoaY0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "medicalReport",
+									"type": "file",
+									"src": "/C:/Users/Dell/Downloads/4849 (1).pdf"
+								},
+								{
+									"key": "patientId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "reportId",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/reports/updateReport",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reports",
+								"updateReport"
+							]
+						},
+						"description": "This endpoint allows users to update the details of an existing report by providing the patient ID and the specific report ID that needs to be updated. Once the relevant report is identified, users can upload the updated report (in PNG, PDF, JPG, or JPEG formats), which will replace the existing report."
+					},
+					"response": []
+				}
+			],
+			"description": "The **Patient** module manages **patient records, medical history.** It ensures **secure storage and easy retrieval** of patient data for doctors and hospital staff."
+		},
+		{
+			"name": "Catlog",
+			"item": [
+				{
+					"name": "Add Catalog By Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "category",
+									"value": "ROOM",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Blood Test",
+									"type": "text"
+								},
+								{
+									"key": "fees",
+									"value": "200",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "CBC, Sugar",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/catalog/addCatalog",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"addCatalog"
+							]
+						},
+						"description": "This API allows you to create a catalog for the hospital. It helps in managing and organizing hospital services.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Catalog By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/getById/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"getById",
+								"5"
+							]
+						},
+						"description": "This API allows you to retrieve a catalog using its ID.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Catalog By Catagory",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/category/ROOM",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"category",
+								"ROOM"
+							]
+						},
+						"description": "This API allows you to retrieve catalogs based on category.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Catalog by Service Name",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/blo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"blo"
+							]
+						},
+						"description": "This API allows you to retrieve a list of all service names.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Reactive Catalog By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/reactivate/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"reactivate",
+								"5"
+							]
+						},
+						"description": "This API allows you to reactivate a catalog using its ID, making it available for use again.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Catalog By Hospital Id By Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/getById/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"getById",
+								"5"
+							]
+						},
+						"description": "This API allows you to retrieve all catalogs associated with a specific hospital using its ID.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Catalog By Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/deleteCatalog/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"deleteCatalog",
+								"5"
+							]
+						},
+						"description": "This API allows you to deactivate a catalog, making it unavailable for use.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Catalog By Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/catalog/getAllCatalog",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"getAllCatalog"
+							]
+						},
+						"description": "This API allows you to retrieve a list of all catalogs in the system.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Catalog By Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsb2tlc2hjaG91ZGhhcnkxQGdtYWlsLmNvbSIsImlhdCI6MTc0MDk4MzY5NH0.lIMGx7FGyHXLoX-x7Dk_TBGMutLjzoFeqzr3xwkawbI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "category",
+									"value": "ROOM",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Blood Test",
+									"type": "text"
+								},
+								{
+									"key": "fees",
+									"value": "350",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "CBC, Sugar",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/catalog/updateCatalog/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"catalog",
+								"updateCatalog",
+								"5"
+							]
+						},
+						"description": "This API allows you to update the catalog using the catalog ID. It enables modifications to existing catalog details.\n\n#### **Access**\n\n- Admin"
+					},
+					"response": []
+				}
+			],
+			"description": "The **Catalog** module manages **medical services, treatments, medicines, and procedures** offered by the hospital. It helps in **standardizing service listings, pricing, and availability** for billing and patient care."
+		},
+		{
+			"name": "prescription",
+			"item": [
+				{
+					"name": "create prescription",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": [\"Tablet\", \"Tablet\", \"Tablet\",\"Tablet\",\"Syrup\"],\r\n    \"medicine\": [\"Isordill 500mg\", \"Paracetamoll 400mg\", \"Aspirinn 40mg\", \"Rongold 10 mg\",\"Ambrolite D\"],\r\n    \"dosage\": [\"1\",\"1\",\"0.5\",\"1\",\"5 ml\"], \r\n    \"schedule\": [\"1 time\", \"\", \"3 time\", \"2 times\",\"2 times\"],  \r\n    \"quantity\": [0,25,25,25,3],\r\n    \"numberOfDays\":[5,5,5,5], \r\n    \"appoinmentId\":3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/prescriptions/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions",
+								"create"
+							]
+						},
+						"description": "### Create Prescription\n\nThis endpoint allows the client to create a new prescription.\n\n#### Request Body\n\n- `type` (array of strings) - The type of medication.\n    \n- `medicine` (array of strings) - The name of the medicine.\n    \n- `dosage` (array of strings) - The dosage of the medicine.\n    \n- `schedule` (array of strings) - The schedule for taking the medicine.\n    \n- `quantity` (number) - The quantity of medicine prescribed.\n    \n- `numberOfDays` (number) - The number of days for which the prescription is valid.\n    \n- `appoinmentId` (number) - The ID of the appointment for which the prescription is being created.\n    \n\n#### Response\n\n- `type` (array of strings) - The type of medication.\n    \n- `medicine` (array of strings) - The name of the medicine.\n    \n- `dosage` (array of strings) - The dosage of the medicine.\n    \n- `schedule` (array of strings) - The schedule for taking the medicine.\n    \n- `quantity` (number) - The quantity of medicine prescribed.\n    \n- `numberOfDays` (number) - The number of days for which the prescription is valid.\n    \n- `createdDate` (string) - The date of creation of the prescription.\n    \n- `modifiedDate` (string) - The date of the last modification of the prescription.\n    \n- `status` (number) - The status of the prescription.\n    \n- `id` (number) - The ID of the prescription.\n    \n\n**Authority :- Doctor**"
+					},
+					"response": []
+				},
+				{
+					"name": "getprescriptionbyid",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkZWZnQGdtYWlsLmNvbSIsImlhdCI6MTczOTc4NzY0OSwiZXhwIjoxNzM5Nzg4NTQ5fQ.QaCJcq-lzJLcydZkocjYrHIOQhy8F_411R6nuX7mhlE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/prescriptions/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions",
+								"2"
+							]
+						},
+						"description": "### GET /prescriptions/2\n\nThis endpoint retrieves the details of a specific prescription with the ID of 2.\n\n#### Request\n\nThere are no request parameters for this endpoint.\n\n**Authority:- Doctor**\n\n#### Response\n\nThe response will be in JSON format with the following schema:\n\n``` json\n{\n  \"type\": [\"string\"],\n  \"medicine\": [\"string\"],\n  \"dosage\": [\"string\"],\n  \"schedule\": [\"string\"],\n  \"quantity\": [number],\n  \"numberOfDays\": [number],\n  \"createdDate\": \"string\",\n  \"modifiedDate\": \"string\",\n  \"status\": number,\n  \"id\": number\n}\n\n ```\n\nThe response will contain details about the prescription, including the type, medicine, dosage, schedule, quantity, number of days, created date, modified date, status, and ID."
+					},
+					"response": []
+				},
+				{
+					"name": "get all prescription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkZWZnaGlAZ21haWwuY29tIiwiaWF0IjoxNzM4MTU2NDYyLCJleHAiOjE3MzgxNTczNjJ9.ZZohmBKvxuHT3xnZNNlODBd4IUN2adMchRym-PJxhYc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/prescriptions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions"
+							]
+						},
+						"description": "The endpoint retrieves a list all prescriptions.\n\n**Authority:- Doctor**\n\nThe response of the request can be documented as a JSON schema:\n\n``` json\n{\n    \"type\": {\n        \"type\": \"array\",\n        \"items\": {\n            \"type\": \"string\"\n        }\n    },\n    \"medicine\": {\n        \"type\": \"array\",\n        \"items\": {\n            \"type\": \"string\"\n        }\n    },\n    \"dosage\": {\n        \"type\": \"array\",\n        \"items\": {\n            \"type\": \"string\"\n        }\n    },\n    \"schedule\": {\n        \"type\": \"array\",\n        \"items\": {\n            \"type\": \"string\"\n        }\n    },\n    \"quantity\": {\n        \"type\": \"array\",\n        \"items\": {\n            \"type\": \"number\"\n        }\n    },\n    \"numberOfDays\": {\n        \"type\": \"array\",\n        \"items\": {\n            \"type\": \"number\"\n        }\n    },\n    \"createdDate\": {\n        \"type\": \"string\"\n    },\n    \"modifiedDate\": {\n        \"type\": \"string\"\n    },\n    \"status\": {\n        \"type\": \"number\"\n    },\n    \"id\": {\n        \"type\": \"number\"\n    }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "statusChange",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkZWZnQGdtYWlsLmNvbSIsImlhdCI6MTczOTc4NzY0OSwiZXhwIjoxNzM5Nzg4NTQ5fQ.QaCJcq-lzJLcydZkocjYrHIOQhy8F_411R6nuX7mhlE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/prescriptions/status/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions",
+								"status",
+								"1"
+							]
+						},
+						"description": "This endpoint is used to delete a specific prescription status by sending an HTTP DELETE request to the specified URL. The request does not require a request body as it only needs the ID of the prescription status to be deleted, which is included in the URL path also **this will not delete prescription permanently.**\n\n### Request Parameters\n\n- ID (in the URL path): The unique identifier of the prescription status to be deleted.\n    \n\n**Authority:- Doctor**\n\n### Response\n\nThe response will indicate the success or failure of the deletion operation. A successful response will typically return a 200 OK status code with an empty body, while an unsuccessful deletion may return an error message along with an appropriate status code."
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW5qYW5hQGdtYWlsLmNvbSIsImlhdCI6MTc0MDczNzU1OH0.8Hp_xTavvUt-2qPLeUMZQLMsv75mYLJP-G4HyX-IC_o",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": [\"Tablet\", \"Tablet\", \"Tablet\",\"Tablet\",\"Syrup\"],\r\n    \"medicine\": [\"Isordill 500mg\", \"Paracetamoll 400mg\", \"Aspirinn 40mg\", \"Rongold 10 mg\",\"Ambrolite D\"],\r\n    \"dosage\": [\"1\",\"1\",\"0.5\",\"1\",\"5 ml\"], \r\n    \"schedule\": [\"1 time\", \"1 time\", \"3 time\", \"2 times\",\"2 times\"],  \r\n    \"quantity\": [25,25,25,25,1],\r\n    \"numberOfDays\":[5,5,5,5], \r\n    \"appoinmentId\":4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/prescriptions/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions",
+								"4"
+							]
+						},
+						"description": "### Update Prescription\n\nThis endpoint is used to update a prescription with the specified ID.\n\n**Authority:- Doctor**\n\n#### Request Body\n\n- `type` (array of strings): The type of medicine.\n    \n- `medicine` (array of strings): The name of the medicine.\n    \n- `dosage` (array of strings): The dosage of the medicine.\n    \n- `schedule` (array of strings): The schedule for taking the medicine.\n    \n- `quantity` (number): The quantity of the medicine.\n    \n- `numberOfDays` (number): The number of days for the prescription.\n    \n- `appoinmentId` (number): The ID of the appointment associated with the prescription.\n    \n\nExample:\n\n``` json\n{\n  \"type\": [\"Tablet\"],\n  \"medicine\": [\"Isordill 500mg\"],\n  \"dosage\": [\"1\"],\n  \"schedule\": [\"1 time\"],\n  \"quantity\": 25,\n  \"numberOfDays\": 5,\n  \"appoinmentId\": 2\n}\n#### Response\n- `type` (array of strings): The type of medicine.\n- `medicine` (array of strings): The name of the medicine.\n- `dosage` (array of strings): The dosage of the medicine.\n- `schedule` (array of strings): The schedule for taking the medicine.\n- `quantity` (number): The quantity of the medicine.\n- `numberOfDays` (number): The number of days for the prescription.\n- `createdDate` (string): The date of creation.\n- `modifiedDate` (string): The date of modification.\n- `status` (number): The status of the prescription.\n- `id` (number): The ID of the prescription.\nExample:\n```json\n{\n  \"type\": [\"\"],\n  \"medicine\": [\"\"],\n  \"dosage\": [\"\"],\n  \"schedule\": [\"\"],\n  \"quantity\": 0,\n  \"numberOfDays\": 0,\n  \"createdDate\": \"\",\n  \"modifiedDate\": \"\",\n  \"status\": 0,\n  \"id\": 0\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "getprescriptionpatientid",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkZWZnQGdtYWlsLmNvbSIsImlhdCI6MTczOTg4MzQ3NywiZXhwIjoxNzM5ODg0Mzc3fQ.E1xTpdfaRAUsSv0fGox_lL-UIlwO1ztyRzsnHg5iw_s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/prescriptions/patient/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions",
+								"patient",
+								"1"
+							]
+						},
+						"description": "### Prescription Details Response\n\nThe endpoint returns a JSON array containing prescription details for the specified patient also if there is appoinment for the particular pateint then only it will display.\n\n| Key | Type | Description |\n| --- | --- | --- |\n| type | array | Array of prescription types |\n| medicine | array | Array of prescribed medicines |\n| dosage | array | Array of prescribed dosages |\n| schedule | array | Array of medication schedules |\n| quantity | number | Quantity of each prescribed medicine |\n| numberOfDays | number | Number of days for the prescription |\n| createdDate | string | Date of prescription creation |\n| modifiedDate | string | Date of prescription modification |\n| status | number | Prescription status |\n| id | number | Unique prescription ID |\n\nExample:\n\n``` json\n[\n    {\n        \"type\": [\"Type1\", \"Type2\"],\n        \"medicine\": [\"Medicine1\", \"Medicine2\"],\n        \"dosage\": [\"Dosage1\", \"Dosage2\"],\n        \"schedule\": [\"Schedule1\", \"Schedule2\"],\n        \"quantity\": [1, 2],\n        \"numberOfDays\": 7,\n        \"createdDate\": \"2022-01-01\",\n        \"modifiedDate\": \"2022-01-05\",\n        \"status\": 1,\n        \"id\": 12345\n    }\n]\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "getallmedicine",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNkZWZnQGdtYWlsLmNvbSIsImlhdCI6MTczOTg4MzQ3NywiZXhwIjoxNzM5ODg0Mzc3fQ.E1xTpdfaRAUsSv0fGox_lL-UIlwO1ztyRzsnHg5iw_s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/prescriptions/getMedicine",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"prescriptions",
+								"getMedicine"
+							]
+						},
+						"description": "### Get Medicine Prescription\n\nThis endpoint makes an HTTP GET request to retrieve the list of medicines prescribed.\n\n#### Request Body\n\nThis request does not require a request body.\n\n**Authority:- Doctor**\n\n#### Response\n\n- Status: 200 OK\n    \n- Content-Type: application/json\n    \n\nThe response body is a JSON array containing the list of prescribed medicines."
+					},
+					"response": []
+				}
+			],
+			"description": "The **Prescription** module manages **electronic prescriptions (ePrescriptions)** issued by doctors. It allows **secure storage, retrieval, and sharing** of prescribed medications, dosage instructions, and treatment plans for patients"
+		},
+		{
+			"name": "reports",
+			"item": [
+				{
+					"name": "download report by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/reports/downloadReport/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reports",
+								"downloadReport",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CareTakerBooking",
+			"item": [
+				{
+					"name": "Book CareTaker",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n  \"caretakerId\": 14,\r\n  \"startDate\": \"2025-05-15\",\r\n  \"fromTime\": \"04:01\",\r\n  \"toTime\": \"05:00\",\r\n  //\"endDate\":\"2025-05-13\",\r\n  \"address\": \"123 Main Street, Springfield\",\r\n  \"notes\": \"Requires wheelchair assistance.\"\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/caretakers/book",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"caretakers",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get bookings by careTakerID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdmluYXNoQGdtYWlsLmNvbSIsImlhdCI6MTc0NzEzNDkzMX0.eVzN0_Y8az7D4IKRg6lSORUJYoOR4uh4H2ZzmFyeO1U",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/caretakers/getCaretakerBookings/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"caretakers",
+								"getCaretakerBookings",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get All caretakers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/caretakers/getAllCaretakers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"caretakers",
+								"getAllCaretakers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Booking",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/caretakers/cancelBooking/38",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"caretakers",
+								"cancelBooking",
+								"38"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get All Bookings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/caretakers/getAllbookings",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"caretakers",
+								"getAllbookings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Appointment",
+			"item": [
+				{
+					"name": "Book Appointment (RECEPTIONIST)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"doctor\": {\r\n        \"id\": 5\r\n    },\r\n    \"patientDTO\": {\r\n        \"name\":  \"ChaVan b\",\r\n        \"contactNumber\": \"1234567859\",\r\n        \"whatsAppNumber\": \"9087654321\",\r\n        \"emailId\": \"abc@gmail.com\",\r\n        \"dateOfBirth\": \" 2001-01-01 \",\r\n        \"gender\": \" female \",\r\n        \"bloodGroup\": \"b+ \"\r\n    },\r\n    \"appointmentStatus\":\"SCHEDULED\",\r\n    \"appointmentDateAndTime\": \"2027-09-16T16:16:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/appointments/bookAppointment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"bookAppointment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Appointment (RECEPTIONIST,DOCTOR)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZWNlcHRpb25pc3RAZ21haWwuY29tIiwiaWF0IjoxNzQwOTIwODgyfQ.H_pglncrGFo992l4q50Hr3Jg6Sez9Bj6bJKRdY5pvkg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"patientDTO\": {\r\n        \"name\": \"Heera Thakuru\",\r\n        \"contactNumber\": \"9923933431\",\r\n       \"whatsAppNumber\": \"1234567890\",\r\n        \"emailId\": \"ravindrasomvanshi22@gmail.com\",\r\n        \"dateOfBirth\": \"22 feb 2001\",\r\n        \"gender\": \" male \",\r\n        \"bloodGroup\": \"O+\",\r\n        \"status\": 1,\r\n        \"currentStatus\": 1,\r\n        \"diet\":\"VEG\"\r\n    },\r\n    \"weight\": 172,\r\n    \"height\": 72,\r\n    \"bloodPressure\": \"120/90\",\r\n    \"heartRate\": 72,\r\n    \"bodyTemperature\": 97.6,\r\n    \"respiratoryRate\": 30,\r\n    \"clinicalNote\": \"Patient shows good recovery signs.\",\r\n   // \"appointmentStatus\": \"ENGAGED\",\r\n   \"appointmentStatus\": \"COMPLETED\",\r\n    \"pulseRate\": 100,\r\n    \"currentDoctor\":7,\r\n    \"fetchClinicalNote\": 1,\r\n    \"nextAppointmentDate\": \"2025-12-30\",\r\n    \"symptoms\": \"Headache, fatigue\",\r\n    \"allergies\": \"qer\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/appointments/updateAppointmentbyId/345678",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"updateAppointmentbyId",
+								"345678"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Appointment (RECEPTIONIST)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZWNlcHRpb25pc3RAZ21haWwuY29tIiwiaWF0IjoxNzQwOTIwODgyfQ.H_pglncrGFo992l4q50Hr3Jg6Sez9Bj6bJKRdY5pvkg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/appointments/cancelAppointmentbyId/35",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"cancelAppointmentbyId",
+								"35"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Appointment (ADMIN)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjFAZ21haWwuY29tIiwiaWF0IjoxNzQwNjYyMjA0fQ.h4RpJ3vGuk92hBX06lnGOy-_rNxNCnlkuKCPXHrFHKU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/appointments/deleteAppointmentbyId/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"deleteAppointmentbyId",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Appointment By ID (ADMIN,DOCTOR)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW5qYW5hQGdtYWlsLmNvbSIsImlhdCI6MTc0MDY2MjcwMH0.lSldzbboCS3vXtYMCfT6J0qE41gEC31aj0QSJTC1zh4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/appointments/getAppointmentbyId/0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"getAppointmentbyId",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Appointments ( ADMIN , DOCTOR )",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW5qYW5hQGdtYWlsLmNvbSIsImlhdCI6MTc0MDY2MjcwMH0.lSldzbboCS3vXtYMCfT6J0qE41gEC31aj0QSJTC1zh4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/appointments/getAllAppointments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"getAllAppointments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Appointment By Patient Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW5qYW5hQGdtYWlsLmNvbSIsImlhdCI6MTc0MDY2MjcwMH0.lSldzbboCS3vXtYMCfT6J0qE41gEC31aj0QSJTC1zh4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/appointments/getAppointmentsbyPatientId/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"getAppointmentsbyPatientId",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Appointment By Date(RECEPTIONIST,ADMIN,DOCTOR)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZWNlcHRpb25pc3RAZ21haWwuY29tIiwiaWF0IjoxNzQwOTIwODgyfQ.H_pglncrGFo992l4q50Hr3Jg6Sez9Bj6bJKRdY5pvkg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/appointments/getAppointmentsbyDate/Oct 27 2025",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"getAppointmentsbyDate",
+								"Oct 27 2025"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Branchwise Appointment (ADMIN,DOCTOR,RECEPTIONIST)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZWNlcHRpb25pc3RAZ21haWwuY29tIiwiaWF0IjoxNzQwOTIwODgyfQ.H_pglncrGFo992l4q50Hr3Jg6Sez9Bj6bJKRdY5pvkg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/appointments/getAppointmentsbyBranch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"appointments",
+								"getAppointmentsbyBranch"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OAuth 2.0",
+			"item": [
+				{
+					"name": "get information",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "code",
+									"value": "4/0AUJR-x5OBhAux3ghZU3hLolAeMlPJiztYSAzflb9yUWfeAGztmRpDwkdRBplfLICq7-TcA",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/OAuth2/google/success",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"OAuth2",
+								"google",
+								"success"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoice",
+			"item": [
+				{
+					"name": "generate Invoice by appointmentId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "paymentMode",
+									"value": "INSURANCE",
+									"type": "text"
+								},
+								{
+									"key": "policyNumber",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "policyCompanyName",
+									"value": "THIS IS COMPANY",
+									"type": "text"
+								},
+								{
+									"key": "policyStatus",
+									"value": "CLAIMED",
+									"type": "text"
+								},
+								{
+									"key": "policyAmount",
+									"value": "200",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "quickCareCharge",
+									"value": "470",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/invoice/generateInvoice/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"generateInvoice",
+								"5"
+							]
+						},
+						"description": "# **Generate Invoice**\n\nThis API endpoint is used to generate an invoice for a specific entity. The HTTP POST request should be made to [http://localhost:8080/invoice/generateInvoice/5](http://localhost:8080/invoice/generateInvoice/5), where \"5\" is the identifier for the entity for which the invoice is being generated.\n\n### Request Body\n\nThe request should include a form-data body type with the necessary parameters to generate the invoice. Please refer to the API documentation for the required parameters and their descriptions.\n\n### Response\n\nThe response will contain the details of the generated invoice, including the invoice number, date, items, total amount, and any other relevant information."
+					},
+					"response": []
+				},
+				{
+					"name": "update invoice by bill id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "paidAmount",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "dueDate",
+									"value": "2025-05-09",
+									"type": "text"
+								},
+								{
+									"key": "paymentMode",
+									"value": "CREDIT_CARD",
+									"type": "text"
+								},
+								{
+									"key": "paymentMode",
+									"value": "INSURANCE",
+									"type": "text"
+								},
+								{
+									"key": "policyNumber",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "policyCompanyName",
+									"value": "THIS IS COMPANY",
+									"type": "text"
+								},
+								{
+									"key": "policyStatus",
+									"value": "CLAIMED",
+									"type": "text"
+								},
+								{
+									"key": "policyAmount",
+									"value": "200",
+									"type": "text"
+								},
+								{
+									"key": "quickCareCharge",
+									"value": "470",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/invoice/updateInvoice/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"updateInvoice",
+								"1"
+							]
+						},
+						"description": "### Update Invoice\n\n> **Description:**  \nThis API endpoint allows the `RECEPTIONIST` to update an existing bill using the billing ID. The update includes modifying the payment details such as the paid amount, payment mode, due date, and bill status. The system ensures that the total paid amount does not exceed the total bill amount and mandates a due date if the bill is not fully paid. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### Request Parameters\n\n1. **Path Parameters :**\n    \n    | **Parameter** | **Type** | **Required** |\n    | --- | --- | --- |\n    | `billingId` | Long | Yes |\n    \n\n1. **Body Parameters :**\n    \n    | **Parameter** | **Type** | **Required** |\n    | --- | --- | --- |\n    | `paidAmount` | BigDecimal | Yes |\n    | `paymentMode` | Enum (`String`) | Yes |\n    | `dueDate` | Date (`YYYY-MM-DD`) | No |\n    \n\n#### Response\n\n- Status: 201\n    \n- Content-Type: application/json\n    \n\nThe response will contain a JSON object with a `message` key.\n\nExample:\n\n``` json\n{\n    \"message\": \"\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "status",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "PARTIALLY_PAID",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "COMPLETE",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "PARTIALLY_PAID,UNPAID ",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByStatus",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByStatus"
+							]
+						},
+						"description": "### Retrieve Invoices by Status\n\n> **Description:**  \nThis API endpoint allows a receptionist to retrieve a list of invoices filtered by their status. If no status is provided, it defaults to fetching invoices with `COMPLETE`, `PARTIALLY_PAID`, and `UNPAID` statuses. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### **Request Parameters :**\n\n1. **ParameterTypeRequiredDescription**`status`List of `BillingStatus`NoThe status of the invoices to filter. Allowed values: `COMPLETE`, `PARTIALLY_PAID`, `UNPAID`. Defaults to all three if not provided.\n    \n\nThe request does not contain any parameters or a request body.\n\n#### Response\n\nUpon a successful execution, the API returns a JSON response with the array of invoice objects. Each invoice object has the following properties:\n\n- `id` (number): The unique identifier of the invoice.\n    \n- `totalAmount` (number): The total amount of the invoice.\n    \n- `paidAmount` (number): The amount already paid for the invoice.\n    \n- `balanceAmount` (number): The remaining balance amount for the invoice.\n    \n- `doctorFee` (number): The fee charged by the doctor for the invoice.\n    \n- `paymentMode` (string): The mode of payment for the invoice.\n    \n- `createdUser` (object): The user who created the invoice with their details.\n    \n- `modifiedUser` (object): The user who last modified the invoice with their details.\n    \n- `dueDate` (string): The due date for the invoice.\n    \n- `hospitalizationInfo` (object): Information related to hospitalization, if applicable.\n    \n\n#### Example\n\n``` json\n[\n  {\n    \"id\": 0,\n    \"totalAmount\": 0,\n    \"paidAmount\": 0,\n    \"balanceAmount\": 0,\n    \"doctorFee\": 0,\n    \"paymentMode\": \"\",\n    \"createdUser\": {\n      \"id\": 0,\n      \"username\": \"\",\n      \"name\": \"\",\n      \"password\": \"\",\n      \"branch\": \"\",\n      \"roles\": \"\",\n      \"hospital\": {\n        \"id\": 0,\n        \"name\": \"\",\n        \"address\": \"\",\n        \"contactNumber\": \"\",\n        \"emailId\": \"\",\n        \"openingTime\": \"\",\n        \"closingTime\": \"\",\n        \"branch\": \"\",\n        \"workingDays\": \"\",\n        \"offDays\": \"\",\n        \"numberOfUsers\": \"\",\n        \"departments\": \"\",\n        \"createdUser\": {\n          \"id\": 0,\n          \"username\": \"\",\n          \"name\": \"\",\n          \"password\": \"\",\n          \"branch\": null,\n          \"roles\": \"\",\n          \"hospital\": null,\n          \"createdUser\": 0,\n          \"modifiedUser\": 0,\n          \"createdDate\": \"\",\n          \"modifiedDate\": \"\",\n          \"status\": 0\n        },\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n      },\n      \"createdUser\": {\n        \"id\": 0,\n        \"username\": \"\",\n        \"name\": \"\",\n        \"password\": \"\",\n        \"branch\": \"\",\n        \"roles\": \"\",\n        \"hospital\": {\n          \"id\": 0,\n          \"name\": \"\",\n          \"address\": \"\",\n          \"contactNumber\": \"\",\n          \"emailId\": \"\",\n          \"openingTime\": \"\",\n          \"closingTime\": \"\",\n          \"branch\": \"\",\n          \"workingDays\": \"\",\n          \"offDays\": \"\",\n          \"numberOfUsers\": \"\",\n          \"departments\": \"\",\n          \"createdUser\": 0,\n          \"modifiedUser\": 0,\n          \"createdDate\": \"\",\n          \"modifiedDate\": \"\",\n          \"status\": 0\n        },\n        \"createdUser\": 0,\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n      },\n      \"modifiedUser\": 0,\n      \"createdDate\": \"\",\n      \"modifiedDate\": \"\",\n      \"status\": 0\n    },\n    \"modifiedUser\": 0,\n    \"createdDate\": \"\",\n    \"modifiedDate\": \"\",\n    \"status\": \"\",\n    \"dueDate\": \"\",\n    \"hospitalizationInfo\": null\n  }\n]\n\n ```\n\n> **Description:**  \nThis API endpoint allows a receptionist to retrieve a list of bills filtered by their status. If no status is provided, it defaults to fetching bills with `COMPLETE`, `PARTIALLY_PAID`, and `UNPAID` statuses. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### **Request Parameters :**\n\n1. **Path Parameters :**\n    \n    | **Parameter** | **Type** | **Required** | **Description** |\n    | --- | --- | --- | --- |\n    | `status` | List of `BillingStatus` | No | The status of the bills to filter. Allowed values: `COMPLETE`, `PARTIALLY_PAID`, `UNPAID`. Defaults to all three if not provided. |\n    \n\nThe request does not contain any parameters or a request body.\n\n#### Response\n\nUpon a successful execution, the API returns a JSON response with the array of bill objects. Each bill object has the following properties:\n\n- `id` (number): The unique identifier of the bill.\n    \n- `totalAmount` (number): The total amount of the bill.\n    \n- `paidAmount` (number): The amount already paid for the bill.\n    \n- `balanceAmount` (number): The remaining balance amount for the bill.\n    \n- `doctorFee` (number): The fee charged by the doctor for the bill.\n    \n- `paymentMode` (string): The mode of payment for the bill.\n    \n- `createdUser` (object): The user who created the bill with their details.\n    \n- `modifiedUser` (object): The user who last modified the bill with their details.\n    \n- `dueDate` (string): The due date for the bill.\n    \n- `hospitalizationInfo` (object): Information related to hospitalization, if applicable.\n    \n\n#### Example\n\n``` json\n[\n  {\n    \"id\": 0,\n    \"totalAmount\": 0,\n    \"paidAmount\": 0,\n    \"balanceAmount\": 0,\n    \"doctorFee\": 0,\n    \"paymentMode\": \"\",\n    \"createdUser\": {\n      \"id\": 0,\n      \"username\": \"\",\n      \"name\": \"\",\n      \"password\": \"\",\n      \"branch\": \"\",\n      \"roles\": \"\",\n      \"hospital\": {\n        \"id\": 0,\n        \"name\": \"\",\n        \"address\": \"\",\n        \"contactNumber\": \"\",\n        \"emailId\": \"\",\n        \"openingTime\": \"\",\n        \"closingTime\": \"\",\n        \"branch\": \"\",\n        \"workingDays\": \"\",\n        \"offDays\": \"\",\n        \"numberOfUsers\": \"\",\n        \"departments\": \"\",\n        \"createdUser\": {\n          \"id\": 0,\n          \"username\": \"\",\n          \"name\": \"\",\n          \"password\": \"\",\n          \"branch\": null,\n          \"roles\": \"\",\n          \"hospital\": null,\n          \"createdUser\": 0,\n          \"modifiedUser\": 0,\n          \"createdDate\": \"\",\n          \"modifiedDate\": \"\",\n          \"status\": 0\n        },\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n      },\n      \"createdUser\": {\n        \"id\": 0,\n        \"username\": \"\",\n        \"name\": \"\",\n        \"password\": \"\",\n        \"branch\": \"\",\n        \"roles\": \"\",\n        \"hospital\": {\n          \"id\": 0,\n          \"name\": \"\",\n          \"address\": \"\",\n          \"contactNumber\": \"\",\n          \"emailId\": \"\",\n          \"openingTime\": \"\",\n          \"closingTime\": \"\",\n          \"branch\": \"\",\n          \"workingDays\": \"\",\n          \"offDays\": \"\",\n          \"numberOfUsers\": \"\",\n          \"departments\": \"\",\n          \"createdUser\": 0,\n          \"modifiedUser\": 0,\n          \"createdDate\": \"\",\n          \"modifiedDate\": \"\",\n          \"status\": 0\n        },\n        \"createdUser\": 0,\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n      },\n      \"modifiedUser\": 0,\n      \"createdDate\": \"\",\n      \"modifiedDate\": \"\",\n      \"status\": 0\n    },\n    \"modifiedUser\": 0,\n    \"createdDate\": \"\",\n    \"modifiedDate\": \"\",\n    \"status\": \"\",\n    \"dueDate\": \"\",\n    \"hospitalizationInfo\": null\n  }\n]\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get all invoice",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getAllInvoice",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getAllInvoice"
+							]
+						},
+						"description": "### Retrieve All invoice\n\n> **Description:**  \nThis API endpoint allows a `RECEPTIONIST` to retrieve a list of all bills available in the DB. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### Response\n\nThe response is a JSON array containing the details of all the bills. Below is a JSON schema representing the structure of the response:\n\n``` json\n[\n  {\n    \"id\": \"number\",\n    \"totalAmount\": \"number\",\n    \"paidAmount\": \"number\",\n    \"balanceAmount\": \"number\",\n    \"doctorFee\": \"number\",\n    \"paymentMode\": \"string\",\n    \"createdUser\": {\n      \"id\": \"number\",\n      \"username\": \"string\",\n      \"name\": \"string\",\n      \"password\": \"string\",\n      \"branch\": \"string\",\n      \"roles\": \"string\",\n      \"hospital\": {\n        \"id\": \"number\",\n        \"name\": \"string\",\n        \"address\": \"string\",\n        \"contactNumber\": \"string\",\n        \"emailId\": \"string\",\n        \"openingTime\": \"string\",\n        \"closingTime\": \"string\",\n        \"branch\": \"string\",\n        \"workingDays\": \"string\",\n        \"offDays\": \"string\",\n        \"numberOfUsers\": \"string\",\n        \"departments\": \"string\",\n        \"createdUser\": {\n          \"id\": \"number\",\n          \"username\": \"string\",\n          \"name\": \"string\",\n          \"password\": \"string\",\n          \"branch\": \"string\",\n          \"roles\": \"string\",\n          \"hospital\": \"object\",\n          \"createdUser\": \"number\",\n          \"modifiedUser\": \"number\",\n          \"createdDate\": \"string\",\n          \"modifiedDate\": \"string\",\n          \"status\": \"number\"\n        },\n        \"modifiedUser\": \"number\",\n        \"createdDate\": \"string\",\n        \"modifiedDate\": \"string\",\n        \"status\": \"number\"\n      },\n      \"createdUser\": {\n        \"id\": \"number\",\n        \"username\": \"string\",\n        \"name\": \"string\",\n        \"password\": \"string\",\n        \"branch\": \"string\",\n        \"roles\": \"string\",\n        \"hospital\": \"object\",\n        \"createdUser\": \"number\",\n        \"modifiedUser\": \"number\",\n        \"createdDate\": \"string\",\n        \"modifiedDate\": \"string\",\n        \"status\": \"number\"\n      },\n      \"modifiedUser\": \"number\",\n      \"createdDate\": \"string\",\n      \"modifiedDate\": \"string\",\n      \"status\": \"string\",\n      \"dueDate\": \"string\",\n      \"hospitalizationInfo\": \"null\"\n    }\n  }\n]\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by appointment id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByAppointmentId/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByAppointmentId",
+								"1"
+							]
+						},
+						"description": "### Retrive invoice By Appointment Id\n\n> **Description:**  \nThis API retrieves the billing details for a specific appointment using the provided `appointmentId`. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### **Request Parameter :**\n\n1. **Path Parameter :**\n    \n    | **Parameter** | **Type** | **Required** | **Description** |\n    | --- | --- | --- | --- |\n    | `appointmentId` | `long` | Yes | The unique identifier of the appointment for which the bill is being fetched. |\n    \n\n#### Response\n\nThe response returned is a JSON object with the following schema:\n\n- id (number): The unique identifier of the bill.\n    \n- totalAmount (number): The total amount of the bill.\n    \n- paidAmount (number): The amount that has been paid.\n    \n- balanceAmount (number): The remaining balance amount.\n    \n- doctorFee (number): The fee charged by the doctor.\n    \n- paymentMode (string): The mode of payment.\n    \n- createdUser (object): Details of the user who created the bill.\n    \n    - id (number): The unique identifier of the user.\n        \n    - username (string): The username of the user.\n        \n    - name (string): The name of the user.\n        \n    - password (string): The password of the user.\n        \n    - branch (string): The branch of the user.\n        \n    - roles (string): The roles assigned to the user.\n        \n    - hospital (object): Details of the hospital associated with the user.\n        \n        - id (number): The unique identifier of the hospital.\n            \n        - name (string): The name of the hospital.\n            \n        - address (string): The address of the hospital.\n            \n        - contactNumber (string): The contact number of the hospital.\n            \n        - emailId (string): The email address of the hospital.\n            \n        - openingTime (string): The opening time of the hospital.\n            \n        - closingTime (string): The closing time of the hospital.\n            \n        - branch (string): The branch of the hospital.\n            \n        - workingDays (string): The working days of the hospital.\n            \n        - offDays (string): The off days of the hospital.\n            \n        - numberOfUsers (string): The number of users associated with the hospital.\n            \n        - departments (string): The departments available in the hospital.\n            \n        - createdUser (object): Details of the user who created the hospital entry.\n            \n            - id (number): The unique identifier of the user who created the hospital entry.\n                \n            - username (string): The username of the user who created the hospital entry.\n                \n            - name (string): The name of the user who created the hospital entry.\n                \n            - password (string): The password of the user who created the hospital entry.\n                \n            - branch (string): The branch of the user who created the hospital entry.\n                \n            - roles (string): The roles assigned to the user who created the hospital entry.\n                \n            - hospital (null): The hospital associated with the user who created the hospital entry.\n                \n            - createdUser (number): The unique identifier of the user who created the hospital entry.\n                \n            - modifiedUser (number): The unique identifier of the user who last modified the hospital entry.\n                \n            - createdDate (string): The date when the hospital entry was created.\n                \n            - modifiedDate (string): The date when the hospital entry was last modified.\n                \n            - status (number): The status of the hospital entry.\n                \n        - modifiedUser (number): The unique identifier of the user who last modified the hospital entry.\n            \n        - createdDate (string): The date when the hospital entry was created.\n            \n        - modifiedDate (string): The date when the hospital entry was last modified.\n            \n        - status (number): The status of the hospital entry.\n            \n    - createdUser (object): Details of the user who created the bill entry.\n        \n        - (properties similar to the createdUser object described above)\n            \n    - modifiedUser (number): The unique identifier of the user who last modified the bill entry.\n        \n    - createdDate (string): The date when the bill entry was created.\n        \n    - modifiedDate (string): The date when the bill entry was last modified."
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by patient name",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "name",
+								"value": "manoj",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByPatientName?name=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZab",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByPatientName"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZab"
+								}
+							]
+						},
+						"description": "### Retrieve invoice by Patient Name\n\n> **Description:**  \nThis endpoint retrieves the bill details for a specific patient based on their name. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### Request Parameters :\n\n1. **Path Parameter :**\n    \n    | **Parameter** | **Type** | **Required** | **Description** |\n    | --- | --- | --- | --- |\n    | `name` | `String` | Yes | The full or partial name of the patient to search for billing records. |\n    \n\n#### Response\n\nUpon a successful request, the server responds with a status code of 200 and a JSON array containing the bill details for the specified patient. The response includes the following attributes:\n\n- `id`: The unique identifier for the bill.\n    \n- `totalAmount`: The total amount of the bill.\n    \n- `paidAmount`: The amount already paid.\n    \n- `balanceAmount`: The remaining balance amount.\n    \n- `doctorFee`: The fee charged by the doctor.\n    \n- `paymentMode`: The mode of payment.\n    \n- `createdUser`: Details of the user who created the bill.\n    \n- `modifiedUser`: Details of the user who modified the bill.\n    \n- `dueDate`: The due date for the bill.\n    \n- `hospitalizationInfo`: Information related to hospitalization, if applicable.\n    \n\nThe response is in the JSON format with the mentioned attributes."
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by month and year",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByMonthAndYear?year=2025&month=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByMonthAndYear"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2025"
+								},
+								{
+									"key": "month",
+									"value": "5"
+								}
+							]
+						},
+						"description": "### Get invoice by Month and Year\n\n> **Description:**  \nThis API retrieves all billing records for a specific month and/or year. At least one of `month` or `year` must be provided. Only a receptionist can access this information. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n#### Request Parameters :\n\n| **Parameter** | **Type** | **Required** | **Description** |\n| --- | --- | --- | --- |\n| `month` | `int` | No | The month (1-12) for which bills should be retrieved. |\n| `year` | `int` | No | The year (from 2020 to the current year) for which bills should be retrieved. |\n\n#### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n- The response will contain an array of bill objects, each including the following fields:\n    \n    - id (number): The unique identifier for the bill.\n        \n    - totalAmount (number): The total amount of the bill.\n        \n    - paidAmount (number): The amount already paid.\n        \n    - balanceAmount (number): The remaining balance amount.\n        \n    - doctorFee (number): The fee of the doctor.\n        \n    - paymentMode (string): The mode of payment.\n        \n    - createdUser (object): Details of the user who created the bill.\n        \n    - modifiedUser (object): Details of the user who modified the bill.\n        \n    - dueDate (string): The due date of the bill.\n        \n    - hospitalizationInfo (object): Information related to hospitalization, if applicable."
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by date or date range",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByDateRange?startDate=two thousand twenty five-may-ten",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByDateRange"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-09-29",
+									"disabled": true
+								},
+								{
+									"key": "endDate",
+									"value": "2025-05-01",
+									"disabled": true
+								},
+								{
+									"key": "startDate",
+									"value": "two thousand twenty five-may-ten"
+								},
+								{
+									"key": "endDate",
+									"value": "2099-01-01",
+									"disabled": true
+								}
+							]
+						},
+						"description": "### Get invoice by Date Range\n\n> **Description:**  \nRetrieves all billing records within a specified date range. If no start date is provided, it defaults to the earliest billing date. If no end date is provided, it defaults to the current date. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n### **Request Parameters:**\n\n| **Parameter** | **Type** | **Required** | **Description** |\n| --- | --- | --- | --- |\n| `startDate` | `date (yyyy-MM-dd)` | No | The starting date for the search range. Defaults to the earliest billing date if not provided. |\n| `endDate` | `date (yyyy-MM-dd)` | No | The ending date for the search range. Defaults to the current date if not provided. |\n\n### Response\n\nUpon successful execution, the response will have a status code of 404 and a content type of `application/json`. The response body will contain a JSON object with a `message` key.\n\nExample:\n\n``` json\n{\n    \"message\": \"\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceById/12",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceById",
+								"12"
+							]
+						},
+						"description": "# Get invoice Details\n\n> **Description:**  \nRetrieves a specific bill using its unique ID. Only receptionists can access this API to view billing details. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n### **Request Parameters:**\n\n1. **Path Parameters :**\n    \n    | Parameter | Type | Required | Description |\n    | --- | --- | --- | --- |\n    | `id` | `long` | Yes | The unique ID of the bill to retrieve. |\n    \n\n## Response\n\n- `id`: The ID of the bill.\n    \n- `totalAmount`: The total amount of the bill.\n    \n- `paidAmount`: The amount already paid for the bill.\n    \n- `balanceAmount`: The remaining balance amount for the bill.\n    \n- `doctorFee`: The fee charged by the doctor for the bill.\n    \n- `paymentMode`: The mode of payment for the bill.\n    \n- `createdUser`: The user who created the bill, including their ID, username, name, and other details.\n    \n- `modifiedUser`: The user who last modified the bill, including their ID, username, name, and other details.\n    \n- `dueDate`: The due date for the bill.\n    \n- `hospitalizationInfo`: Information related to hospitalization, if applicable.\n    \n\n### Response Format\n\n`application/json`\n\n### Status Codes\n\n- `200 OK`: The request was successful, and the bill details are returned.\n    \n- `404 Not Found`: If the bill with the provided ID is not found."
+					},
+					"response": []
+				},
+				{
+					"name": "turnover - admin",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/hospitalTurnover",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"hospitalTurnover"
+							]
+						},
+						"description": "## Get Hospital Turnover\n\n> **Description:**  \nRetrieves the financial turnover of the hospital, including total revenue, total expenses, and net turnover. Only `ADMIN` users are allowed to access this API. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `ADMIN`\n    \n---\n\n### **Request Parameters:**\n\nNone\n\n### **Response:**\n\n#### **Success Response (200 OK)**\n\n**Content-Type:** `application/json`\n\n``` json\n{\n  \"totalRevenue\": 500000.00,\n  \"totalExpenses\": 200000.00,\n  \"netTurnover\": 300000.00,\n  \"hospital\": {\n    \"id\": 1,\n    \"name\": \"String\",\n    \"location\": \"String\",\n    \"contact\": \"Number\"\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by patient id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getByPatient/[3]",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getByPatient",
+								"[3]"
+							]
+						},
+						"description": "### Get invoice By Patient\n\n> **Description:**  \nFetches the billing details for a specific patient using the patient ID. Only `ADMIN` users are authorized to access this API. \n  \n\n#### **Access Control:**\n\n- **Role Required:** `ADMIN`\n    \n\n---\n\n### **Request Parameters:**\n\n1. **Path Parameters :**\n    \n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `id` | `long` | Yes | The unique ID of the patient |\n\n#### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\n##### Response Body\n\n``` json\n{\n    \"id\": 0,\n    \"totalAmount\": 0,\n    \"paidAmount\": 0,\n    \"balanceAmount\": 0,\n    \"doctorFee\": 0,\n    \"paymentMode\": \"\",\n    \"createdUser\": {\n        \"id\": 0,\n        \"username\": \"\",\n        \"name\": \"\",\n        \"password\": \"\",\n        \"branch\": \"\",\n        \"roles\": \"\",\n        \"hospital\": {\n            \"id\": 0,\n            \"name\": \"\",\n            \"address\": \"\",\n            \"contactNumber\": \"\",\n            \"emailId\": \"\",\n            \"openingTime\": \"\",\n            \"closingTime\": \"\",\n            \"branch\": \"\",\n            \"workingDays\": \"\",\n            \"offDays\": \"\",\n            \"numberOfUsers\": \"\",\n            \"departments\": \"\",\n            \"createdUser\": 0,\n            \"modifiedUser\": 0,\n            \"createdDate\": \"\",\n            \"modifiedDate\": \"\",\n            \"status\": 0\n        },\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": \"\"\n    },\n    \"modifiedUser\": 0,\n    \"createdDate\": \"\",\n    \"modifiedDate\": \"\",\n    \"status\": \"\",\n    \"dueDate\": \"\",\n    \"hospitalizationInfo\": null\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get invoice by doctor id",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByDoctorId/😉1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByDoctorId",
+								"😉1"
+							]
+						},
+						"description": "# Get invoice by Doctor ID\n\n> **Description:**  \nFetches all billing details associated with a specific doctor based on their appointments. Only `RECEPTIONIST` users are authorized to access this API. \n  \n\n**Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n## **Request Parameters:**\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `doctorId` | `long` | Yes | The unique ID of the doctor |\n\n## **Response:**\n\n### **Success Response (200 OK)**\n\n**Content-Type:** `application/json`\n\n``` json\n{\n  \"patient\": {\n    \"patientId\": 101,\n    \"name\": \"John Doe\",\n    \"age\": 35,\n    \"gender\": \"Male\"\n  },\n  \"bills\": [\n    {\n      \"billId\": 2023,\n      \"appointmentId\": 5001,\n      \"hospitalId\": 10,\n      \"totalAmount\": 1000.00,\n      \"paidAmount\": 700.00,\n      \"dueAmount\": 300.00,\n      \"billingDate\": \"2025-02-01\",\n      \"status\": \"PARTIALLY_PAID\"\n    }\n  ]\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "send invoice by using invoice id",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/sendInvoiceById/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"sendInvoiceById",
+								"1"
+							],
+							"query": [
+								{
+									"key": "isReminder",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						},
+						"description": "# Send invoice by Email\n\n> **Description:**  \nSends a hospital bill as a PDF attachment via email to the patient's registered email address. If `isReminder=true`, the email will be sent as a payment reminder instead of a standard bill. \n  \n\n**Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n## **Request Parameters:**\n\n1. **Path Parameters :**\n    \n    | Parameter | Type | Required | Description |\n    | --- | --- | --- | --- |\n    | `billingId` | `long` | Yes | The unique ID of the bill to be emailed. |\n    | `isReminder` | `boolean` | No (default: `false`) | If `true`, the email will be a due payment reminder. |\n    \n\n---\n\n## **Response:**\n\n### **Success Response (200 OK)**\n\n**Content-Type:** `application/pdf`  \n**Headers:**\n\n- `Content-Disposition: inline; filename=bill.pdf`\n    \n- `Content-Type: application/pdf`\n    \n\n**Response Body:**  \nReturns the generated PDF bill as a response body.\n\n---"
+					},
+					"response": []
+				},
+				{
+					"name": "invoice report",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getHospitalReport",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getHospitalReport"
+							]
+						},
+						"description": "# invoice Report\n\n> **Description:**  \nRetrieves a financial and staff report for the hospital, including total staff count, average salaries by role, total revenue, total expenses, and net profit. \n  \n\n**Access Control:**\n\n- **Role Required:** `ADMIN`\n    \n\n---\n\n### Request\n\nNo request body parameters are required for this endpoint.\n\n### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\nThe response body contains the following fields:\n\n- `totalProfit` (number): The total profit.\n    \n- `totalStaff` (number): The total number of staff.\n    \n- `roles` (array): An array of objects containing role-related information.\n    \n    - `role` (string): The role name.\n        \n    - `averageSalary` (number): The average salary for the role.\n        \n    - `roleCount` (number): The count of staff for the role.\n        \n- `totalExpenses` (number): The total expenses.\n    \n- `totalRevenue` (number): The total revenue."
+					},
+					"response": []
+				},
+				{
+					"name": "get report by month and year",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getHospitalReport/monthYear?month=5&year=2025",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getHospitalReport",
+								"monthYear"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "5"
+								},
+								{
+									"key": "year",
+									"value": "2025"
+								}
+							]
+						},
+						"description": "### Retrieve Monthly invoice Report\n\n> **Description:**  \nRetrieves the hospital's financial report for a specific month and year, including total staff count, average salaries by role, total revenue, total expenses, and net profit. \n  \n\n**Access Control:**\n\n- **Role Required:** `ADMIN`\n    \n\n---\n\n## **Request Parameters:**\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `month` | `int` | Yes | Month (1-12) for which the revenue report is requested. |\n| `year` | `int` | Yes | Year (greater than 1900 and up to the current year). |\n\n#### Response\n\nThe response will be in JSON format and will include the following fields:\n\n- `totalProfit` (number) - The total profit for the specified month and year.\n    \n- `totalStaff` (number) - The total number of staff for the specified month and year.\n    \n- `roles` (array) - An array of objects containing the following information for each role:\n    \n    - `role` (string) - The role name.\n        \n    - `roleCount` (number) - The count of staff for the role.\n        \n    - `averageSalary` (number) - The average salary for the role.\n        \n- `totalExpenses` (number) - The total expenses for the specified month and year.\n    \n- `totalRevenue` (number) - The total revenue for the specified month and year.\n    \n\n#### Example\n\n``` json\n{\n    \"totalProfit\": 0,\n    \"totalStaff\": 0,\n    \"roles\": [\n        {\n            \"role\": \"\",\n            \"roleCount\": 0,\n            \"averageSalary\": 0\n        }\n    ],\n    \"totalExpenses\": 0,\n    \"totalRevenue\": 0\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "filter by balance",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/invoice/getInvoiceByBalanceRange?minBalance=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"invoice",
+								"getInvoiceByBalanceRange"
+							],
+							"query": [
+								{
+									"key": "minBalance",
+									"value": ""
+								},
+								{
+									"key": "maxBalance",
+									"value": "1000",
+									"disabled": true
+								}
+							]
+						},
+						"description": "### Filter By Balance\n\n> **Description:**  \nRetrieves a list of bills within a specified balance range. The user can filter bills based on the minimum and maximum balance. \n  \n\n**Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n---\n\n## **Request Parameters:**\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| `minBalance` | `BigDecimal` | No | Minimum balance amount (default: `0`). |\n| `maxBalance` | `BigDecimal` | No | Maximum balance amount (default: `Double.MAX_VALUE`). |\n\n#### Response\n\nThe response will be a JSON array containing bill objects with the following properties:\n\n- `id` (number) - The ID of the bill.\n    \n- `totalAmount` (number) - The total amount of the bill.\n    \n- `paidAmount` (number) - The amount already paid for the bill.\n    \n- `balanceAmount` (number) - The remaining balance amount for the bill.\n    \n- `doctorFee` (number) - The fee charged by the doctor.\n    \n- `paymentMode` (string) - The mode of payment for the bill.\n    \n- `createdUser` (object) - Information about the user who created the bill.\n    \n- `modifiedUser` (number) - The ID of the user who last modified the bill.\n    \n- `createdDate` (string) - The date when the bill was created.\n    \n- `modifiedDate` (string) - The date when the bill was last modified.\n    \n- `status` (string) - The status of the bill.\n    \n- `dueDate` (string) - The due date for the bill.\n    \n- `hospitalizationInfo` (object) - Information about hospitalization, if applicable.\n    \n\n#### Example\n\n``` json\n[\n    {\n        \"id\": 0,\n        \"totalAmount\": 0,\n        \"paidAmount\": 0,\n        \"balanceAmount\": 0,\n        \"doctorFee\": 0,\n        \"paymentMode\": \"\",\n        \"createdUser\": {\n            \"id\": 0,\n            \"username\": \"\",\n            \"name\": \"\",\n            \"password\": \"\",\n            \"branch\": \"\",\n            \"roles\": \"\",\n            \"hospital\": {\n                \"id\": 0,\n                \"name\": \"\",\n                \"address\": \"\",\n                \"contactNumber\": \"\",\n                \"emailId\": \"\",\n                \"openingTime\": \"\",\n                \"closingTime\": \"\",\n                \"branch\": \"\",\n                \"workingDays\": \"\",\n                \"offDays\": \"\",\n                \"numberOfUsers\": \"\",\n                \"departments\": \"\",\n                \"createdUser\": 0,\n                \"modifiedUser\": 0,\n                \"createdDate\": \"\",\n                \"modifiedDate\": \"\",\n                \"status\": 0\n            },\n            \"createdUser\": {\n                \"id\": 0,\n                \"username\": \"\",\n                \"name\": \"\",\n                \"password\": \"\",\n                \"branch\": \"\",\n                \"roles\": \"\",\n                \"hospital\": {\n                    \"id\": 0,\n                    \"name\": \"\",\n                    \"address\": \"\",\n                    \"contactNumber\": \"\",\n                    \"emailId\": \"\",\n                    \"openingTime\": \"\",\n                    \"closingTime\": \"\",\n                    \"branch\": \"\",\n                    \"workingDays\": \"\",\n                    \"offDays\": \"\",\n                    \"numberOfUsers\": \"\",\n                    \"departments\": \"\",\n                    \"createdUser\": 0,\n                    \"modifiedUser\": 0,\n                    \"createdDate\": \"\",\n                    \"modifiedDate\": \"\",\n                    \"status\": 0\n                },\n                \"createdUser\": 0,\n                \"modifiedUser\": 0,\n                \"createdDate\": \"\",\n                \"modifiedDate\": \"\",\n                \"status\": 0\n            },\n            \"modifiedUser\": 0,\n            \"createdDate\": \"\",\n            \"modifiedDate\": \"\",\n            \"status\": \"\"\n        },\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": \"\",\n        \"dueDate\": \"\",\n        \"hospitalizationInfo\": null\n    }\n]\n\n ```"
+					},
+					"response": []
+				}
+			],
+			"description": "The **Billing** module handles **invoice generation, payment processing, and financial records** for patient treatments, hospitalizations, and consultations. It ensures accurate **cost calculation** based on **doctor fees, room charges, nursing services, and additional expenses**."
+		},
+		{
+			"name": "Hospitalization",
+			"item": [
+				{
+					"name": "admit patient - receptionist",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospitalization/admitPatient/10?depositAmount=40&paymentMode=CREDIT_CARD&roomCategory=icu&paymentMode=UPI&paymentMode=DEBIT_CARD",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospitalization",
+								"admitPatient",
+								"10"
+							],
+							"query": [
+								{
+									"key": "depositAmount",
+									"value": "40"
+								},
+								{
+									"key": "paymentMode",
+									"value": "CREDIT_CARD"
+								},
+								{
+									"key": "roomCategory",
+									"value": "icu"
+								},
+								{
+									"key": "paymentMode",
+									"value": "UPI"
+								},
+								{
+									"key": "paymentMode",
+									"value": "DEBIT_CARD"
+								}
+							]
+						},
+						"description": "### Admit patient\n\nThis endpoint is used to admit a patient to the hospital.\n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n#### Response\n\n- Status: 201\n    \n- Content-Type: application/json\n    \n\n``` json\n{\n    \"message\": \"\"\n}\n\n ```\n\n#### Request Body Parameters\n\n- No request body parameters are required for this endpoint.\n    \n\n#### Response Schema\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"message\": {\n            \"type\": \"string\"\n        }\n    }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "discharge patient - receptionist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospitalization/discharge/10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospitalization",
+								"discharge",
+								"10"
+							]
+						},
+						"description": "### DIscharge patient\n\nThis endpoint is used to discharge a patient from the hospitalization with the specified ID.\n\n#### **Access Control:**\n\n- **Role Required:** `RECEPTIONIST`\n    \n\n### Request Body\n\nThe request should be sent as form-data with an empty body.\n\n### Response\n\n- Status: 201\n    \n- Content-Type: application/json\n    \n\nThe response will contain a JSON object with a \"message\" key indicating the success or details of the discharge process."
+					},
+					"response": []
+				},
+				{
+					"name": "add deposit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8080/deposit/addDeposit/10?depositAmount=27&paymentMode=CREDIT_CARD&paymentMode=DEBIT_CARD&paymentMode=UPI&depositAmount=10000&paymentMode=INSURANCE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"deposit",
+								"addDeposit",
+								"10"
+							],
+							"query": [
+								{
+									"key": "depositAmount",
+									"value": "27"
+								},
+								{
+									"key": "paymentMode",
+									"value": "CREDIT_CARD"
+								},
+								{
+									"key": "paymentMode",
+									"value": "DEBIT_CARD"
+								},
+								{
+									"key": "paymentMode",
+									"value": "UPI"
+								},
+								{
+									"key": "depositAmount",
+									"value": "10000"
+								},
+								{
+									"key": "paymentMode",
+									"value": "INSURANCE"
+								}
+							]
+						},
+						"description": "# Add Deposite\n\nThis endpoint makes an HTTP POST request to add a deposit with a appointment ID . The request includes query parameters for depositAmount and paymentMode, where depositAmount has multiple values and paymentMode is repeated with different values. The request uses form-data as the request body type.\n\n### Request\n\n- Method: POST\n    \n- URL: `http://localhost:8080/deposit/addDeposit/10`\n    \n- Query Parameters:\n    \n    - depositAmount (repeated): 27, 10000\n        \n    - paymentMode (repeated): CREDIT_CARD, DEBIT_CARD, UPI, INSURANCE\n        \n- Body (form-data): Empty\n    \n\n### Response\n\nThe response for this request is not provided. Please refer to the API documentation or contact the API provider for information about the response schema."
+					},
+					"response": []
+				},
+				{
+					"name": "update hospitalization record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/hospitalization/updateHospitalization/5?canteenCharges=380&additionalCharges=850&nursingCharges=430",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"hospitalization",
+								"updateHospitalization",
+								"5"
+							],
+							"query": [
+								{
+									"key": "canteenCharges",
+									"value": "380"
+								},
+								{
+									"key": "additionalCharges",
+									"value": "850"
+								},
+								{
+									"key": "nursingCharges",
+									"value": "430"
+								}
+							]
+						},
+						"description": "### Update Hospitalization Details\n\nThis endpoint allows the user to update hospitalization details by sending an HTTP POST request with the hospitalization ID in the URL path and various charges as query parameters.\n\n#### Request Body\n\n- No request body is required for this endpoint.\n    \n\n#### Request Parameters\n\n- `canteenCharges` (number) - The charges for canteen services.\n    \n- `additionalCharges` (number) - Any additional charges incurred during hospitalization.\n    \n- `nursingCharges` (number) - The charges for nursing services.\n    \n\n#### Response\n\nThe response of this request is a JSON schema. Please refer to the schema for the structure and properties of the response.\n\nThis endpoint allows the user to add a deposit with the specified deposit amount and payment mode.\n\n#### Request\n\n- Method: POST\n    \n- URL: `http://localhost:8080/deposit/addDeposit/10`\n    \n- Headers:\n    \n    - Content-Type: `multipart/form-data`\n        \n- Body:\n    \n    - No request body parameters provided.\n        \n- Query Parameters:\n    \n    - depositAmount (number): The amount to be deposited.\n        \n    - paymentMode (array of strings): The mode of payment for the deposit.\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"string\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```\n\n- `status` (string): The status of the deposit addition process.\n    \n- `message` (string): A message providing additional information about the deposit addition process.\n    \n\nThis endpoint allows the user to add a deposit with the specified deposit amount and payment mode.\n\n#### Request\n\n- Method: POST\n    \n- URL: `http://localhost:8080/deposit/addDeposit/10`\n    \n- Headers:\n    \n    - Content-Type: application/x-www-form-urlencoded\n        \n\n##### Parameters\n\n- depositAmount (number) - The amount to be deposited.\n    \n- paymentMode (string) - The mode of payment. Multiple payment modes can be specified.\n    \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"string\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```\n\n- `status` (string) - The status of the deposit addition request.\n    \n- `message` (string) - A message providing additional information about the deposit addition.\n    \n\nThis endpoint allows the user to add a deposit with the specified deposit amount and payment mode.\n\n#### Request\n\n- Method: POST\n    \n- URL: `http://localhost:8080/deposit/addDeposit/10?depositAmount=27&paymentMode=CREDIT_CARD&paymentMode=DEBIT_CARD&paymentMode=UPI&depositAmount=10000&paymentMode=INSURANCE`\n    \n- Headers:\n    \n    - Content-Type: `multipart/form-data`\n        \n\n#### Request Body\n\n- Type: form-data\n    \n\n#### Response\n\nThe response for this request is a JSON schema. It includes the schema for the response body.\n\nThis endpoint allows you to add a deposit with the specified deposit amount and payment mode.\n\n#### Request Body\n\n- No request body parameters are required for this request.\n    \n\n#### Request Parameters\n\n- Path Parameters\n    \n    - depositId (integer, required): The ID of the deposit to be added.\n        \n- Query Parameters\n    \n    - depositAmount (integer, required): The amount of the deposit.\n        \n    - paymentMode (string, required): The mode of payment for the deposit.\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"status\": \"string\",\n  \"message\": \"string\",\n  \"data\": {\n    \"depositId\": \"integer\",\n    \"depositAmount\": \"integer\",\n    \"paymentMode\": \"string\"\n  }\n}\n\n ```\n\n- status (string): The status of the response.\n    \n- message (string): A message indicating the result of the deposit addition.\n    \n- data (object): An object containing the details of the added deposit, including depositId, depositAmount, and paymentMode."
+					},
+					"response": []
+				}
+			],
+			"description": "The **Hospitalization** module manages patient **admit, discharges, and related hospital stay details** such as room allocation, nursing charges, and additional services."
+		},
+		{
+			"name": "Request",
+			"item": [
+				{
+					"name": "send request from doctor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"branch\": \"Mumbai\",\r\n    \"message\":\"accept request\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/request/send/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"request",
+								"send",
+								"2"
+							]
+						},
+						"description": "## Send Request\n\nThis endpoint is used to send a request with a payload to the server.\n\n### Request Body\n\n- `branch`: (string) The branch related to the request.\n    \n- `message`: (string) The message for the request.\n    \n\n### Response\n\nThe response for this request will follow the JSON schema below:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"string\"\n    },\n    \"timestamp\": {\n      \"type\": \"string\",\n      \"format\": \"date-time\"\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "view pending requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/request/pending",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"request",
+								"pending"
+							]
+						},
+						"description": "### Get Pending Request\n\nThis endpoint retrieves pending requests.\n\n#### Request Body\n\nThis request does not require a request body.\n\n#### Response\n\nThe response for this request is a JSON schema, representing the structure of the response data."
+					},
+					"response": []
+				},
+				{
+					"name": "view accepted requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/request/accepted",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"request",
+								"accepted"
+							]
+						},
+						"description": "### Request Description\n\nThis endpoint makes an HTTP GET request to retrieve the accepted request. The request does not include a request body.\n\n### Response\n\nThe response for this request is a JSON schema, which includes the accepted request details. The response schema should be documented accordingly."
+					},
+					"response": []
+				},
+				{
+					"name": "view rejected requests",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/request/rejected",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"request",
+								"rejected"
+							]
+						},
+						"description": "### Retrieve Rejected Request Details\n\nThis endpoint makes an HTTP GET request to retrieve the details of a rejected request.\n\n#### Request Body\n\nThis request does not require a request body.\n\n#### Response\n\nThe response will include the details of the rejected request, including the request ID, timestamp, reason for rejection, and any additional notes."
+					},
+					"response": []
+				},
+				{
+					"name": "accept request - doctor, admin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/request/accept/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"request",
+								"accept",
+								"1"
+							]
+						},
+						"description": "### Request Acceptance\n\nThis endpoint sends an HTTP PUT request to update the acceptance status for a specific request.\n\n#### Request Body\n\n- No request body parameters required.\n    \n\n#### Response\n\n- **success** (`string`): Indicates the success of the acceptance update.\n    \n\nExample Response:\n\n``` json\n{\n    \"success\": \"\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "reject request - doctor,admin",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8080/request/reject/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"request",
+								"reject",
+								"1"
+							]
+						},
+						"description": "### Request Rejection\n\nThis endpoint is used to reject a specific request.\n\n#### Request Body\n\nThe request should include form-data with the necessary parameters.\n\n- `parameter1`: (text) Description of parameter1.\n    \n- `parameter2`: (file) Description of parameter2.\n    \n\n#### Response\n\nUpon making the request, the server will respond with a status code of 400 and the content type will be in JSON format. In case of an error, the response will include a JSON object with an `error` key."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Add ADMIN for Hospital by SUPER_ADMIN",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"private.admin@gmail.com\",\r\n    \"name\": \"swapnil\",\r\n    \"address\": \"pune\",\r\n    \"roles\": \"ADMIN\",\r\n    \"contactNumber\": \"7057546782\",\r\n    \"dateOfBirth\": \"2000-01-26\",\r\n    \"type\": \"Regular\",\r\n    \"specalization\": \"Administration\",\r\n    \"isCareTaker\": false,\r\n    \"bookingStatus\": 0,\r\n    \"bookingCharge\": 0\r\n}\r\n// swa7057@2000",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/superAdmin/addAdmin/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"superAdmin",
+								"addAdmin",
+								"2"
+							]
+						},
+						"description": "#### **Authorization** \\- SUPER_ADMIN\n\nThis endpoint makes an HTTP POST request to add an admin with the given payload. The request body should include the following parameters:\n\n- `username` (text) - The email address of the admin.\n    \n- `password` (text) - The password for the admin account.\n    \n- `name` (text) - The name of the admin.\n    \n- `address` (text) - The address of the admin.\n    \n- `roles` (text) - The role assigned to the admin.\n    \n\n### Request Body\n\nThe request body should be in JSON format with the above-mentioned parameters.\n\n### Response\n\nUpon successful execution, the endpoint returns a status code of 200 with a content type of text/plain, and the message \"User has been saved\"."
+					},
+					"response": []
+				},
+				{
+					"name": "Add user by admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"private.receptionist.mumbai@gmail.com\",\r\n    \"roles\": \"receptionist\",\r\n    \"name\": \"swapnil\",\r\n    \"address\": \"nagpur\",\r\n    \"branch\": \"Mumbai\",\r\n    \"salary\": 90000,\r\n    \"contactNumber\": \"7057546782\",\r\n    \"dateOfBirth\": \"2000-01-26\",\r\n    \"type\": \"Regular\",\r\n    \"specalization\": \"Hacking\",\r\n    \"isCareTaker\": false,\r\n    \"bookingStatus\": 0,\r\n    \"bookingCharge\": 0\r\n}\r\n// swa7075@2000",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/user/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"add"
+							]
+						},
+						"description": "# Add User\n\n#### **Authorization** \\- ADMIN\n\nThis endpoint allows you to add a new user with the provided details.\n\n###### **Authorization** - ADMIN\n\n## Request Body\n\n- `username` (string): The email address of the user.\n    \n- `password` (string): The password for the user account.\n    \n- `name` (string): The name of the user.\n    \n- `address` (string): The address of the user.\n    \n- `branch` (string): The branch location of the user.\n    \n- `roles` (string): The role of the user.\n    \n- `doctorFee` (number): The fee charged by the doctor.\n    \n- `salary` (number): The salary of the user.\n    \n\n### Example\n\n``` json\n{\n    \"username\": \"example@gmail.com\",\n    \"password\": \"********\",\n    \"name\": \"John Doe\",\n    \"address\": \"123 Main St\",\n    \"branch\": \"New York\",\n    \"roles\": \"receptionist\",\n    \"doctorFee\": 1200,//if user role is doctor that time only take this field other wise ingnore\n    \"salary\": 10000\n}\n\n ```\n\n## Response\n\n- Status: 200\n    \n- Content-Type: text/plain\n    \n- Body: \"User has been saved\""
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id - admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/get/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"get",
+								"9"
+							]
+						},
+						"description": "### Get User By Id\n\n#### **Authorization** - ADMIN\n\nThis endpoint retrieves the details of a specific user based on the provided user ID.\n\n#### Request\n\n- Method: GET\n    \n- URL: `http://localhost:8080/user/get/{userId}`\n    \n\n#### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\n``` json\n{\n    \"id\": 0,\n    \"username\": \"\",\n    \"name\": \"\",\n    \"password\": \"\",\n    \"branch\": \"\",\n    \"roles\": \"\",\n    \"hospital\": {\n        \"id\": 0,\n        \"name\": \"\",\n        \"address\": \"\",\n        \"contactNumber\": \"\",\n        \"emailId\": \"\",\n        \"openingTime\": \"\",\n        \"closingTime\": \"\",\n        \"branch\": \"\",\n        \"workingDays\": \"\",\n        \"offDays\": \"\",\n        \"numberOfUsers\": \"\",\n        \"departments\": \"\",\n        \"createdUser\": {\n            \"id\": 0,\n            \"username\": \"\",\n            \"name\": \"\",\n            \"password\": \"\",\n            \"branch\": null,\n            \"roles\": \"\",\n            \"hospital\": null,\n            \"createdUser\": 0,\n            \"modifiedUser\": 0,\n            \"createdDate\": \"\",\n            \"modifiedDate\": \"\",\n            \"status\": 0\n        },\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n    },\n    \"createdUser\": 0,\n    \"modifiedUser\": {\n        \"id\": 0,\n        \"username\": \"\",\n        \"name\": \"\",\n        \"password\": \"\",\n        \"branch\": \"\",\n        \"roles\": \"\",\n        \"hospital\": {\n            \"id\": 0,\n            \"name\": \"\",\n            \"address\": \"\",\n            \"contactNumber\": \"\",\n            \"emailId\": \"\",\n            \"openingTime\": \"\",\n            \"closingTime\": \"\",\n            \"branch\": \"\",\n            \"workingDays\": \"\",\n            \"offDays\": \"\",\n            \"numberOfUsers\": \"\",\n            \"departments\": \"\",\n            \"createdUser\": 0,\n            \"modifiedUser\": 0,\n            \"createdDate\": \"\",\n            \"modifiedDate\": \"\",\n            \"status\": 0\n        },\n        \"createdUser\": 0,\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\",\n        \"status\": 0\n    },\n    \"createdDate\": \"\",\n    \"modifiedDate\": \"\",\n    \"status\": 0\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "update user - self",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"public.doctor.pune@gmail.com\",\r\n    \"password\":\"swa7057@2000\",\r\n    \"name\":\"swapnil sudrik\",\r\n    \"address\":\"pune\",\r\n    \"roles\":\"DOCTOR\",\r\n    \"contactNumber\":\"7057546782\",\r\n    \"dateOfBirth\":\"2000-01-26\",\r\n    \"specalization\":\"Hacking\"\r\n\r\n//below details user can not edit. only admin have to access to edit\r\n    // \"branch\":\"pune\",\r\n    // \"doctorFee\":1200,\r\n    // \"salary\":230000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/user/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"update"
+							]
+						},
+						"description": "### Update User -self\n\n#### **Authorization** \\- ALL USERS\n\nThis endpoint allows the client to update user information.\n\n#### Request Body\n\n- `username` (string) - The username of the user.\n    \n- `password` (string) - The password of the user.\n    \n- `name` (string) - The name of the user.\n    \n- `address` (string) - The address of the user.\n    \n- `roles` (string) - The roles of the user.\n    \n\n#### Response\n\nThe response is a text/plain content type with the message \"Account update successfully\".\n\n#### JSON Schema for Response\n\n``` json\n{\n    \"type\": \"object\",\n    \"properties\": {\n        \"status\": {\n            \"type\": \"number\",\n            \"description\": \"The status code of the response\"\n        },\n        \"message\": {\n            \"type\": \"string\",\n            \"description\": \"The message indicating the status of the account update\"\n        }\n    }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get all users from hospital-admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjFAZ21haWwuY29tIiwiaWF0IjoxNzQwNjUyMDM4fQ.l-KtkzYZ5uXX6ylOx_sj1vK4wjJXa3uGSQS-WdMOpOg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/getAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"getAll"
+							]
+						},
+						"description": "# Get All User\n\n#### **Authorization** - ADMIN\n\nThe `http://localhost:8080/user/getAll` endpoint is a GET request that returns a JSON array of user objects. Each user object contains the following properties:\n\n- `id` (number): The unique identifier of the user.\n    \n- `username` (string): The username of the user.\n    \n- `name` (string): The name of the user.\n    \n- `password` (string): The password of the user.\n    \n- `branch` (string): The branch of the user.\n    \n- `roles` (string): The roles assigned to the user.\n    \n- `hospital` (object): An object representing the hospital details associated with the user. It contains various properties such as `id`, `name`, `address`, `contactNumber`, `emailId`, `openingTime`, `closingTime`, `branch`, `workingDays`, `offDays`, `numberOfUsers`, `departments`, `createdUser`, `modifiedUser`, `createdDate`, `modifiedDate`, and `status`.\n    \n\n**Request Body**  \nThis request does not require a request body.\n\n**Response**\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\n  \nThe response contains an array of user objects with their respective properties as described above."
+					},
+					"response": []
+				},
+				{
+					"name": "get all active users by admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjFAZ21haWwuY29tIiwiaWF0IjoxNzQwNjUyMDM4fQ.l-KtkzYZ5uXX6ylOx_sj1vK4wjJXa3uGSQS-WdMOpOg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/getActive",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"getActive"
+							]
+						},
+						"description": "# Get Active Users\n\n#### **Authorization** - ADMIN\n\nThis endpoint retrieves the active user details.\n\n## Request\n\n### HTTP Request Method\n\nGET\n\n### Endpoint\n\n[http://localhost:8080/user/getActive](http://localhost:8080/user/getActive)\n\n## Response\n\n### Body\n\nThe response will be a JSON array containing active user details. Each user object will have the following attributes:\n\n- `id` (number): The user's ID\n    \n- `username` (string): The user's username\n    \n- `name` (string): The user's name\n    \n- `password` (string): The user's password\n    \n- `branch` (string): The user's branch\n    \n- `roles` (string): The user's roles\n    \n- `hospital` (object): The user's associated hospital details including ID, name, address, contact number, email ID, opening time, closing time, branch, working days, off days, number of users, and departments\n    \n- `createdUser` (number): The ID of the user who created this user\n    \n- `modifiedUser` (number): The ID of the user who last modified this user\n    \n- `createdDate` (string): The date when the user was created\n    \n- `modifiedDate` (string): The date when the user was last modified\n    \n- `status` (number): The status of the user\n    \n\n### Status Code\n\n200 - OK"
+					},
+					"response": []
+				},
+				{
+					"name": "delete user by admin",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/delete/16",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"delete",
+								"16"
+							]
+						},
+						"description": "### DELETE /user/delete/{userId}\n\n#### **Authorization** - ADMIN\n\nThis endpoint is used to deactivate a user account with the specified user ID.\n\n#### Request\n\nNo request body is required for this endpoint. The user ID is specified in the URL path.\n\n- `userId` (path parameter) - The ID of the user account to be deactivated.\n    \n\n#### Response\n\nThe response is of type `text/plain` and returns a message indicating the status of the account deactivation.\n\nExample response:\n\n``` json\n{\n  \"type\": \"string\",\n  \"description\": \"USER Account has been Deactivated.\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "reactive user by admin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/reactive/16",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"reactive",
+								"16"
+							]
+						},
+						"description": "### Update User Account (Reactive)\n\n#### **Authorization** \\- ADMIN\n\nThis endpoint is used to update the user account with reactive behavior.\n\n#### Request Body\n\n- No request body is required for this endpoint.\n    \n\n#### Response\n\n- Status: 200 OK\n    \n- Content Type: text/plain\n    \n- User Account has been Activated."
+					},
+					"response": []
+				},
+				{
+					"name": "get user by token",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/user/getByToken",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"getByToken"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "password update  - admin",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"public.admin@gmail.com\",\r\n    \"password\":\"swa9999@2001\"\r\n}\r\n// swa9999@2001",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/user/updatePassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"updatePassword"
+							]
+						},
+						"description": "## Update User Password\n\n#### **Authorization** \\- ADMIN\n\nThis endpoint allows the user to update their password.\n\n### Request Body\n\n- `username` (string): The email address of the user.\n    \n- `password` (string): The new password for the user account.\n    \n\n### Response\n\nThe response is in plain text format and indicates the success of the password update operation.\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"number\",\n      \"description\": \"The HTTP status code of the response.\"\n    },\n    \"Content-Type\": {\n      \"type\": \"string\",\n      \"description\": \"The type of content in the response.\"\n    },\n    \"message\": {\n      \"type\": \"string\",\n      \"description\": \"A message indicating the result of the password update operation.\"\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "unblock user by admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"swapnilsudrik.s@gmail.com\",\r\n    \"password\": \"superadmin123\"\r\n}\r\n\r\n// {\r\n//     \"username\": \"admin@gmail.com\",\r\n//     \"password\": \"12345\"\r\n// }\r\n{\r\n    \"username\":\"r4@gmail.com\",\r\n    \"password\":\"1234\"\r\n}\r\n\r\n{\r\n    \"username\":\"d2@gmail.com\",\r\n    \"password\":\"1234\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/user/unlockUser/r@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user",
+								"unlockUser",
+								"r@gmail.com"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The **User** module manages user registration, authentication, and role-based access control within the system. Users can be **SUPER_ADMIN, ADMIN, DOCTOR, or RECEPTIONIST**."
+		},
+		{
+			"name": "Staff",
+			"item": [
+				{
+					"name": "get all staff - admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/staff/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"staff",
+								"all"
+							]
+						},
+						"description": "### Get All Staff\n\n#### **Authorization** - ADMIN\n\nThis endpoint retrieves the details of all staff members.\n\n#### Request\n\n- Method: GET\n    \n- URL: `http://localhost:8080/staff/all`\n    \n\n#### Response\n\n- Status: 200 OK\n    \n- Content-Type: application/json\n    \n\n##### Response Body\n\n``` json\n[\n    {\n        \"id\": 0,\n        \"email\": \"\",\n        \"name\": \"\",\n        \"address\": \"\",\n        \"branch\": \"\",\n        \"roles\": \"\",\n        \"doctorFee\": 0,\n        \"salary\": 0,\n        \"status\": 0,\n        \"hospital\": {\n            \"id\": 0,\n            \"name\": \"\",\n            \"address\": \"\",\n            \"contactNumber\": \"\",\n            \"emailId\": \"\",\n            \"openingTime\": \"\",\n            \"closingTime\": \"\",\n            \"branch\": \"\",\n            \"workingDays\": \"\",\n            \"offDays\": \"\",\n            \"numberOfUsers\": \"\",\n            \"departments\": \"\",\n            \"createdUser\": {\n                \"id\": 0,\n                \"username\": \"\",\n                \"name\": \"\",\n                \"password\": \"\",\n                \"branch\": null,\n                \"roles\": \"\",\n                \"hospital\": null,\n                \"createdUser\": 0,\n                \"modifiedUser\": 0,\n                \"createdDate\": \"\",\n                \"modifiedDate\": \"\",\n                \"status\": 0\n            },\n            \"modifiedUser\": 0,\n            \"createdDate\": \"\",\n            \"modifiedDate\": \"\",\n            \"status\": 0\n        },\n        \"createdUser\": 0,\n        \"modifiedUser\": 0,\n        \"createdDate\": \"\",\n        \"modifiedDate\": \"\"\n    }\n]\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "get active staff - admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/staff/active",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"staff",
+								"active"
+							]
+						},
+						"description": "### Retrieve Active Staff\n\n#### Access - ADMIN\n\nThis endpoint makes an HTTP GET request to retrieve information about active staff members.\n\n#### Request\n\n- Method: GET\n    \n- URL: `http://localhost:8080/staff/active`\n    \n\n#### Response\n\nUpon a successful request, the server will respond with a status code of 200 and a JSON object containing an array of active staff members. Each staff member object includes the following fields:\n\n- `id` (number): The unique identifier of the staff member\n    \n- `email` (string): The email address of the staff member\n    \n- `name` (string): The name of the staff member\n    \n- `address` (string): The address of the staff member\n    \n- `branch` (string): The branch where the staff member is located\n    \n- `roles` (string): The role or roles of the staff member\n    \n- `doctorFee` (number): The fee charged by the staff member if they are a doctor\n    \n- `salary` (number): The salary of the staff member\n    \n- `status` (number): The status of the staff member\n    \n- `hospital` (object): An object containing information about the hospital where the staff member works, including its unique identifier, name, address, contact number, email, opening and closing times, working days, off days, number of users, departments, and details of the user who created and modified the hospital entry\n    \n- `createdUser` (number): The unique identifier of the user who created the staff member entry\n    \n- `modifiedUser` (number): The unique identifier of the user who last modified the staff member entry\n    \n- `createdDate` (string): The date when the staff member entry was created\n    \n- `modifiedDate` (string): The date when the staff member entry was last modified"
+					},
+					"response": []
+				},
+				{
+					"name": "get staff by id - admin",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/staff/get/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"staff",
+								"get",
+								"4"
+							]
+						},
+						"description": "# Get Staff By Id\n\n#### **Access** - ADMIN\n\nThis endpoint retrieves staff information based on the provided staff ID.\n\n### Request\n\n#### Request URL\n\n- Method: GET\n    \n- URL: `http://localhost:8080/staff/get/{staffId}`\n    \n\n### Response\n\n- Status: 200\n    \n- Content-Type: application/json\n    \n\n#### Response Body\n\nThe response contains staff information including ID, email, name, address, branch, roles, doctor fee, salary, and status. It also includes details about the hospital associated with the staff, the user who created the staff record, the user who last modified the staff record, and timestamps for record creation and modification."
+					},
+					"response": []
+				},
+				{
+					"name": "update staff - admin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"public.receptionist.pune1@gmail.com\",\r\n    \"address\": \"mumbai\",\r\n    \"name\": \"vishakha\",\r\n    \"branch\": \"Pune\",\r\n    \"roles\": \"receptionist\",\r\n    \"doctorFee\": 1200,\r\n    \"salary\": 100000,\r\n    \"contactNumber\": \"9999999999\",\r\n    \"dateOfBirth\": \"2001-09-09\",\r\n    \"type\": \"Regular\",\r\n    \"specalization\": \"Hacking\",\r\n    \"bookingCharge\":1234,\r\n    \"bookingStatus\":0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/staff/update/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"staff",
+								"update",
+								"3"
+							]
+						},
+						"description": "## Update Staff Account\n\n#### Access - ADMIN\n\nThis endpoint allows the client to update the details of a staff member.\n\n### Request\n\n- Method: PUT\n    \n- URL: `http://localhost:8080/staff/update/{staffId}`\n    \n- Headers:\n    \n    - Content-Type: application/json\n        \n- { \"branch\": \"mumbai\", \"address\": \"mumbai\", \"name\": \"sw\", \"roles\": \"doctor\", \"doctorFee\": 1200, \"salary\": 100000}\n    \n\n### Response\n\n- Status: 200\n    \n- Content-Type: text/plain\n    \n- Body: Staff Account update successfully\n    \n\n### JSON Schema for Response\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"status\": {\n      \"type\": \"number\"\n    },\n    \"message\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "reactive staff by id - admin",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/staff/reactive/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"staff",
+								"reactive",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete staff by id - admin",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/staff/delete/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"staff",
+								"delete",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The **Staff** module manages **hospital employees** such as **DOCTORS, NURSES, ADMIN, and RECEPTIONISTS**. and other staff member. It includes staff **registration, role assignment, salary management, and access control** within the hospital system."
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// {\r\n//     \"username\": \"swapnilsudrik.s@gmail.com\",\r\n//     \"password\": \"superadmin123\"\r\n// }\r\n\r\n// {\r\n//     \"username\": \"public.admin@gmail.com\",\r\n//     \"password\": \"swa7057@2000\"\r\n// }\r\n\r\n// {\r\n//     \"username\": \"public.admin.pune@gmail.com\",\r\n//     \"password\": \"swa7057@2000\"\r\n// }\r\n\r\n{\r\n    \"username\": \"public.doctor.pune@gmail.com\",\r\n    \"password\": \"swa7057@2000\"\r\n}\r\n\r\n{\r\n    \"username\": \"private.admin@gmail.com\",\r\n    \"password\": \"swa7057@2000\"\r\n}\r\n\r\n\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"login"
+					]
+				},
+				"description": "# Auth Login\n\nThis endpoint allows users to authenticate and obtain a token for accessing protected resources.\n\n## Request\n\n- Method: POST\n    \n- URL: `http://localhost:8080/auth/login`\n    \n- Body:\n    \n    - `username` (text, required): The username of the user.\n        \n    - `password` (text, required): The password of the user.\n        \n\n## Response\n\nThe response is in JSON format with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\"\n    },\n    \"roles\": {\n      \"type\": \"string\"\n    },\n    \"token\": {\n      \"type\": \"string\"\n    }\n  }\n}\n\n ```\n\nThe response contains the following fields:\n\n- `id`: The unique identifier of the user.\n    \n- `roles`: The roles assigned to the user.\n    \n- `token`: The authentication token for accessing protected resources."
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"logout"
+					]
+				},
+				"description": "### Auth Logout\n\nThis endpoint is used to log out the user.\n\n#### Request Body\n\n- No request body is required for this endpoint.\n    \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"message\": \"string\"\n}\n\n ```\n\n- `message` (string): A message indicating the result of the logout operation."
+			},
+			"response": []
+		}
+	]
+}
