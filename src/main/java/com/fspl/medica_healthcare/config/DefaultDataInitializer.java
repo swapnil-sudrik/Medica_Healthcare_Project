@@ -50,6 +50,7 @@ public class DefaultDataInitializer {
                     user.setModifiedDate(LocalDate.now());
                     user.setStatus(1);
                     user.setName("swapnil");
+                    user.setBranch("India".getBytes());
                     userRepository.save(user);
 
 

@@ -13,9 +13,16 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String Username);
 
-    @Query("SELECT u FROM User u WHERE u.hospital.id = :id AND u.status = 1")
-    List<User> findAllActiveUsersByHospitalId(@Param("id") long id);
+//    @Query("SELECT u FROM User u WHERE u.hospital.id = :id AND u.status = 1")
+//    List<User> findAllActiveUsersByHospitalId(@Param("id") long id);
 
-    @Query("SELECT u FROM User u WHERE u.hospital.id = :id")
-    List<User> findAllUsersByHospitalId(@Param("id") long id);
+    List<User> findByHospitalIdAndBranchAndStatus(Long hospitalId, byte[] branch, int status);
+
+
+
+    @Query("SELECT u FROM User u WHERE u.hospital.id = :id AND u.branch= :branch")
+    List<User> findAllUsersByHospitalId(@Param("id") long id, byte[] branch);
+
+
+
 }

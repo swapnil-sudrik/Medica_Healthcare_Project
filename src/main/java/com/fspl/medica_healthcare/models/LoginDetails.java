@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,10 +20,21 @@ public class LoginDetails {
     @Column(unique = true)
     private String username;
 
-    @Column(unique = true)
-    private String token;
+//    @Lob  // Store large data
+//    @Column(unique = true, columnDefinition = "TEXT")
+//    private String token;
 
-    private LocalDate issuedAt;
+    private String ipAddress;
+
+    private LocalDateTime loginAt;
+
+    private String browser;
+
+    private String browserVersion;
+
+    private String operatingSystem;
+
+    private String deviceType;
 
     @ManyToOne
     @JsonIgnore
@@ -33,8 +45,8 @@ public class LoginDetails {
         return "LoginDetails{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", token='" + token + '\'' +
-                ", issuedAt=" + issuedAt +
+//                ", token='" + token + '\'' +
+                ", issuedAt=" + loginAt +
                 '}';
     }
 }

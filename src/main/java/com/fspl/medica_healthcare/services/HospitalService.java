@@ -23,11 +23,14 @@ public class HospitalService {
 
     private static final Logger log = Logger.getLogger(CatalogController.class);
 
+    static int status;
+
     public List<Hospital> getAllHospitals() {
         try {
-            return hospitalRepository.findAll();
-
+            List<Hospital> hospitals = hospitalRepository.findAll();
+            return hospitals;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while getAllHospitals" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -35,44 +38,56 @@ public class HospitalService {
 
     public Hospital getHospitalById(long id) {
         try {
-            return hospitalRepository.findById(id).orElse(null);
+            Hospital hospital = hospitalRepository.findById(id).orElse(null);
+            return hospital;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while getHospitalById" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
             return null;
         }
     }
 
-    public Hospital saveHospital(Hospital hospital) {
+    public Boolean saveHospital(Hospital hospital) {
         try {
-            return hospitalRepository.save(hospital);
+            hospitalRepository.save(hospital);
+            return true;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while saveHospital" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
-            return null;
+            return false;
         }
     }
 
     public List<Hospital> findHospitalByName(String name) {
         try {
-            return hospitalRepository.findByNameContainingIgnoreCase(name);
+            List<Hospital>hospitals = hospitalRepository.findByNameContainingIgnoreCase(name);
+            return hospitals;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while findHospitalByName" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
             return null;
         }
     }
 
-    public List<Hospital> findDeactivatedHospitals(int status) {
+    public List<Hospital> findDeactivatedHospitals() {
+        status = 0;
         try {
-            return hospitalRepository.findDeactiveHospitals(status);
+            List<Hospital> hospitals = hospitalRepository.findDeactiveHospitals(status);
+            return hospitals;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while findDeactivatedHospitals" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
             return null;
         }
     }
 
-    public List<Hospital> findActiveHospitals(int status) {
+    public List<Hospital> findActiveHospitals() {
+        status = 1;
         try {
-            return hospitalRepository.findActiveHospitals(status);
+            List<Hospital> hospitals = hospitalRepository.findActiveHospitals(status);
+            return hospitals;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while findActiveHospitals" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -80,19 +95,24 @@ public class HospitalService {
 
     public boolean existsByEmailId(String emailId) {
         try {
-            return hospitalRepository.existsByEmailId(emailId);
+            boolean exists = hospitalRepository.existsByEmailId(emailId);
+            return exists;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("An unexpected error occurred while existsByEmailId" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
             return false;
         }
     }
 
-    public boolean existsByName(String name) {
+    public Hospital getBranchesByHospitalId(long id) {
         try {
-            return hospitalRepository.existsByName(name);
+            Hospital hospitals = hospitalRepository.getBranchesByHospitalId(id);
+            return hospitals;
         } catch (Exception e) {
-            log.error("An unexpected error occurred while existsByName" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
-            return false;
+            e.printStackTrace();
+            log.error("An unexpected error occurred while fetching hospital branches" + ExceptionUtils.getStackTrace(e) +"Logged User" + userService.getAuthenticateUser().getId());
+            return null;
         }
     }
+
 }

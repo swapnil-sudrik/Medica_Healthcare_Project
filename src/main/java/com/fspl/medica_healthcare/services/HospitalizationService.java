@@ -17,7 +17,7 @@ public class HospitalizationService {
 
     private static final Logger log = Logger.getLogger(HospitalizationService.class);
 
-    public HospitalizationInfo createAdmission(HospitalizationInfo hospitalizationInfo) {
+    public HospitalizationInfo saveHospitalization(HospitalizationInfo hospitalizationInfo) {
         try {
             // Appointment appointment = hospitalizationInfo.getAppointment();
             HospitalizationInfo saved = hospitalizationInfoRepository.save(hospitalizationInfo);
@@ -35,6 +35,15 @@ public class HospitalizationService {
     }
 
 
+    public HospitalizationInfo getHospitalizationInfoById(long id){
+        try{
+            return hospitalizationInfoRepository.findById(id).orElse(null);
+        } catch (Exception e) {
+            log.error("An error occurred while getting hospitalization information: "+ e.getMessage(), e);
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     public boolean saveAllHospitalization(List<HospitalizationInfo> hospitalizationInfos){

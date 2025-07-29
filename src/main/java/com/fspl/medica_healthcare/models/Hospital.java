@@ -23,27 +23,21 @@ public class Hospital {
     private byte[] address;
     private String contactNumber;
     private String emailId;
-    private LocalTime openingTime;
-    private LocalTime closingTime;
-
-    @Lob
-    @JsonIgnore
-    private byte[] letterHead;
 
     @Lob
     private byte[] branch;
 
-    private String workingDays;
-    private String offDays;
     private String numberOfUsers;
 
     @Lob
     private byte[] departments;
 
     @ManyToOne
+    @JsonIgnoreProperties({"hospital", "createdUser", "modifiedUser"}) // Ignore to prevent recursion
     private User createdUser;
 
     @ManyToOne
+    @JsonIgnoreProperties({"hospital", "createdUser", "modifiedUser"}) // Ignore to prevent recursion
     private User modifiedUser;
 
     private LocalDate createdDate;

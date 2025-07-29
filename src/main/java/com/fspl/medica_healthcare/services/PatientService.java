@@ -22,24 +22,6 @@ public class PatientService {
     @Autowired
     private UserService userService;
 
-    public Patient savePatient(Patient patient) {
-        try {
-            if (patient != null) {
-                User loginUser = userService.getAuthenticateUser();
-                patient.setHospital(loginUser.getHospital());
-                patient.setCreatedUser(loginUser);
-                patient.setCreatedDate(LocalDate.now());
-                patient.setStatus(1);
-                patient.setModifiedUser(loginUser);
-                patient.setModifiedDate(LocalDate.now());
-                return patientRepository.save(patient);
-            } else
-                return null;
-        } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
-            return null;
-        }
-    }
 
     public List<Patient> getPatientsByStatus(int status) {
         try {
@@ -49,6 +31,7 @@ public class PatientService {
             else
                 return null;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -62,6 +45,7 @@ public class PatientService {
             else
                 return null;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -71,6 +55,7 @@ public class PatientService {
         try {
             return patientRepository.findById(id).orElse(null);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -84,6 +69,7 @@ public class PatientService {
             else
                 return null;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -91,12 +77,14 @@ public class PatientService {
 
     public List<Patient> getPatientsByContactNumber(String contactNumber) {
         try {
-            List<Patient> patientList = patientRepository.findByContactNumber(contactNumber);
+            List<Patient> patientList = patientRepository.findByContactNumber(contactNumber); // fetch By Contact Number
+
             if (patientList != null && !patientList.isEmpty())
                 return patientList;
             else
                 return null;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }
@@ -110,16 +98,48 @@ public class PatientService {
             else
                 return null;
         } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
+            return null;
+        }
+    }
+
+    public List<Patient> getAllPatientsByHospital(long hospital_id) {
+        try {
+            List<Patient> patientList = patientRepository.findAllPatientsByHospital(hospital_id);
+            if (patientList != null && !patientList.isEmpty())
+                return patientList;
+            else
+                return null;
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }
     }
 
     //For appointment use
-    public Patient findPatientByDetails(String patientName, String emailId, String contactNumber) {
+    public Patient findPatientByDetails(byte[] name, byte[] emailId, String contactNumber) {
         try {
-            return patientRepository.findByNameAndEmailIdAndContactNumber(patientName, emailId, contactNumber);
+            return patientRepository.findPatientByDetails(name, emailId, contactNumber);
         } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Patient savePatient(Patient patient) {
+        try {
+            User loginUser = userService.getAuthenticateUser();
+            patient.setHospital(loginUser.getHospital());
+            patient.setCreatedUser(loginUser);
+            patient.setCreatedDate(LocalDate.now());
+            patient.setStatus(1);
+            patient.setModifiedUser(loginUser);
+            patient.setModifiedDate(LocalDate.now());
+            return patientRepository.save(patient);
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID : " + userService.getAuthenticateUser().getId());
             return null;
         }

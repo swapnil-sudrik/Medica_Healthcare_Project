@@ -5,12 +5,16 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
 
 @Entity
 @Table(name = "settings")
 @Data
+
 public class Settings {
 
     @Id
@@ -46,15 +50,22 @@ public class Settings {
 
     private String ambulanceCharges;
 
+    private String gstNumber;
+
+    private String applyGst;
+
     @ManyToOne
     private User createdUser;
 
     @ManyToOne
     private User modifiedUser;
 
-    private Date createdDate;
-    private Date modifiedDate;
+    private LocalDate  createdDate;
+    private LocalDate modifiedDate;
 
     private int status;
+
+
+
 
 }

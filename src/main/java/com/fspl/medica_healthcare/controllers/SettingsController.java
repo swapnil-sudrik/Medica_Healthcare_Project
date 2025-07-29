@@ -3,11 +3,9 @@ package com.fspl.medica_healthcare.controllers;
 import com.fspl.medica_healthcare.models.Hospital;
 import com.fspl.medica_healthcare.models.Settings;
 import com.fspl.medica_healthcare.models.User;
-import com.fspl.medica_healthcare.repositories.UserRepository;
 import com.fspl.medica_healthcare.services.HospitalService;
 import com.fspl.medica_healthcare.services.SettingsService;
 import com.fspl.medica_healthcare.services.UserService;
-import jakarta.validation.Valid;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -15,13 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -32,10 +28,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/settings")
 public class SettingsController {
 
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter);
 
-    User currentUser = null;
+    User loginUser = null;
 
     private static final Logger logger = Logger.getLogger(SettingsController.class);
     @Autowired
@@ -56,55 +52,62 @@ public class SettingsController {
                                                                  @RequestParam("logo") MultipartFile logo) {
 
         try {
+            // get authenticated user
+            loginUser = userService.getAuthenticateUser();
 
-            currentUser = userService.getAuthenticateUser();
+            //Check if settings already exist for Hospital
+            Optional<Hospital> hospitalOptional = settingsService.findHospitalByHospitalId(setting.getHospital().getId());
 
-            Optional<Hospital> hospitalOptional = settingsService.findByHospital(setting.getHospital().getId());
             if (hospitalOptional.isEmpty()) {
 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Invalid hospitalId. Hospital not found."));
+                        .body("Record Not Found");
             }
 
-            // Vaidating Hospital Opening Time and Closing Time
+            // Validating Hospital Opening Time and Closing Time
 
-            String timeFormat = "HH:mm (e.g., 09:30 or 18:45)";
-            if (parseTime(setting.getHospitalOpeningTime()) == null) {
-
+            String TIME_FORMAT = "HH:mm (e.g., 09:30 or 18:45)";
+            if (validateAndParseTime(setting.getHospitalOpeningTime()) == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Invalid hospitalOpeningTime. Use format " + timeFormat));
+                        .body(Map.of("error", "Invalid hospitalOpeningTime. Use format " + TIME_FORMAT));
             }
 
+            //Parsing the HospitalOpeningTime into LocalTime
             LocalTime openingTime = LocalTime.parse(setting.getHospitalOpeningTime());
 
+            // check HospitalOpeningTime is in between 06:00 AM to 10:00 AM
             if (openingTime.isBefore(LocalTime.of(6, 0)) || openingTime.isAfter(LocalTime.of(10, 0))) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Hospital opening time must be between 06:00 am and 10:00 am."));
             }
 
-            if (parseTime(setting.getHospitalClosingTime()) == null) {
+            // If HospitalClosingTime is null then throw error
+            if (validateAndParseTime(setting.getHospitalClosingTime()) == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Invalid hospitalClosingTime. Use format " + timeFormat));
+                        .body(Map.of("error", "Invalid hospitalClosingTime. Use format " + TIME_FORMAT));
             }
 
+            // Getting the Hospital object , If it is present
             Hospital hospital = hospitalOptional.get();
 
             //Validating Logo And LetterHead
 
+            //Check if the logo is present and in the correct format
             if (logo != null && !logo.isEmpty()) {
                 if (!isValidImageType(logo)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(Map.of("error", "Invalid hospitalLogo format. Only JPG, JPEG, or PNG files are allowed."));
+                            .body(Map.of("error", "Invalid hospitalLogo format. Only JPG,SVG, JPEG, or PNG files are allowed."));
                 }
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Hospital logo is required."));
             }
 
+            //Check if the LetterHead is present and in the correct format
             if (letterHead != null && !letterHead.isEmpty()) {
                 if (!isValidImageType(letterHead)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(Map.of("error", "Invalid hospitalLetterHead format. Only JPG, JPEG, or PNG files are allowed."));
+                            .body(Map.of("error", "Invalid hospitalLetterHead format. Only JPG, SVG,JPEG, or PNG files are allowed."));
                 }
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -113,40 +116,49 @@ public class SettingsController {
 
             //Validating Working Days Of Hospital
 
+            //Creating a list of Weekdays
             List<String> validDays = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+
+            // Convert the list of valid days to a set with lowercase values for case-insensitive comparison.
             Set<String> validDaysSet = validDays.stream().map(String::toLowerCase).collect(Collectors.toSet());
 
+            // Process and normalize the hospital's working days into a lowercase list without empty values.
             List<String> workingDaysList = Arrays.stream(setting.getHospitalWorkingDays().split(","))
                     .map(String::trim)
                     .filter(day -> !day.isEmpty())
                     .map(String::toLowerCase)
                     .collect(Collectors.toList());
 
+            // Process and normalize the hospital's off days into a lowercase list without empty values.
             List<String> offDaysList = Arrays.stream(setting.getHospitalOffDays().split(","))
                     .map(String::trim)
                     .filter(day -> !day.isEmpty())
                     .map(String::toLowerCase)
                     .collect(Collectors.toList());
 
-
+            //Converting WorkingDays and OffDays into set to remove duplicates
             Set<String> workingDaysSet = new HashSet<>(workingDaysList);
             Set<String> offDaysSet = new HashSet<>(offDaysList);
 
+            //Finding invalid days by removing valid days from set
             Set<String> invalidWorkingDays = new HashSet<>(workingDaysSet);
             invalidWorkingDays.removeAll(validDaysSet);
 
             Set<String> invalidOffDays = new HashSet<>(offDaysSet);
             invalidOffDays.removeAll(validDaysSet);
 
+            // if invalid day found then throw error
             if (!invalidWorkingDays.isEmpty() || !invalidOffDays.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Invalid days found. Allowed days are Monday to Sunday. Invalid entries: " +
                                 String.join(", ", invalidWorkingDays) + " " + String.join(", ", invalidOffDays)));
             }
 
+            // Find common days from working days and off days
             Set<String> commonDays = new HashSet<>(workingDaysSet);
             commonDays.retainAll(offDaysSet);
 
+            // if common day found in working days and off days then throw error
             if (!commonDays.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "The following days cannot be both working and off days: " + String.join(", ", commonDays)));
@@ -157,42 +169,41 @@ public class SettingsController {
                         .body(Map.of("error", "Duplicate days found. Please remove duplicate days from your input."));
             }
 
-
+            // Check if Setting already exist for Hospital
             Optional<Settings> existingSettings = settingsService.findSettingsByHospital(hospital);
 
+            //If setting already exists get it otherwise create new
             Settings settings = existingSettings.orElse(new Settings());
 
             // Validating No Of Ambulance and Ambulance Charges
 
-            String noOfAmbulancesStr = setting.getNoOfAmbulances();
+            String ambulanceCount = setting.getNoOfAmbulances();
 
-            if (noOfAmbulancesStr == null || noOfAmbulancesStr.trim().isEmpty()) {
+            //if no of ambulance is null then throw error
+            if (ambulanceCount == null || ambulanceCount.trim().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Number of ambulances is required."));
             }
 
-            noOfAmbulancesStr = noOfAmbulancesStr.trim();
+            //trim the input
+            ambulanceCount = ambulanceCount.trim();
 
-            if (!noOfAmbulancesStr.matches("\\d+")) {
+            // Check if no of ambulance is a positive integer
+            if (!ambulanceCount.matches("\\d+")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Number of ambulances must be a valid positive integer."));
             }
 
             // Validating No of Ambulance and Ambulance Charges
 
-            Integer noOfAmbulances = Integer.valueOf(noOfAmbulancesStr);
-            settings.setNoOfAmbulances(noOfAmbulancesStr);
+            Integer noOfAmbulances = Integer.valueOf(ambulanceCount);
+            settings.setNoOfAmbulances(ambulanceCount);
 
+            // If no of ambulance is zero then ambulance charges will be automatically zero
             if (noOfAmbulances == 0) {
 
-                settings.setAmbulanceCharges("0.0");
+                settings.setAmbulanceCharges("0");
 
-                if (setting.getAmbulanceCharges() != null &&
-                        !setting.getAmbulanceCharges().trim().equals("0") &&
-                        !setting.getAmbulanceCharges().trim().equals("0.0")) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(Map.of("error", "Ambulance charges must be 0 when no ambulances are available."));
-                }
             } else {
                 String ambulanceChargesStr = setting.getAmbulanceCharges();
 
@@ -201,6 +212,7 @@ public class SettingsController {
                             .body(Map.of("error", "Ambulance charges are required when ambulances are available."));
                 }
 
+                // Ambulance charges must be valid positive integer
                 ambulanceChargesStr = ambulanceChargesStr.trim();
 
                 if (!ambulanceChargesStr.matches("\\d+(\\.\\d+)?")) {
@@ -208,8 +220,10 @@ public class SettingsController {
                             .body(Map.of("error", "Ambulance charges must be a valid positive number."));
                 }
 
+                //Parsing ambulance charges into Double
                 Double ambulanceCharges = Double.parseDouble(ambulanceChargesStr);
 
+                // If ambulance charges are less than zero then throw error
                 if (ambulanceCharges < 0) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                             .body(Map.of("error", "Ambulance charges cannot be negative."));
@@ -222,18 +236,54 @@ public class SettingsController {
 
             String ambulanceContactNumber = setting.getAmbulanceContactNumber();
 
+            // If Ambulance Contact Number is null or empty then throw error
             if (ambulanceContactNumber == null || ambulanceContactNumber.trim().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Ambulance contact number is required."));
             }
 
+            //Check if Ambulance Contact number is valid positive integer
             ambulanceContactNumber = ambulanceContactNumber.trim();
 
             if (!ambulanceContactNumber.matches("^\\d{10}$")) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(Map.of("error", "Ambulance contact number must be exactly 10 digits and only digits are allowed."));
             }
+            // Validating GST Number and applyGst field
 
+            // if GstNumber is null or empty set ApplyGst as zero otherwise set s it is in request
+            if(setting.getGstNumber()==null || setting.getGstNumber().isEmpty())
+            {
+                settings.setApplyGst("0");
+            }
+            else {
+                settings.setApplyGst(setting.getApplyGst());
+            }
+
+            if (setting.getApplyGst() == null || setting.getApplyGst().isEmpty() ||
+                    setting.getApplyGst().equals("0") || setting.getApplyGst().equals("1")) {
+                // If applyGst is null, empty, "0", or "1", it's valid, do nothing
+            } else {
+                // If it's anything else, return error
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("applyGst is invalid.");
+            }
+
+
+            if (setting.getGstNumber() != null && !setting.getGstNumber().isEmpty()) {
+                String gstNumber = setting.getGstNumber().trim();
+
+                // Validate GST Number using regex pattern
+                String gstPattern = "\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}";
+                if (!gstNumber.matches(gstPattern)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(Map.of("error", "Invalid GST number format. The correct format is: \nXXAAAAA9999A1Z9"));
+                }
+
+            }
+
+
+            // Adding all details
             settings.setHospital(hospital);
             settings.setHospitalOpeningTime(String.valueOf(openingTime));
             settings.setHospitalClosingTime(String.valueOf(LocalTime.parse(setting.getHospitalClosingTime())));
@@ -246,19 +296,24 @@ public class SettingsController {
             settings.setStatus(1);
             settings.setHospitalLogo(logo.getBytes());
             settings.setHospitalLetterHead(letterHead.getBytes());
+            settings.setGstNumber(setting.getGstNumber());
 
+
+            // Setting createdUser , ModifiedUser, createdDate and ModifiedDate
             if (existingSettings.isPresent()) {
 
-                settings.setModifiedUser(currentUser);
-                settings.setModifiedDate(new Date());
+                settings.setModifiedUser(loginUser);
+                settings.setModifiedDate(LocalDate.now());
             } else {
 
-                settings.setCreatedUser(currentUser);
-                settings.setModifiedUser(currentUser);
+                settings.setCreatedUser(loginUser);
+                settings.setModifiedUser(loginUser);
 
-                settings.setCreatedDate(new Date());
+                settings.setCreatedDate(LocalDate.now());
+                settings.setModifiedDate(LocalDate.now());
             }
 
+            // Save Settings
             settingsService.saveSettings(settings, letterHead, logo);
 
             if (existingSettings.isPresent()) {
@@ -268,17 +323,18 @@ public class SettingsController {
             }
 
         } catch (Exception e) {
-            e.printStackTrace(pw);
-            logger.error("Error processing request: {}" + sw + "Logged User :" + currentUser.getId());
+            e.printStackTrace(printWriter);
+            logger.error("Error processing request: {}" + stringWriter + "Logged User :" + loginUser.getId() +"Request Data:"+setting);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "An error occurred while processing the request."));
         }
     }
 
-   // __________ Get ALL Settings______________________________________________________________________________________________________________________________________________________________________
+
+    // Get ALL Settings
 
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-    @GetMapping("/getSettings")
+    @GetMapping("/getAllSettings")
     public synchronized ResponseEntity<List<Settings>> getAllSettings() {
         try {
             List<Settings> settingsList = settingsService.getAllSettings();
@@ -287,48 +343,55 @@ public class SettingsController {
             }
             return ResponseEntity.ok(settingsList);
         } catch (Exception e) {
-            e.printStackTrace(pw);
-            logger.error("Error fetching settings: {}" + sw + "Logged User :" + currentUser.getId());
+            e.printStackTrace(printWriter);
+            logger.error("Error fetching settings: {}" + stringWriter + "Logged User :" + loginUser.getId());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // _________________Get Settings By ID_______________________________________________________________________________________________________________________________________________________________
 
+    //  Get Settings By ID
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/{id}")
-    public synchronized ResponseEntity<?> getSettingsById(@PathVariable long id) {
+    @GetMapping("/getSettingsByHospitalId/{hospitalId}")
+    public synchronized ResponseEntity<?> getSettingsByHospitalId(@PathVariable long hospitalId) {
         try {
-            Settings settings = settingsService.getSettingsById(id);
-            if (settings == null) {
+
+            // Check if hospitalId is a positive number
+            if (hospitalId <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Record Not Found");
+            }
+
+            Optional<Settings> settings = settingsService.findSettingsByHospitalId(hospitalId);
+            if (settings.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Settings not found with ID: " + id));
+                        .body("Record Not Found");
             }
             return ResponseEntity.ok(settings);
         } catch (Exception e) {
-            e.printStackTrace(pw);
-            logger.error("Error fetching in get Setting by ID : {}" + sw + "Logged User :" + currentUser.getId());
+            e.printStackTrace(printWriter);
+            logger.error("Error fetching in get Setting by hospitalID : "+hospitalId+" | " + stringWriter + "Logged User :" + loginUser.getId());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "An error occurred while fetching the settings: " + e.getMessage()));
         }
     }
 
-    // _________________Get Logo and LetterHead Of Hospital_______________________________________________________________________________________________________________________________________________________________
 
+    // Get Logo and LetterHead Of Hospital
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/byType/{type}/{id}")
-    public synchronized ResponseEntity<?> getImage(@PathVariable String type, @PathVariable long id) {
+    @GetMapping("/byType/{type}/{settingId}")
+    public synchronized ResponseEntity<?> getImage(@PathVariable String type, @PathVariable long settingId) {
         try {
             Optional<byte[]> imageData;
 
             switch (type.toLowerCase()) {
                 case "letterhead":
-                    imageData = settingsService.getLetterHead(id);
+                    imageData = settingsService.getLetterHead(settingId);
                     break;
                 case "logo":
-                    imageData = settingsService.getLogo(id);
+                    imageData = settingsService.getLogo(settingId);
                     break;
                 default:
                     return ResponseEntity.badRequest()
@@ -336,6 +399,7 @@ public class SettingsController {
                             .body(Map.of("error", "Invalid type parameter. Use 'letterHead' or 'logo'."));
             }
 
+            // Return the image if present otherwise throw error
             if (imageData.isPresent()) {
                 return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE)
@@ -343,19 +407,21 @@ public class SettingsController {
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(Map.of("error", type + " is not present for ID: " + id));
+                        .body(Map.of("error", type + " is not present for ID: " + settingId));
             }
         } catch (Exception e) {
 
-            e.printStackTrace(pw);
-            logger.error("Error fetching for hospital id : {}" + sw + "Logged User :" + currentUser.getId());
+            e.printStackTrace(printWriter);
+            logger.error("Error fetching for setting id :"+settingId+" | " + stringWriter + "Logged User :" + loginUser.getId());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(Map.of("error", "An error occurred while fetching the " + type + ": " + e.getMessage()));
         }
     }
 
-    // _________Method to check image type_______________________________________________________________________________________________________________________________________________________________________
+
+
+    // Method to check image type
 
     private boolean isValidImageType(MultipartFile file) {
         try {
@@ -368,25 +434,25 @@ public class SettingsController {
             return contentType != null &&
                     (contentType.equals("image/jpeg") ||
                             contentType.equals("image/png") ||
-                            contentType.equals("image/jpg"));
+                            contentType.equals("image/jpg") ||
+                            contentType.equals("image/svg"));
         } catch (Exception e) {
-            e.printStackTrace(pw);
-            logger.error("Error Occurred in Checking image type : {}" + sw);
+            e.printStackTrace(printWriter);
+            logger.error("Error Occurred in Checking image type : {}" + stringWriter);
             return false;
         }
 
 
     }
 
-    // ________Method to parse time________________________________________________________________________________________________________________________________________________________________________
+    // Method to parse time
 
-
-    private LocalTime parseTime(String time) {
+    private LocalTime validateAndParseTime(String time) {
         try {
             return LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
         } catch (DateTimeParseException e) {
-            e.printStackTrace(pw);
-            logger.error("Failed to parse time : {}" + sw + "Logged User :" + currentUser.getId());
+            e.printStackTrace(printWriter);
+            logger.error("Failed to parse time : {}" + stringWriter + "Logged User :" + loginUser.getId());
             return null;
         }
     }

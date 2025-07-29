@@ -11,66 +11,49 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Data
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id",
+//        scope = User.class
+//)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Username is mandatory")
-    @Email(message = "Username must be a valid email address")
-    @Pattern(
-            regexp = "^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z]+\\.[a-zA-Z]{2,}$",
-            message = "Username must be a valid email address and should not start with a number or contain invalid domains"
-    )
-    @Size(max = 100, message = "Username cannot exceed 100 characters")
-    @Column(nullable = false, unique = true)
     private String username;
 
-    @NotBlank(message = "Name is mandatory")
-    @Pattern(
-            regexp = "^[a-zA-Z\\s]+$",
-            message = "Name can only contain letters and spaces"
-    )
-    @Size(max = 100, message = "Name cannot exceed 100 characters")
-    @Column(nullable = false)
     private String name;
 
-
-
-    @NotBlank(message = "Password is mandatory")
     private String password;
 
+    @Lob
     private byte[] branch;
 
-    //    @Enumerated(EnumType.STRING) // Store enum as String in DB
-//    private Roles roles;
-    @NotBlank(message = "Role is mandatory")
-//    @Pattern(
-//            regexp = "ADMIN|DOCTOR|RECEPTIONIST|SUPER_ADMIN",
-//            message = "Role is not correct. Allowed values are: ADMIN, DOCTOR, SUPER_ADMIN, RECEPTIONIST"
-//    )
     @Column(nullable = false)
     private String roles;
 
-
     @ManyToOne
 //    @JsonBackReference
-    @JsonIgnoreProperties("user") // Prevent cyclic references
+    @JsonIgnoreProperties({"createdUser", "modifiedUser"}) // Ignore to prevent recursion
     private Hospital hospital;
 
     @ManyToOne
-//    @JsonIgnore
+    @JsonIgnoreProperties(value = {"hospital", "createdUser", "modifiedUser", "staff"}) // Ignore to prevent recursion
     private User createdUser;
 
     @ManyToOne
-//    @JsonIgnore
+//    @JsonBackReference
+    @JsonIgnoreProperties(value = {"hospital", "createdUser", "modifiedUser", "staff"}) // Ignore to prevent recursion
     private User modifiedUser;
 
     private LocalDate createdDate;
@@ -79,9 +62,31 @@ public class User {
 
     private int status;
 
+    ///arshad , saurabh start
+    private LocalDate lastUpdatedPasswordDate;
+    /// arshad, saurabh end
+
+    /// vishesh start
+    private String type;
+
+    ///pratik start
+    private String contactNumber;
+
+    private LocalDate dateOfBirth;
+    /// pratik end
+
+    ///deepali start
+    private int failedLoginAttempts = 3;
+    private boolean isAccountLocked = false;
+    private LocalDateTime lockTime;
+    /// deepali end
+
+
     @OneToOne
-    @JsonIgnore
+    @JsonIgnoreProperties({"hospital", "createdUser", "modifiedUser"}) // Ignore to prevent recursion
     private Staff staff;
+
+
 
     @Override
     public String toString() {
@@ -94,7 +99,12 @@ public class User {
                 ", createdDate=" + createdDate +
                 ", modifiedDate=" + modifiedDate +
                 ", status=" + status +
+                ", branch=" + new String(branch) +
+
                 '}';
     }
+
+
+
 }
 

@@ -39,18 +39,6 @@ public class LoginDetailService {
         }
     }
 
-    public LoginDetails findByToken(String token){
-        try {
-            Optional<LoginDetails> loginDetails = loginDetailsRepository.findByToken(token);
-            return loginDetails.orElse(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("An error occurred while findByToken() : "+ e);
-
-            return null;
-        }
-    }
-
     public void delete(LoginDetails loginDetails){
             loginDetailsRepository.delete(loginDetails);
     }

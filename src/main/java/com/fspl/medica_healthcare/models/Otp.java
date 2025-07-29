@@ -16,4 +16,5 @@ public class Otp {
     private String email;
     private String otp;
     private LocalDateTime createdDateTime;
+    private boolean isVerified;
 }

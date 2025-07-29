@@ -1,5 +1,6 @@
 package com.fspl.medica_healthcare.services;
 
+import com.fspl.medica_healthcare.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,8 +22,11 @@ public class JwtService {
     public static final String SECRET_KEY = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
     // Generate token with given user name
-    public String generateToken(String userName) {
+    public String generateToken(String userName, User user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("name", user.getName());
+//        claims.put("hospitalName", user.getHospital().getName());
+        claims.put("role", user.getRoles());
         return createToken(claims, userName);
     }
 
@@ -75,9 +79,14 @@ public class JwtService {
 
     // Validate the token against user details and expiration
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
+        try {
+            final String username = extractUsername(token);
 //        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-        return (username.equals(userDetails.getUsername()));
+            return (username.equals(userDetails.getUsername()));
+        } catch (Exception e) {
+            return false;
+        }
+
 
     }
 }

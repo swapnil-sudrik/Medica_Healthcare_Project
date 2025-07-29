@@ -29,5 +29,6 @@ public interface SettingsRepository extends JpaRepository<Settings , Long> {
     //Optional<Settings> findByHospitalId(Long hospitalId);
 
     Optional<Settings> findByHospital(Hospital hospital);
+    Optional<Settings> findByHospital_Id(Long hospitalId);
 
 }

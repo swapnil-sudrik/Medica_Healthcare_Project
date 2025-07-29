@@ -1,11 +1,13 @@
 package com.fspl.medica_healthcare.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fspl.medica_healthcare.enums.AppointmentStatus;
 import com.fspl.medica_healthcare.models.Patient;
 import com.fspl.medica_healthcare.models.User;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,32 +23,35 @@ import java.time.LocalDateTime;
 public class AppointmentDTO {
 
         private long id;
-        private Patient patient;
-        private User doctor;
+        private PatientDTO patientDTO;
 
+        @JsonIgnoreProperties(value = {"createdUser","modifiedUser","hospital","staff"})
+        private User doctor;
         @NotNull
         @Enumerated(EnumType.STRING)
         private AppointmentStatus appointmentStatus;
-
-        private LocalDateTime appointmentDateAndTime;
-        private LocalDate nextAppointmentDate;
-        private User createdUser;
-        private User modifiedUser;
-        private LocalDateTime createdDate;
-        private LocalDateTime modifiedDate;
+        private String appointmentDateAndTime;
+        private String nextAppointmentDate;
+        private LocalDate createdDate;
+        private LocalDate modifiedDate;
         private int status; // 0 = inactive, 1 = active
         private String symptoms;
         private String pulseRate;
         private String clinicalNote;
-        private int fetchClinicalNote;
+        private Integer fetchClinicalNote;
+        @JsonIgnoreProperties(value = {"createdUser","modifiedUser","hospital","staff"})
         private User currentDoctor;
         private String height;
-        private double weight;
+        private Double weight;
         private String bloodPressure;
         private String heartRate;
-        private double bodyTemperature;
+        private Double bodyTemperature;
         private String respiratoryRate;
         private String allergies;
+        @JsonIgnoreProperties(value = {"createdUser","modifiedUser","hospital","staff"})
+        private User createdUser;
+        @JsonIgnoreProperties(value = {"createdUser","modifiedUser","hospital","staff"})
+        private User modifiedUser;
 
 
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+
 import java.time.LocalDate;
 
 @Entity
@@ -14,19 +15,21 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String name;
+
+    @Lob
+    private byte[] name;
     private String contactNumber;
     private String whatsAppNumber;
-    private String emailId;
 
-    @NotNull(message = "Date of birth is required")
-    @Past(message = "Date of birth must be in the past")
-    private LocalDate dateOfBirth;
+    @Lob
+    private byte[] emailId;
+
+    private String dateOfBirth;
 
 
     private String gender;
     private String bloodGroup;
-    private int age;
+    private String age;
 
     @ManyToOne
     private User createdUser;

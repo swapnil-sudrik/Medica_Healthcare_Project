@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReportsService {
@@ -21,45 +20,50 @@ public class ReportsService {
     @Autowired
     private UserService userService;
 
+    //=========================================== SAVE A LIST OF MEDICAL REPORTS ========================================================//
     public boolean saveAllReports(List<Reports> reports) {
         try {
-            List<Reports> reportList = reportRepository.saveAll(reports);
-            return !reportList.isEmpty();
+            List<Reports> reportList = reportRepository.saveAll(reports); // Save all reports to the database
+            return !reportList.isEmpty(); // Return true if reports are saved successfully
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e)  + " Log-in User ID : " + userService.getAuthenticateUser().getId());
+            e.printStackTrace();
+            logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID: " + userService.getAuthenticateUser().getId());
             return false;
         }
     }
 
+    //================================================= FETCH REPORTS BY PATIENT ID =========================================================//
     public List<Reports> findReportsByPatientId(long id) {
         try {
-            List<Reports> reportList = reportRepository.findByPatientId(id);
-            if (reportList != null && !reportList.isEmpty()) {
-                return reportList;
-            } else
-                return null;
+            List<Reports> reportList = reportRepository.findByPatientId(id); // Retrieve reports for the given patient ID
+
+            return (reportList != null && !reportList.isEmpty()) ? reportList : null; // Return the list of reports if found
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e)  + " Log-in User ID : " + userService.getAuthenticateUser().getId());
+            e.printStackTrace();
+            logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID: " + userService.getAuthenticateUser().getId());
             return null;
         }
     }
 
+    //================================================ SAVE A SINGLE MEDICAL REPORT =========================================================//
     public boolean saveReport(Reports report) {
         try {
-            Reports savedReport = reportRepository.save(report);
-            return savedReport.getId() > 0;
+            Reports savedReport = reportRepository.save(report); // Save the report to the database
+            return savedReport.getId() > 0; // Return true if the report is saved successfully
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e)  + " Log-in User ID : " + userService.getAuthenticateUser().getId());
+            e.printStackTrace();
+            logger.error(ExceptionUtils.getStackTrace(e) + " Log-in User ID: " + userService.getAuthenticateUser().getId());
             return false;
         }
     }
 
-    public Reports findReportByIdAndPatientId(long reportId, long patientId) {
+    //================================================ GET REPORT BY REPORT ID ==========================================================//
+    public Reports getReportByReportId(long id) {
         try {
-            Optional<Reports> report = reportRepository.findByIdAndPatientId(reportId, patientId);
-            return report.orElse(null);
+            return reportRepository.findById(id).orElse(null);
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e)  + " Log-in User ID : " + userService.getAuthenticateUser().getId());
+            e.printStackTrace();
+            logger.error(ExceptionUtils.getStackTrace(e) + "Log-in User Id : " + userService.getAuthenticateUser().getId());
             return null;
         }
     }

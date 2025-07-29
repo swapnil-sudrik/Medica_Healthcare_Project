@@ -2,42 +2,36 @@ package com.fspl.medica_healthcare.controllers;
 
 import com.fspl.medica_healthcare.dtos.PrescriptionDTO;
 import com.fspl.medica_healthcare.exceptions.ResourceNotFoundException;
-import com.fspl.medica_healthcare.models.Appointment;
-import com.fspl.medica_healthcare.models.Patient;
-import com.fspl.medica_healthcare.models.Prescription;
-import com.fspl.medica_healthcare.models.User;
+import com.fspl.medica_healthcare.models.*;
 import com.fspl.medica_healthcare.repositories.PrescriptionRepository;
 import com.fspl.medica_healthcare.services.*;
+import com.fspl.medica_healthcare.utils.EncryptionUtil;
 import com.fspl.medica_healthcare.utils.ExceptionMessages;
 import com.fspl.medica_healthcare.utils.ExceptionUtils;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.text.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.validation.Valid;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-
 import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+
+
 
 @RestController
 @RequestMapping("/prescriptions")
@@ -50,161 +44,262 @@ public class PrescriptionController {
     private UserService userService;
 
     @Autowired
-    private PrescriptionRepository prescriptionRepository;
+    private EmailService emailService;
+
 
     @Autowired
     private AppointmentService appointmentService;
 
     @Autowired
-    private PatientService patientService;
-
+    private EncryptionUtil encryptionUtil;
 
     @Autowired
-    private JavaMailSender mailSender;
+    private SettingsService settingsService;
 
-    private static final Logger logger = LogManager.getLogger(PrescriptionController.class);
+
+
+    private static final Logger logger = Logger.getLogger(PrescriptionController.class);
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('DOCTOR')")
-    public synchronized ResponseEntity<?> createPrescription(@Valid @RequestBody PrescriptionDTO prescriptionDTO) {
-        User loginUser=null;
+    @PreAuthorize("hasAuthority('DOCTOR')")  // Ensures that only users with 'DOCTOR' role can access this method
+    public synchronized ResponseEntity<String> createPrescription(@Valid @RequestBody PrescriptionDTO prescriptionDTO) {
+        User loginUser = null;
         try {
-            if (prescriptionDTO.getMedicine() == null || prescriptionDTO.getMedicine().isEmpty()) {
-                return ResponseEntity.ok("Medicine list cannot be null or empty");
+            // Check if the medicine list is null, empty, or contains invalid names.
+            // Medicine names must start with a letter and can contain letters, numbers, and spaces
+            if (prescriptionDTO.getMedicine() == null || prescriptionDTO.getMedicine().isEmpty() ||
+                    prescriptionDTO.getMedicine().stream().anyMatch(m -> !m.matches("^[a-zA-Z\\s][a-zA-Z0-9\\s]*$"))) {
+                return ResponseEntity.badRequest().body("Medicine list cannot be null and empty OR Medicine names must start with a letter and can contain letters, numbers, and spaces.");
             }
 
-            if (prescriptionDTO.getDosage() == null || prescriptionDTO.getDosage().isEmpty() || prescriptionDTO.getDosage().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Dosage list cannot be null or empty or size must match medicine count");
+            // Validation: Check if the dosage list is valid and matches the medicine count
+            if (prescriptionDTO.getDosage() == null || prescriptionDTO.getDosage().isEmpty() ||
+                    prescriptionDTO.getDosage().size() != prescriptionDTO.getMedicine().size()) {
+                return ResponseEntity.badRequest().body("Dosage list cannot be null and empty OR Size must match medicine count");
             }
 
+            // Loop through the medicine list to validate dosage based on the type (Tablet or Syrup)
+            for (int i = 0; i < prescriptionDTO.getDosage().size(); i++) {
+                String dosage = prescriptionDTO.getDosage().get(i);
+                String type = prescriptionDTO.getType().get(i);
 
-            if (prescriptionDTO.getSchedule() == null || prescriptionDTO.getSchedule().isEmpty() || prescriptionDTO.getSchedule().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Schedule list cannot be null or empty orr schedule must match count of medicine");
-            }
-
-            if (prescriptionDTO.getType() == null || prescriptionDTO.getType().isEmpty() || prescriptionDTO.getType().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Type list cannot be null or empty or Type count must match medicine count");
-            }
-
-            if (prescriptionDTO.getQuantity() == null || prescriptionDTO.getQuantity().isEmpty() || prescriptionDTO.getQuantity().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Quantity list cannot be null or empty or Quantity count must match medicine count");
-            }
-
-            int count=0;
-            for(int i=0;i<prescriptionDTO.getMedicine().size();i++) {
-                if(prescriptionDTO.getType().get(i).equals("Tablet")){
-                    count++;
+                if (type.equalsIgnoreCase("Tablet")) {
+                    // Tablet dosage cannot contain "ml"
+                    if (dosage.toLowerCase().contains("ml")) {
+                        return ResponseEntity.badRequest().body("Invalid tablet. Tablet dosages cannot contain 'ml'.");
+                    }
+                    // Tablet dosage must be a valid number
+                    else if (!dosage.matches("^[0-9]+(\\.[0-9]+)?$")) {
+                        return ResponseEntity.badRequest().body("Invalid tablet dosage format. Tablet dosages must be numbers.");
+                    }
+                } else if (type.equalsIgnoreCase("Syrup")) {
+                    // Syrup dosage must end with "ml"
+                    if (!dosage.toLowerCase().endsWith("ml")) {
+                        return ResponseEntity.badRequest().body("Invalid syrup dosage. Syrup dosages must end with 'ml'.");
+                    }
+                    // Syrup dosage must have valid numbers before "ml"
+                    else if (!dosage.substring(0, dosage.length() - 2).trim().matches("^[0-9]+(\\.[0-9]+)?$")) {
+                        return ResponseEntity.badRequest().body("Invalid syrup dosage format. Syrup dosages must have numbers before 'ml'.");
+                    }
+                } else {
+                    return ResponseEntity.badRequest().body("Invalid type. Only 'Tablet' and 'Syrup' are allowed.");
                 }
             }
 
-            if (prescriptionDTO.getNumberOfDays().size()!=count) {
+            // Validation: Schedule list should match the medicine count and contain valid values (1, 2, or 3 times)
+            if (prescriptionDTO.getSchedule() == null || prescriptionDTO.getSchedule().isEmpty() ||
+                    prescriptionDTO.getSchedule().size() != prescriptionDTO.getMedicine().size() ||
+                    prescriptionDTO.getMedicine().contains(0) ||
+                    prescriptionDTO.getSchedule().stream().anyMatch(s -> !s.matches("^[1-3]\\s+time(s)?$"))) {
+                return ResponseEntity.badRequest().body("Schedule list cannot be null or empty,  Schedule must match count of medicine, Schedule must be greater than 0 OR '1 times', '2 times', or '3 times' only.");
+            }
 
+            // Validation: Check if the type list is valid and matches the medicine count
+            if (prescriptionDTO.getType() == null || prescriptionDTO.getType().isEmpty() ||
+                    prescriptionDTO.getType().size() != prescriptionDTO.getMedicine().size()) {
+                return ResponseEntity.badRequest().body("Type list cannot be null or empty OR Type count must match medicine count");
+            }
+
+            // Validate that only "Tablet" and "Syrup" are allowed types
+            for (String type : prescriptionDTO.getType()) {
+                if (!type.equalsIgnoreCase("Tablet") && !type.equalsIgnoreCase("Syrup")) {
+                    return ResponseEntity.badRequest().body("Invalid prescription type: " + type + ". Only 'Tablet' and 'Syrup' are allowed.");
+                }
+            }
+
+            // Validation: Quantity list should match the medicine count and contain values greater than 0
+            if (prescriptionDTO.getQuantity() == null || prescriptionDTO.getQuantity().isEmpty() ||
+                    prescriptionDTO.getQuantity().size() != prescriptionDTO.getMedicine().size() ||
+                    prescriptionDTO.getQuantity().contains(0)) {
+                return ResponseEntity.badRequest().body("Quantity list cannot be null or empty OR Quantity count must match medicine count, or Invalid Quantity must be greater than 0");
+            }
+
+            // Validation: Check if the number of days matches the medicine count
+//            int medicineCount = 0;
+//            for (int i = 0; i < prescriptionDTO.getMedicine().size(); i++) {
+//                if (prescriptionDTO.getType().get(i).equals("Tablet")) {
+//                    medicineCount++;
+//                }
+//            }
+
+            // Ensure the number of days matches the tablet count
+            if (prescriptionDTO.getNumberOfDays().size() != prescriptionDTO.getMedicine().size()) {
                 return ResponseEntity.ok("Number of days count must match medicine count");
             }
 
+            // Fetch authenticated user (doctor) information
             loginUser = userService.getAuthenticateUser();
             if (loginUser == null) {
-                return ResponseEntity.ok("User not authenticated");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
             }
 
+            // Validate if appointment exists
             Appointment appointment = appointmentService.findAppointmentById(prescriptionDTO.getAppoinmentId());
-            if (appointment==null) {
-                return ResponseEntity.ok("Appointment not found");
+            if (appointment == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found");
             }
 
-            if(prescriptionService.getPrescriptionByAppointmentId(prescriptionDTO.getAppoinmentId(),loginUser)){
-                return ResponseEntity.ok("Prescription is available in this appointment");
+            // Check if prescription already exists for this appointment
+            if (prescriptionService.getPrescriptionByAppointmentId(prescriptionDTO.getAppoinmentId(), loginUser)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Prescription is already available for this appointment");
             }
 
+            // Create a new prescription entity from the prescriptionDTO
             Prescription prescription = prescriptionDTOToPrescription(prescriptionDTO);
-
-
             prescription.setCreatedUser(loginUser);
             prescription.setLoginUser(loginUser);
             prescription.setAppointment(appointment);
-            prescription.setStatus(1); // Set as Active
+            prescription.setStatus(1);  // Set prescription as Active
             prescription.setCreatedDate(LocalDateTime.now());
             prescription.setModifiedDate(LocalDateTime.now());
 
+            // Save or update the prescription in the database
             if (prescriptionService.saveOrUpdatePrescription(prescription)) {
-
-                if(sendPrescriptionAsPdf(prescription)) {
-                    return ResponseEntity.ok(prescription);
-                }else {
-                    return ResponseEntity.ok("prescription save but pdf not send");
+                // Send prescription as a PDF if saved successfully
+                if (sendPrescriptionAsPdf(prescription)) {
+                    return ResponseEntity.ok("Prescription sent successfully");
+                } else {
+                    return ResponseEntity.ok("Prescription saved but PDF not sent");
                 }
             } else {
-                return ResponseEntity.ok("prescription  not save ");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Prescription not saved");
+
             }
         } catch (Exception e) {
-            logger.error("\n An error occurred while creating the prescription \n"+ ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
+            e.printStackTrace();
+            // Catch any exceptions that occur during the creation process and log the error
+            logger.error("\n An error occurred while creating the prescription" + ExceptionUtils.getStackTrace(e) +
+                    " \nLogged user" + loginUser.getId() + " \nUser Request " + prescriptionDTO);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while creating the prescription");
         }
     }
 
-
 //-------------------------------------------------------------------------------------------------------------
 
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('DOCTOR')")
-    public ResponseEntity<?> updatePrescription(
-            @PathVariable Long id,
-            @Valid @RequestBody PrescriptionDTO prescriptionDTO) {
-        User loginUser=null;
+    @PutMapping("/{prescriptionid}")
+    @PreAuthorize("hasAuthority('DOCTOR')")  // Ensures that only users with 'DOCTOR' authority can access this endpoint
+    public ResponseEntity<String> updatePrescription(
+            @PathVariable long prescriptionid,  // Fetches the prescription ID from the URL path
+            @Valid @RequestBody PrescriptionDTO prescriptionDTO) {  // Accepts the updated prescription details in the request body
+        User loginUser = null;
         try {
-
-            if (prescriptionDTO.getMedicine() == null || prescriptionDTO.getMedicine().isEmpty()) {
-                return ResponseEntity.ok("Medicine list cannot be null or empty");
+            //  Validate the medicine list
+            if (prescriptionDTO.getMedicine() == null || prescriptionDTO.getMedicine().isEmpty() ||
+                    prescriptionDTO.getMedicine().stream().anyMatch(m -> !m.matches("^[a-zA-Z\\s][a-zA-Z0-9\\s]*$"))) {
+                return ResponseEntity.badRequest().body("Medicine list cannot be null and empty OR Medicine names must start with a letter and can contain letters, numbers, and spaces.");
             }
 
-            if (prescriptionDTO.getDosage() == null || prescriptionDTO.getDosage().isEmpty() || prescriptionDTO.getDosage().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Dosage list cannot be null or empty or size must match medicine count");
+            // Validate that the dosage list is not null, not empty, and the size matches the medicine count
+            if (prescriptionDTO.getDosage() == null || prescriptionDTO.getDosage().isEmpty() ||
+                    prescriptionDTO.getDosage().size() != prescriptionDTO.getMedicine().size()) {
+                return ResponseEntity.badRequest().body("Dosage list cannot be null and empty OR Size must match medicine count");
             }
 
-            if (prescriptionDTO.getSchedule() == null || prescriptionDTO.getSchedule().isEmpty() || prescriptionDTO.getSchedule().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Schedule list cannot be null or empty orr schedule must match count of medicine");
-            }
+            // Loop through medicine and validate dosage format for each medicine (Tablet/Syrup)
+            for (int i = 0; i < prescriptionDTO.getDosage().size(); i++) {
+                String dosage = prescriptionDTO.getDosage().get(i);
+                String type = prescriptionDTO.getType().get(i);
 
-            if (prescriptionDTO.getType() == null || prescriptionDTO.getType().isEmpty() || prescriptionDTO.getType().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Type list cannot be null or empty or Type count must match medicine count");
-            }
-
-            if (prescriptionDTO.getQuantity() == null || prescriptionDTO.getQuantity().isEmpty() || prescriptionDTO.getQuantity().size() != prescriptionDTO.getMedicine().size()) {
-                return ResponseEntity.ok("Quantity list cannot be null or empty or Quantity count must match medicine count");
-            }
-            int count=0;
-            for(int i=0;i<prescriptionDTO.getMedicine().size();i++) {
-                if(prescriptionDTO.getType().get(i).equals("Tablet")){
-                    count++;
+                if (type.equalsIgnoreCase("Tablet")) {
+                    // Tablet dosage cannot contain "ml" and should be a valid number
+                    if (dosage.toLowerCase().contains("ml")) {
+                        return ResponseEntity.badRequest().body("Invalid tablet dosage. Tablet dosages cannot contain 'ml'.");
+                    } else if (!dosage.matches("^[0-9]+(\\.[0-9]+)?$")) {
+                        return ResponseEntity.badRequest().body("Invalid tablet dosage format. Tablet dosages must be numbers.");
+                    }
+                } else if (type.equalsIgnoreCase("Syrup")) {
+                    // Syrup dosage must end with "ml" and have valid numbers before "ml"
+                    if (!dosage.toLowerCase().endsWith("ml")) {
+                        return ResponseEntity.badRequest().body("Invalid syrup dosage. Syrup dosages must end with 'ml'.");
+                    } else if (!dosage.substring(0, dosage.length() - 2).trim().matches("^[0-9]+(\\.[0-9]+)?$")) {
+                        return ResponseEntity.badRequest().body("Invalid syrup dosage format. Syrup dosages must have numbers before 'ml'.");
+                    }
+                } else {
+                    return ResponseEntity.badRequest().body("Invalid type. Only 'Tablet' and 'Syrup' are allowed.");
                 }
-
             }
 
-            if (prescriptionDTO.getNumberOfDays().size()!=count) {
-
-                return ResponseEntity.ok("Number of days count must match medicine count");
+            // Validate the schedule list (should not be null/empty, and size must match medicine count)
+            if (prescriptionDTO.getSchedule() == null || prescriptionDTO.getSchedule().isEmpty() ||
+                    prescriptionDTO.getSchedule().size() != prescriptionDTO.getMedicine().size() ||
+                    prescriptionDTO.getMedicine().contains(0) ||
+                    prescriptionDTO.getSchedule().stream().anyMatch(s -> !s.matches("^[1-3]\\s+time(s)?$"))) {
+                return ResponseEntity.badRequest().body("Schedule list cannot be null or empty,  Schedule must match count of medicine, Schedule must be greater than 0 OR '1 times', '2 times', or '3 times' only.");
             }
+
+            // Validate that the type list is valid (only "Tablet" and "Syrup") and matches the medicine count
+            if (prescriptionDTO.getType() == null || prescriptionDTO.getType().isEmpty() ||
+                    prescriptionDTO.getType().size() != prescriptionDTO.getMedicine().size()) {
+                return ResponseEntity.badRequest().body("Type list cannot be null or empty OR Type count must match medicine count");
+            }
+
+            // Validate each type to ensure it's either "Tablet" or "Syrup"
+            for (String type : prescriptionDTO.getType()) {
+                if (!type.equalsIgnoreCase("Tablet") && !type.equalsIgnoreCase("Syrup")) {
+                    return ResponseEntity.badRequest().body("Invalid prescription type: " + type + ". Only 'Tablet' and 'Syrup' are allowed.");
+                }
+            }
+
+            //  Validate the quantity list (should not be null/empty, and size must match medicine count)
+            if (prescriptionDTO.getQuantity() == null || prescriptionDTO.getQuantity().isEmpty() ||
+                    prescriptionDTO.getQuantity().size() != prescriptionDTO.getMedicine().size() ||
+                    prescriptionDTO.getQuantity().contains(0)) {
+                return ResponseEntity.badRequest().body("Quantity list cannot be null or empty OR Quantity count must match medicine count, or Invalid Quantity must be greater than 0");
+            }
+
+            // Validate the number of days list (should match the number of tablet medicines and be valid)
+            int medicineCount = 0;
+            for (int i = 0; i < prescriptionDTO.getMedicine().size(); i++) {
+                if (prescriptionDTO.getType().get(i).equals("Tablet")) {
+                    medicineCount++;
+                }
+            }
+
+            // Ensure the number of days matches the tablet count
+            if (prescriptionDTO.getNumberOfDays().size() != prescriptionDTO.getMedicine().size()) {
+                return ResponseEntity.badRequest().body("Number of days count must match medicine count");
+            }
+
+            // Fetch the authenticated user (doctor) and handle the case where no user is authenticated
             loginUser = userService.getAuthenticateUser();
-            if (loginUser==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
+            if (loginUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+
             }
 
-            Appointment appointment = appointmentService.findAppointmentById(prescriptionDTO.getAppoinmentId());
-            if (appointment==null) {
-                return ResponseEntity.ok("Appointment not found");
+            // Fetch the existing prescription and validate that it exists
+            Prescription prescription = prescriptionService.getPrescriptionById(prescriptionid, loginUser);
+            if (prescription == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Check prescription ID therefore prescription not found");
             }
 
-            Prescription prescription = prescriptionService.getPrescriptionById(id,loginUser);
-            if (prescription==null) {
-                return ResponseEntity.badRequest().body("Invalid prescription ID");
-            }
-
-            prescription.setAppointment(appointment);
+            //Update the prescription with the new data from the DTO
+            prescription.setAppointment(prescription.getAppointment());
             prescription.setType(prescriptionDTO.getType());
             prescription.setMedicine(prescriptionDTO.getMedicine());
             prescription.setDosage(prescriptionDTO.getDosage());
@@ -213,64 +308,75 @@ public class PrescriptionController {
             prescription.setNumberOfDays(prescriptionDTO.getNumberOfDays());
             prescription.setCreatedUser(prescription.getLoginUser());
             prescription.setLoginUser(loginUser);
-            prescription.setModifiedDate(LocalDateTime.now());
+            prescription.setModifiedDate(LocalDateTime.now());  // Set the modified date to the current time
 
-
+            //Save the updated prescription and send it as a PDF if successful
             if (prescriptionService.saveOrUpdatePrescription(prescription)) {
-                if(sendPrescriptionAsPdf(prescription)) {
-                    return ResponseEntity.ok(prescription);
-                }else {
-                    return ResponseEntity.ok("prescription save but pdf not send");
+                if (sendPrescriptionAsPdf(prescription)) {
+                    return ResponseEntity.ok("Prescription updated successfully");
+                } else {
+                    return ResponseEntity.ok("Prescription saved but PDF not sent");
                 }
             } else {
-                return ResponseEntity.ok("prescription  not save ");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Prescription not saved");
             }
         } catch (Exception e) {
-            logger.error("\n Error while updating prescription: " +ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
+            e.printStackTrace();
+            //Catch any exceptions and log the error for debugging
+            logger.error("\n Error while updating prescription: " + ExceptionUtils.getStackTrace(e) +
+                    " \nLogged user: " + loginUser.getId() +
+                    " \nUser Request: " + prescriptionDTO);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to update prescription due to an internal error");
         }
     }
 
-
 //------------------------------------------------------------------------------------------------------------
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{prescriptionid}")
     @PreAuthorize("hasAuthority('DOCTOR')")
-    public  ResponseEntity<?>  getPrescriptionById(@PathVariable Long id) {
+    public  ResponseEntity<?>  getPrescriptionById(@PathVariable long prescriptionid) {
         User loginUser = null;
         try {
+            // Fetch authenticated user
             loginUser = userService.getAuthenticateUser();
             if (loginUser==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
             }
-            Prescription prescription = prescriptionService.getPrescriptionById(id,loginUser);
+            // for get previous prescription status if prescription status not match with condition it show the return message
+            Prescription prescription = prescriptionService.getPrescriptionById(prescriptionid,loginUser);
             if ((!(prescription ==null)) && prescription.getStatus() == 1) {
                 return ResponseEntity.ok( prescription);
             } else {
-                return ResponseEntity.ok("Prescription Not available");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prescription not available");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error occurred while fetching prescription: " + ExceptionUtils.getStackTrace(e)  +"Logged user : " +loginUser.getId());
-            return  ResponseEntity.status(500).body("Failed to fetch prescriptions due to an internal error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch prescriptions due to an internal error");
+
         }
     }
 
 
+
 //--------------------------------------------------------------------------------------------------------------
 
-    @GetMapping
+
+    @GetMapping("/allprescription")
     @PreAuthorize("hasAuthority('DOCTOR')")
     public ResponseEntity<?> getAllPrescriptions() {
         User loginUser = null;
         try {
+            // Fetch authenticated user
             loginUser = userService.getAuthenticateUser();
             if (loginUser==null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
             }
+            // for get all prescription
             List<Prescription> prescriptions = prescriptionService.getAllPrescriptions(loginUser);
-
+            // for validation if prescription null or isempty it show the error
             if (prescriptions == null || prescriptions.isEmpty()) {
                 return ResponseEntity.status(404).body("No prescriptions found");
             }
@@ -278,46 +384,50 @@ public class PrescriptionController {
             return ResponseEntity.ok(prescriptions);
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error while fetching prescriptions: " +ExceptionUtils.getStackTrace(e) +"Logged User"+loginUser.getId());
             return ResponseEntity.status(500).body("Failed to fetch prescriptions due to an internal error");
         }
     }
 
 
+
 //---------------------------------------------------------------------------------------------------------------------
 
 
-    @DeleteMapping("status/{id}")
+    @DeleteMapping("statuschange/{prescriptionid}")
     @PreAuthorize("hasAuthority('DOCTOR')")
-    public ResponseEntity<String> statusChange(@PathVariable Long id) {
+    public ResponseEntity<String> statusChange(@PathVariable long prescriptionid) {
         User loginUser = null;
         try {
+            // Fetch authenticated/login user
             loginUser = userService.getAuthenticateUser();
             if (loginUser==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
             }
-            if (id == null || id <= 0) {
+            // for validation to check id null or zero if match show message
+            if (prescriptionid == -1 || prescriptionid <= 0) {
                 return ResponseEntity.badRequest().body("Invalid prescription ID");
             }
 
-            Prescription prescription = prescriptionService.getPrescriptionById(id,loginUser);
+            //  get previous prescription
+            Prescription prescription = prescriptionService.getPrescriptionById(prescriptionid,loginUser);
 
             if(prescription==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prescription Not Found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No prescriptions found");
             }
 
-
+            // set a status as a false due to soft delete
             prescription.setStatus(0);
             prescriptionService.saveOrUpdatePrescription(prescription);
 
             return ResponseEntity.ok("Status Change  successfully");
 
         } catch (ResourceNotFoundException e) {
+            e.printStackTrace();
             logger.error("\n Error while deleting prescription: " + ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
-            return ResponseEntity.ok("Failed to Change Status due to an internal error");
-        } catch (Exception e) {
-            logger.error("\n Error while deleting prescription: " + ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
-            return ResponseEntity.ok("Failed to Change Status due to an internal error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch prescriptions due to an internal error");
+
         }
     }
 
@@ -325,51 +435,19 @@ public class PrescriptionController {
 //---------------------------------------------------------------------------------------------------------------
 
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('DOCTOR')")
-    public ResponseEntity<String> deletePrescription(@PathVariable Long id) {
-        User loginUser = null;
-        try {
-
-            loginUser = userService.getAuthenticateUser();
-            if (loginUser==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
-            }
-
-            Prescription prescription = prescriptionService.getPrescriptionById(id,loginUser);
-            if (prescription==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prescription not Found");
-            }
-
-            prescriptionService.deletePrescription(prescription);
-
-            return ResponseEntity.ok("Prescription deleted successfully");
-
-        } catch (ResourceNotFoundException e) {
-            logger.error("\n Error: Prescription not found with id: " + id+ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Failed to delete prescription due to an internal error: ");
-        } catch (Exception e) {
-            logger.error("\n Error: An unexpected error occurred while deleting the prescription."+id+ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to delete prescription due to an internal error.");
-        }
-    }
-
-
-//--------------------------------------------------------------------------------------------------------------------
-
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<?> getPrescriptionsByPatientId(
-            @PathVariable("patientId") Long patientId) {
+            @PathVariable("patientId") long patientId) {
         User loginUser=null;
         try {
+            // Fetch authenticated user if login user null it show the return message
             loginUser = userService.getAuthenticateUser();
             if (loginUser==null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+
             }
             List<Prescription> prescriptions = prescriptionService.findPrescriptionByPatientId(patientId,loginUser);
-
+            // if prescription isempty  on that patientid  it show string message
             if (prescriptions.isEmpty()) {
                 String message = "No prescriptions found for patientId: " + patientId;
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
@@ -377,11 +455,14 @@ public class PrescriptionController {
 
             return ResponseEntity.ok(prescriptions);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error while fetching prescriptions for patientId " + patientId + ": " + ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.emptyList());
         }
     }
+
+
 
 
 //--------------------------------------------------------------------------------------------------------------------------
@@ -391,15 +472,17 @@ public class PrescriptionController {
     public ResponseEntity<?> getAllMedicine() {
         User loginUser=null;
         try {
+            // Fetch authenticated user
             loginUser = userService.getAuthenticateUser();
             if (loginUser==null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.SOMETHING_WENT_WRONG);
             }
             List<List<String>> medicines = prescriptionService.findAllMedicine(loginUser);
-
+            // for the validation  to check the medicine is empty it show the message
             if (medicines == null || medicines.isEmpty()) {
-                return ResponseEntity.ok("Medicines Not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Medicine not Found");
             }
+            //  sort the  list for  unique medicine
             Set<String> flattenedMedicines = medicines.stream()
                     .flatMap(List::stream)
                     .collect(Collectors.toSet());
@@ -407,99 +490,77 @@ public class PrescriptionController {
             return ResponseEntity.ok(flattenedMedicines);
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error while fetching medicines: " +ExceptionUtils.getStackTrace(e) +"Logged user"+loginUser.getId());
-            return ResponseEntity.ok("Failed to fetch medicines due to an internal error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch medicines due to an internal error");
         }
     }
 
-    //-------------------------------------------------------------------------------------------------------------------
 
+    //-------------------------------------------------------------------------------------------------------------------
+    @Async
     public boolean sendPrescriptionAsPdf(Prescription prescription) {
         try {
-            if (prescription == null) {
-               // System.err.println("Prescription is null");
+            // Validate prescription and patient information
+            if (prescription == null || prescription.getAppointment() == null ||
+                    prescription.getAppointment().getPatient() == null ||
+                    prescription.getAppointment().getPatient().getEmailId() == null) {
                 return false;
             }
 
-            if (prescription.getAppointment() == null || prescription.getAppointment().getPatient() == null) {
-               // System.err.println("Prescription appointment or patient is null");
-                return false;
-            }
+//             String email = prescription.getAppointment().getPatient().getEmailId();
+            String email = encryptionUtil.decrypt(new String(prescription.getAppointment().getPatient().getEmailId()));
 
-            Patient patient = patientService.getPatientById(prescription.getAppointment().getPatient().getId());
-            if (patient == null || patient.getEmailId() == null) {
-               // System.err.println("Patient or email is null");
-                return false;
-            }
 
-            String email = patient.getEmailId();
-            //System.out.println(email);
-
+            // Generate the prescription PDF
             ByteArrayOutputStream pdfStream = generatePrescriptionPdf(prescription);
+
             if (pdfStream == null) {
-                logger.error("Failed to generate PDF");
+                logger.error("Failed to generate");
                 return false;
             }
-
+            // Prepare email details
             String subject = "Your Prescription Details";
             String content = "Please find attached your prescription details.";
 
+            // Ensure the PDF is sent with correct MIME type
             String fileName = "Prescription_" + prescription.getMedicine() + ".pdf";
-
-            CompletableFuture<Boolean> emailSentFuture = sendEmailWithAttachment(
+            // Send the email with the PDF attachment
+            emailService.sendEmailWithAttachment(
                     email,
                     subject,
                     content,
                     fileName,
-                    pdfStream.toByteArray(),
-                    "application/pdf"
+                    pdfStream.toByteArray()
             );
             return true;
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error sending prescription PDF: " + ExceptionUtils.getStackTrace(e) );
             return false;
         }
     }
-
-
 //    ----------------------------------------------------------------------------------------------------------
 
+    // here we have to generateprescriptionpdf
     private ByteArrayOutputStream generatePrescriptionPdf(Prescription prescription) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            //if the prescription or appointment or patient null it show error message
+            Hospital hospital = prescription.getAppointment().getHospital();
+
             if (prescription == null || prescription.getAppointment() == null || prescription.getAppointment().getPatient() == null) {
-                System.out.println("Prescription or appointment or patient is null");
+                logger.error("Prescription or appointment or patient is null");
                 return null;
             }
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
             document.open();
 
-            // *Title Section*
-            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.BLACK);
-            Paragraph title = new Paragraph("PRESCRIPTION DETAILS", titleFont);
-            title.setAlignment(Element.ALIGN_CENTER);
-            document.add(title);
-            document.add(Chunk.NEWLINE);
 
-            // *Logo Section*
-            String logoPath = "C:/Users/DELL/Desktop/images/logo.png";
-            Image logo = Image.getInstance(logoPath);
-            logo.setAlignment(Element.ALIGN_CENTER);
-            logo.scaleToFit(200f, 100f);
-            document.add(logo);
-            document.add(Chunk.NEWLINE);
 
             // *Contact and Address Information*
             Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
-            Paragraph contactInfo = new Paragraph("Contact: (123) 456-7890", normalFont);
-            contactInfo.setAlignment(Element.ALIGN_CENTER);
-            document.add(contactInfo);
-
-            Paragraph address = new Paragraph("Address: Geera Imperium, Pune, Maharashtra, India", normalFont);
-            address.setAlignment(Element.ALIGN_CENTER);
-            document.add(address);
-            document.add(Chunk.NEWLINE);
 
             // *Table for Patient and Doctor Details*
             PdfPTable detailsTable = new PdfPTable(2);
@@ -507,17 +568,37 @@ public class PrescriptionController {
             detailsTable.setSpacingBefore(10f);
             detailsTable.setWidths(new float[]{50f, 50f}); // Equal-width columns
 
+
+
+            if (prescription.getAppointment().getBloodPressure() != null) {
+                prescription.getAppointment().setBloodPressure(encryptionUtil.decrypt(prescription.getAppointment().getBloodPressure()));
+            }
+
+            if (prescription.getAppointment().getPatient().getEmailId()!=null){
+                prescription.getAppointment().getPatient().setEmailId(encryptionUtil.decrypt(new String(prescription.getAppointment().getPatient().getEmailId())).getBytes());
+            }
+            Settings settings = settingsService.getSettingsById(prescription.getAppointment().getHospital().getId());
+
+            if (settings != null) {
+                Image letterheadImage = Image.getInstance(settings.getHospitalLetterHead());
+//                letterheadImage.scaleToFit(500f, 100f); // scale as needed
+                letterheadImage.scaleToFit(595f, Float.MAX_VALUE); // scales to A4 width, keeps aspect ratio
+                letterheadImage.setAlignment(Element.ALIGN_CENTER);
+                document.add(letterheadImage);
+            }
+
+
             // *Left Column - Patient Details*
             PdfPCell patientDetails = new PdfPCell();
             patientDetails.setBorder(Rectangle.NO_BORDER);
-            patientDetails.addElement(new Paragraph("Patient Name: " + prescription.getAppointment().getPatient().getName(), normalFont));
-            patientDetails.addElement(new Paragraph("Age:" + prescription.getAppointment().getPatient().getAge(), normalFont));
-            patientDetails.addElement(new Paragraph("Gender: " + prescription.getAppointment().getPatient().getGender(), normalFont));
+            patientDetails.addElement(new Paragraph("Patient Name: " + encryptionUtil.decrypt(new String(prescription.getAppointment().getPatient().getName())), normalFont));
+            patientDetails.addElement(new Paragraph("Age:" + encryptionUtil.decrypt(new String(prescription.getAppointment().getPatient().getAge())), normalFont));
+            patientDetails.addElement(new Paragraph("Gender: " + encryptionUtil.decrypt(new String(prescription.getAppointment().getPatient().getGender())), normalFont));
             patientDetails.addElement(new Paragraph("Height: " +
                     (prescription.getAppointment().getHeight() != null ? prescription.getAppointment().getHeight() + " " : "N/A"), normalFont));
             patientDetails.addElement(new Paragraph("Weight: " +
                     (prescription.getAppointment().getWeight() != 0 ? prescription.getAppointment().getWeight() + " " : "N/A"), normalFont));
-            patientDetails.addElement(new Paragraph("BpCount: " +
+            patientDetails.addElement(new Paragraph("Blood Pressure: " +
                     (prescription.getAppointment().getBloodPressure() != null ? prescription.getAppointment().getBloodPressure() : "N/A"), normalFont));
             LocalDateTime createdDateTime = prescription.getCreatedDate();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm a");
@@ -536,16 +617,18 @@ public class PrescriptionController {
             document.add(detailsTable);
             document.add(Chunk.NEWLINE);
 
+
             // *Table for Prescription Details*
             PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100);
-            table.setSpacingBefore(10f);
+            table.setSpacingBefore(80f);
             table.setWidths(new float[]{2f, 3f, 2f, 3f, 2f, 2f});
 
             // *Centering the table itself*
             table.setHorizontalAlignment(Element.ALIGN_CENTER);
 
             document.add(Chunk.NEWLINE);
+
 
             // *Table Headers*
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
@@ -567,14 +650,15 @@ public class PrescriptionController {
             List<Integer> quantity = prescription.getQuantity();
             List<Integer> numberOfDays = prescription.getNumberOfDays();
 
-            if (medicines.size() != numberOfDays.size()) {
-                int k = medicines.size();
-                int ii = numberOfDays.size();
-                for (int i = ii; i < k; i++) {
-                    numberOfDays.add(null);
-                }
-            }
-
+            // to set a null to empty number of days for syrup
+//            if (medicines.size() != numberOfDays.size()) {
+//                int k = medicines.size();
+//                int ii = numberOfDays.size();
+//                for (int i = ii; i < k; i++) {
+//                    numberOfDays.add(null);
+//                }
+//            }
+            // to set the data in cell
             for (int i = 0; i < medicines.size(); i++) {
 
                 table.addCell(createCenteredCell(types.get(i), dataFont));
@@ -582,25 +666,24 @@ public class PrescriptionController {
                 table.addCell(createCenteredCell(dosages.get(i), dataFont));
                 table.addCell(createCenteredCell(schedules.get(i).toUpperCase(Locale.ROOT), dataFont));
                 table.addCell(createCenteredCell(quantity.get(i).toString(), dataFont));
-                Integer numberOfDaysValue = numberOfDays.get(i);
-                table.addCell(createCenteredCell(numberOfDaysValue == null ? null : numberOfDaysValue.toString(), dataFont));
+                // Integer numberOfDaysValue = numberOfDays.get(i);
+                table.addCell(createCenteredCell(numberOfDays.get(i).toString(), dataFont));
+                // table.addCell(createCenteredCell(numberOfDaysValue == null ? null : numberOfDaysValue.toString(), dataFont));
             }
-
 
             document.add(table);
             document.add(Chunk.NEWLINE);
-
 
             document.add(new Paragraph("Clinical Note: " + new String(prescription.getAppointment().getClinicalNote())));
             document.add(Chunk.NEWLINE);
 
             // *Rx Logo in the top-right corner*
-            String rXPath = "C:/Users/DELL/Desktop/images/RxLogo.png";
+            String rXPath = "src/images/RxLogo.png";
             Image rxLogo = Image.getInstance(rXPath);
-            rxLogo.scaleToFit(100f, 50f);
+            rxLogo.scaleToFit(100f, 300f);
 
             float xPosition = document.getPageSize().getWidth() - rxLogo.getScaledWidth() - 450;
-            float yPosition = document.getPageSize().getHeight() - rxLogo.getScaledHeight() - 410;
+            float yPosition = document.getPageSize().getHeight() - rxLogo.getScaledHeight() - 350;
             rxLogo.setAbsolutePosition(xPosition, yPosition);
             document.add(rxLogo);
             document.add(Chunk.NEWLINE);
@@ -615,6 +698,7 @@ public class PrescriptionController {
             return outputStream;
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error generating prescription PDF"+ExceptionUtils.getStackTrace(e) );
             return null;
         }
@@ -628,6 +712,7 @@ public class PrescriptionController {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             return cell;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error creating centered cell: " + ExceptionUtils.getStackTrace(e) );
             return new PdfPCell(new Phrase("Error"));
         }
@@ -658,6 +743,7 @@ public class PrescriptionController {
             return prescription;
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error converting PrescriptionDTO to Prescription: " + ExceptionUtils.getStackTrace(e) );
             return null;
         }
@@ -667,13 +753,13 @@ public class PrescriptionController {
     public PrescriptionDTO prescriptionToPrescriptionDTO(Prescription prescription) {
         try {
             if (prescription == null) {
-               // System.err.println("Prescription is null");
+                // System.err.println("Prescription is null");
                 return null;
             }
             PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
 
             if (prescription.getAppointment() == null) {
-               // System.err.println("Appointment is null in Prescription");
+                // System.err.println("Appointment is null in Prescription");
                 return null;
             }
 
@@ -689,31 +775,9 @@ public class PrescriptionController {
             return prescriptionDTO;
 
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("\n Error converting Prescription to PrescriptionDTO: " +ExceptionUtils.getStackTrace(e));
             return null;
-        }
-    }
-
-
-    public CompletableFuture<Boolean> sendEmailWithAttachment(String to, String subject, String content, String fileName, byte[] attachmentData, String contentType) {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(content, true);
-
-            // Attach PDF
-            ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentData, contentType);
-            helper.addAttachment(fileName, dataSource);
-
-            mailSender.send(message);
-            //System.out.println("Email with attachment sent successfully to " + to);
-            return CompletableFuture.completedFuture(true);
-        } catch (MessagingException e) {
-            logger.error("\n Error while sending email with attachment to " + to + ": " + ExceptionUtils.getStackTrace(e) );
-            return CompletableFuture.completedFuture(false);
         }
     }
 

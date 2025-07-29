@@ -6,6 +6,7 @@ import com.fspl.medica_healthcare.repositories.HospitalRepository;
 import com.fspl.medica_healthcare.repositories.UserRepository;
 import com.fspl.medica_healthcare.templets.EmailTemplets;
 import com.fspl.medica_healthcare.utils.ExceptionUtils;
+import jakarta.transaction.Transactional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +47,9 @@ public class UserService {
 
     private static final Logger log = Logger.getLogger(UserService.class);
 
-    public List<User> getAllUsersByHospital(User loginUser) {
+    public List<User> getAllUsersByHospital(User loginUser, byte[] branch) {
         try {
-            List<User> userList = userRepository.findAllUsersByHospitalId(loginUser.getHospital().getId());
+            List<User> userList = userRepository.findAllUsersByHospitalId(loginUser.getHospital().getId(), branch);
             if (userList.isEmpty()){
                 return null;
             }
@@ -96,19 +98,40 @@ public class UserService {
         }
     }
 
-    public List<User> getAllActiveUsersOfHospital(User loginUser) {
+    public boolean saveUserByOAuth(User user) {
         try {
-            List<User> userList = userRepository.findAllActiveUsersByHospitalId(loginUser.getHospital().getId());
-            if (userList.isEmpty()){
-                return null;
-            }
-            return userList;
+            userRepository.save(user);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("An unexpected error occurred while getAllActiveUsersOfHospital(): \n"+ExceptionUtils.getStackTrace(e) +"\n"+"Logged User Id:\n "+loginUser.getId());            return null;
+            log.error("An unexpected error occurred while saveUser(): \n"+ExceptionUtils.getStackTrace(e) +"\n"+"User email:\n "+user.getUsername());
+            return false;
         }
     }
 
+//    public List<User> getAllActiveUsersOfHospital(User loginUser) {
+//        try {
+//            List<User> userList = userRepository.findAllActiveUsersByHospitalId(loginUser.getHospital().getId());
+//            if (userList.isEmpty()){
+//                return null;
+//            }
+//            return userList;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            log.error("An unexpected error occurred while getAllActiveUsersOfHospital(): \n"+ExceptionUtils.getStackTrace(e) +"\n"+"Logged User Id:\n "+loginUser.getId());            return null;
+//        }
+//    }
+
+    //add new service layer..D
+    public List<User> getAllActiveUsersByHospitalAndBranch(User loginUser, byte[] branch) {
+        return userRepository.findByHospitalIdAndBranchAndStatus(
+                loginUser.getHospital().getId(), branch, 1
+        );
+    }
+
+
+
+    //
     public User getAuthenticateUser() {
         Optional<User> user= Optional.empty();
         try {
@@ -125,11 +148,23 @@ public class UserService {
         // return userRepository.findByUsername(authentication.getName()).orElseThrow(()->new UserNotFoundException("Token Not Found OR Authenticated User Not Found"));
     }
 
+    //new method..
+    public List<User> getAllUsers() {
+        try {
+            List<User> users = userRepository.findAll(); // Fetches all users
+            return users.isEmpty() ? Collections.emptyList() : users; // Never returns null
+        } catch (Exception e) {
+            log.error("Error in getAllUsers(): \n" + ExceptionUtils.getStackTrace(e));
+            return Collections.emptyList(); // Fail-safe: returns empty list instead of null
+        }
+    }
+
     public User userDtoToUser(UserDTO userDTO) {
         User user = new User();
         user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
         user.setName(userDTO.getName());
+        user.setContactNumber(userDTO.getContactNumber());
+        user.setDateOfBirth(userDTO.getDateOfBirth());
         if (userDTO.getRoles().equals("ADMIN")) {
             user.setBranch(null);
         } else {

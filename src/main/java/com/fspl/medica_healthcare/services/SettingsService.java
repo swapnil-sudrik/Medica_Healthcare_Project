@@ -30,10 +30,11 @@ public class SettingsService {
     private HospitalRepository hospitalRepository;
 
 
-    public Optional<Hospital> findByHospital(Long id) {
+    // Find existing setting by using provided hospitalId
+    public Optional<Hospital> findHospitalByHospitalId(Long hospitalId) {
 
         try {
-            return hospitalRepository.findById(id);
+            return hospitalRepository.findById(hospitalId);
         } catch (Exception e) {
             e.printStackTrace(pw);
             logger.error("Error in fetching hospital with given hospital ID  : {} "+sw);
@@ -41,6 +42,18 @@ public class SettingsService {
         }
     }
 
+    public Optional<Settings> findSettingsByHospitalId(Long hospitalId) {
+
+        try {
+            return settingsRepository.findByHospital_Id(hospitalId);
+        } catch (Exception e) {
+            e.printStackTrace(pw);
+            logger.error("Error in fetching hospital with given hospital ID  : {} "+sw);
+            return Optional.empty();
+        }
+    }
+
+    //Find setting by hospital
     public Optional<Settings> findSettingsByHospital(Hospital hospital) {
 
         try {
@@ -52,6 +65,7 @@ public class SettingsService {
         }
     }
 
+    //Save Settings
     public void saveSettings(Settings settings, MultipartFile hospitalLetterHead, MultipartFile hospitalLogo) throws IOException {
 
         try {
@@ -73,6 +87,7 @@ public class SettingsService {
         }
     }
 
+    // Get All Settings
 
     public List<Settings> getAllSettings() {
 
@@ -85,10 +100,12 @@ public class SettingsService {
         }
     }
 
-    public Optional<byte[]> getLetterHead(long id) {
+
+    // Get letterHead
+    public Optional<byte[]> getLetterHead(long settingId) {
 
         try {
-            return settingsRepository.findLetterHead(id);
+            return settingsRepository.findLetterHead(settingId);
         } catch (Exception e) {
             e.printStackTrace(pw);
             logger.error("Error fetching letterhead for given hospital ID : {} " +sw);
@@ -96,10 +113,11 @@ public class SettingsService {
         }
     }
 
-    public Optional<byte[]> getLogo(long id) {
+    // Get Hospital Logo
+    public Optional<byte[]> getLogo(long settingId) {
 
         try {
-            return settingsRepository.findLetterLogo(id);
+            return settingsRepository.findLetterLogo(settingId);
         } catch (Exception e) {
             e.printStackTrace(pw);
             logger.error("Error fetching logo for hospital id : {}" +sw);
@@ -107,16 +125,15 @@ public class SettingsService {
         }
     }
 
-    public Settings getSettingsById(long id) {
+    //Get Settings by settingId
+    public Settings getSettingsById(long settingId) {
 
         try {
-            return settingsRepository.findById(id).orElse(null);
+            return settingsRepository.findById(settingId).orElse(null);
         } catch (Exception e) {
             e.printStackTrace(pw);
             logger.error("Error in fetching settings for given Setting ID : {} " +sw);
             return null;
         }
     }
-
-
 }

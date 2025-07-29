@@ -35,5 +35,4 @@ public class Reports {
     private LocalDate createdDate;
 
     private LocalDate modifiedDate;
-
 }
