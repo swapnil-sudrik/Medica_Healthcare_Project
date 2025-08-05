@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>ABHA Generation</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row mx-auto">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h1>ABHA Generation</h1><br/>
+                    <form id="formId" >
+                        <div class="card-title  text-danger row">
+                            <div class="col-6" style="color: red;">
+                                <span>All fields marked * are mandatory</span>
+                                <br/>
+                                <span style="color: black;">Please Enter Details</span>
+                            </div>
+
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between;">
+                            <p id="timerField"></p>
+                            <p id="timerMobileField" style="margin-right: 25rem;"></p>
+                        </div>
+
+
+
+                        <div class="form-group row">
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="Title">Aadhar Number</label> <span
+                                    class="text-danger">*</span>
+                                <input class="form-control" maxlength="12" minlength="12"
+                                       placeholder="Enter Your Aadhar Number" required
+                                       oninput="validateAadharNumber(this)" id="aadhaarNumber">
+                                <small class="text-danger" id="aadhaarNumberError"></small>
+                            </div>
+
+                            <div class="col-md-2 form-group ">
+                                <label class="t-font-boldest" for="lastName1">Aadhar Enter OTP</label>
+                                <span class="text-danger">*</span>
+                                <input class="form-control number"
+                                       id="otp"
+                                       maxlength="6"
+                                       minlength="6"
+                                       name="Enter your OTP"
+                                       placeholder="Enter your OTP"
+                                       required
+                                       type="text"
+                                       pattern="[0-9]*"
+                                       title="Please enter only numeric values"></div>
+
+
+                            <br/>
+
+                            <!-- Mobile# input -->
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="Title">Phone Number</label> <span
+                                    class="text-danger">*</span>
+                                <input class="form-control" maxlength="10" minlength="10"
+                                       placeholder="Enter Your phone Number" required
+                                       oninput="validateNumber(this)" id="mobileNumber"><small class="text-danger"
+                                                                                               id="moNumberError"></small>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <label class="t-font-boldest">Mobile Enter OTP</label>
+                                <span class="text-danger">*</span>
+                                <input class="form-control number"
+                                       maxlength="6"
+                                       minlength="6"
+                                       id="mobileOtp"
+                                       name="Enter your OTP"
+                                       placeholder="Enter your OTP"
+                                       type="text"
+                                       pattern="[0-9]*"
+                                       title="Please enter only numeric values"
+                                       required>
+                            </div>
+
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-2 form-group ">
+                                <div class="col-md-0 form-group row">
+                                    <div class="col-md-1" style="margin-down: 1px; margin-right: 8px;">
+                                        <button class="btn btn-sm btn-rounded btn-icon"
+                                                id="sendOTPButton"
+                                                style="background-color: rgba(23,23,77,.95); color: white;"
+                                                onclick="generateOTP()">
+                                            <span><b>Send OTP</b></span>
+                                        </button>
+                                    </div>
+
+
+                                    <div class="col-md-1" style="left: 70px;">
+                                        <button class="btn btn-sm btn-rounded btn-icon"
+                                                id="resendOTPButton"
+                                                style="background-color: rgba(23,23,77,.95); color: white;"
+                                                onclick="generateOTP()" disabled>
+                                            <span><b>Resend OTP</b></span>
+                                        </button>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-1 form-group mb-3" style="margin-left: 80px;">
+                                <button class="btn btn-sm btn-rounded btn-icon"
+                                        id="verifyOTPButton"
+                                        disabled
+                                        style="background-color: rgba(23,23,77,.95); color: white;"
+                                        onclick="verifyOTP()">
+                                    <span><b>Verify OTP</b></span>
+                                </button>
+                            </div>
+                            <div class="col-md-0.9" style="margin-left: 90px;">
+                                <button class="btn btn-sm btn-rounded btn-icon"
+                                        id="sendMobileOTPButton"
+                                        style="background-color: rgba(23,23,77,.95); color: white;"
+                                        onclick="generateOTPMobile()">
+                                    <span><b>Send Mobile OTP</b></span>
+                                </button>
+                            </div>
+                            <div class="col-md-1">
+                                <button class="btn btn-sm btn-rounded btn-icon"
+                                        id="resendMobileOTPButton"
+                                        style="background-color: rgba(23,23,77,.95); color: white;"
+                                        onclick="generateOTPMobile()" disabled>
+                                    <span><b>Resend OTP</b></span>
+                                </button>
+                            </div>
+
+                            <div class="col-md-3 form-group " style="margin-left: 60px;">
+                                <button class="btn btn-sm btn-rounded btn-icon"
+                                        type="button"
+                                        id="verifyMobileOTPButton"
+                                        disabled
+                                        style="background-color: rgba(23,23,77,.95); color: white;"
+                                        onclick="verifyOTPMobile()">
+                                    <span><b>Verify Mobile OTP</b></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 200px;">
+                            <!-- First Column -->
+                            <div class="col-md-5 form-group">
+                                <label class="t-font-boldest" for="picker1">ABHA Address </label>
+                                <span class="text-danger">*</span>
+
+                                <div class="input-group">
+                                    <input class="form-control" placeholder="Enter your ABHA Address"
+                                           maxlength="15"
+                                           id="healthId"
+                                           minlength="15"
+                                           type="text"
+                                           oninput="validateABHAAddress()">
+                                    <span class="input-group-text " style=" border-top-right-radius: 20px;
+                                         border-bottom-right-radius: 20px;">@sbx</span>
+
+
+                                    <div class="input-group-append" style="margin-left:25px">
+                                        <button class="btn btn-sm btn-rounded btn-icon"
+                                                type="button"
+                                                id="confirmButton"
+                                                style="background-color: rgba(23,23,77,.95); color: white;"
+                                                onclick="saveAbhaAddress()">
+                                            <span><b>Confirm</b></span>
+                                        </button>
+
+                                    </div>
+
+
+                                </div>
+                                <div id="message"></div>
+
+                            </div>
+
+<!--                            <div class="col-md-3 form-group" style="margin-top:25px">-->
+<!--                                <button class="btn btn-sm btn-rounded btn-icon"-->
+<!--                                        style="background-color: rgba(23,23,77,.95); color: white; width: 100px;"-->
+<!--                                        type="submit"-->
+<!--                                        id="save"-->
+<!--                                        onclick="createHealthIdWithPreVerified()">-->
+<!--                                    <span><b>Save</b></span>-->
+<!--                                </button>-->
+<!--                            </div>-->
+
+
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+<script>
+
+    var globalTxnId;
+
+
+    function generateAuthToken() {
+       $.ajax({
+           type: 'GET',
+           url: '/app/generateAuthToken',
+           success: function(response) {
+               console.log('Authentication Token:', response);
+           },
+           error: function(error) {
+
+                if (error.status === 422) {
+                    console.error('Unprocessable Entity Error:', error.responseText);
+
+                } else {
+                    console.error('Error generating authentication token:', error);
+                }
+            }
+       });
+   }
+
+
+function generateOTP() {
+    generateAuthToken();
+    var sendOTPButton = $('#sendOTPButton');
+    var resendOTPButton = $('#resendOTPButton');
+    var verifyOTPButton = $('#verifyOTPButton');
+    var timerField = $('#timerField');
+    verifyOTPButton.prop('disabled', true);
+    sendOTPButton.prop('disabled', true);
+    resendOTPButton.prop('disabled', true);
+
+    var aadhaarNumber = $('#aadhaarNumber').val();
+
+    $.ajax({
+        type: 'POST',
+        url: '/app/aadhaarGenerateOtp',
+        contentType: 'application/json',
+        data: JSON.stringify({ "aadhaar": aadhaarNumber }),
+        success: function (response, textStatus, xhr) {
+            if (xhr.status === 200) {
+                console.log('Aadhaar is valid or OTP sent successfully:', response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Aadhaar Number is valid or OTP sent successfully',
+                });
+
+                verifyOTPButton.prop('disabled', false);
+
+                // Set a timeout to disable the button after 60 seconds (adjust as needed)
+                var timerDuration = 60; // seconds
+                var remainingTime = timerDuration;
+
+                var timerInterval = setInterval(function () {
+                    timerField.text('Time remaining: ' + remainingTime + ' seconds');
+                    remainingTime--;
+
+                    if (remainingTime < 0) {
+                        clearInterval(timerInterval);
+                        verifyOTPButton.prop('disabled', true);
+                        timerField.text('Timer expired');
+                    }
+                }, 1000); // Update every second
+            } else {
+                console.error('Unexpected response status:', xhr.status, response);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Unexpected response status: ' + xhr.status,
+                });
+            }
+
+            resendOTPButton.prop('disabled', false);
+        },
+        error: function (xhr, textStatus, error) {
+            // Error handling code remains unchanged
+
+            resendOTPButton.prop('disabled', false);
+        }
+    });
+}
+
+
+
+function verifyOTP() {
+
+    var aadhaarNumber = $('#aadhaarNumber').val();
+    var otp = $('#otp').val();
+
+    $.ajax({
+        type: 'POST',
+        url: '/app/aadhaarVerifyOTP',
+        contentType: 'application/json',
+        data: JSON.stringify({ "aadhaar": aadhaarNumber, "otp": otp }),
+        success: function (response) {
+            console.log('Server response:', response);
+
+            try {
+                if (response && response.hasOwnProperty('valid')) {
+                    if (response.valid) {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Valid OTP',
+                        });
+                        $('#error-message').text('Valid OTP').css('color', 'green');
+
+                        $('#verifyOTPButton').prop('disabled', true);
+
+                        $('#resendOTPButton').prop('disabled', true);
+
+                    } else {
+                        console.error('Invalid OTP');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Invalid OTP. Please try again.',
+                        });
+
+                        $('#error-message').text('Invalid OTP. Please try again.').css('color', 'red');
+                    }
+                } else {
+                    console.error('Invalid server response format');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Invalid server response format',
+                    });
+
+                    $('#error-message').text('Invalid OTP. Please try again.').css('color', 'red');
+                }
+            } catch (error) {
+                console.error('Error parsing server response:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid OTP. Please try again.',
+                });
+
+                $('#error-message').text('Invalid OTP. Please try again.').css('color', 'red');
+            }
+        },
+        error: function (error) {
+            console.error('Error verifying OTP:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Invalid OTP. Please try again.',
+            });
+
+            $('#error-message').text('Invalid OTP. Please try again.').css('color', 'red');
+        }
+    });
+}
+
+
+
+
+
+function generateOTPMobile() {
+    event.preventDefault();
+    generateAuthToken();
+    var aadhaarNumber = $('#aadhaarNumber').val();
+    var mobileNumber = $('#mobileNumber').val();
+
+    var sendMobileOTPButton = $('#sendMobileOTPButton');
+    var resendMobileOTPButton = $('#resendMobileOTPButton');
+    var verifyMobileOTPButton = $('#verifyMobileOTPButton');
+    var timerMobileField = $('#timerMobileField'); // Add this line for the timer field
+
+    verifyMobileOTPButton.prop('disabled', true);
+    sendMobileOTPButton.prop('disabled', true);
+    resendMobileOTPButton.prop('disabled', true);
+
+    $.ajax({
+        type: 'POST',
+        url: '/app/mobileGenerateOtp',
+        contentType: 'application/json',
+        data: JSON.stringify({ "aadhaar": aadhaarNumber, "mobileNo": mobileNumber }),
+        success: function (response, textStatus, xhr) {
+            console.log('Response:', response);
+
+            if (xhr.status === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Mobile number is valid, and OTP sent successfully',
+                });
+
+                verifyMobileOTPButton.prop('disabled', false);
+
+                // Set a timeout to disable the button after 60 seconds (adjust as needed)
+                var timerMobileDuration = 60; // seconds
+                var remainingMobileTime = timerMobileDuration;
+
+                var timerMobileInterval = setInterval(function () {
+                    timerMobileField.text('Time remaining: ' + remainingMobileTime + ' seconds');
+                    remainingMobileTime--;
+
+                    if (remainingMobileTime < 0) {
+                        clearInterval(timerMobileInterval);
+                        verifyMobileOTPButton.prop('disabled', true);
+                        timerMobileField.text('Timer expired');
+                    }
+                }, 1000); // Update every second
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Unexpected response status: ' + xhr.status,
+                });
+
+                $('#error-messageMobile').text('Unexpected response status: ' + xhr.status);
+            }
+
+            resendMobileOTPButton.prop('disabled', false);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Error handling code remains unchanged
+
+            resendMobileOTPButton.prop('disabled', false);
+        }
+    });
+}
+
+
+
+
+function resendOTPMobile() {
+
+ console.log('Resending Mobile OTP...');
+
+}
+
+
+
+function verifyOTPMobile() {
+    generateAuthToken();
+    var mobileNumber = $('#mobileNumber').val();
+    var mobileOtp = $('#mobileOtp').val();
+
+    $.ajax({
+        type: 'POST',
+        url: '/app/mobileVerifyOTP',
+        contentType: 'application/json',
+        data: JSON.stringify({ "mobileNo": mobileNumber, "otp": mobileOtp }),
+        success: function (response) {
+            console.log('Full API Response:', response);
+
+            try {
+                if (response && response.valid) {
+                    globalTxnId = response.txnId; // Assign txnId to the global variable
+
+                    if (globalTxnId !== undefined) {
+                        // Now you can use globalTxnId in another API call
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Valid OTP',
+                        });
+                        $('#error-messages').text('Valid OTP').css('color', 'green');
+
+                        $('#verifyMobileOTPButton').prop('disabled', true);
+                        $('#resendMobileOTPButton').prop('disabled', true);
+                    } else {
+                        console.error('txnId is undefined in the response');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'txnId is undefined in the response',
+                        });
+                        $('#error-messages').text('txnId is undefined in the response').css('color', 'red');
+                    }
+                } else {
+                    console.error('Invalid OTP');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Invalid OTP. Please try again.',
+                    });
+                    $('#error-messages').text('Invalid OTP. Please try again.').css('color', 'red');
+                }
+            } catch (error) {
+                console.error('Error parsing server response:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Invalid OTP. Please try again.',
+                });
+                $('#error-messages').text('Invalid OTP. Please try again.').css('color', 'red');
+            }
+        },
+        error: function (error) {
+            console.error('Error verifying OTP:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Invalid OTP. Please try again.',
+            });
+            $('#error-messages').text('Invalid OTP. Please try again.').css('color', 'red');
+        }
+    });
+}
+
+
+// Button click event handler for another button
+$('#save').on('click', function () {
+    if (globalTxnId !== undefined) {
+        createHealthIdWithPreVerified(globalTxnId);
+    } else {
+        console.error('txnId is undefined.');
+        // Handle the situation where txnId is undefined
+    }
+});
+
+
+
+function createHealthIdWithPreVerified() {
+    console.log('Calling createHealthIdWithPreVerified with txnId:',globalTxnId);
+
+    // Make an API call to '/createHealthIdWithPreVerified'
+    $.ajax({
+        type: 'POST',
+        url: '/app/createHealthIdWithPreVerified',
+        data: { txnId: globalTxnId },
+        success: function (token) {
+            console.log('Token received:', token);
+            window.location.href = "/patients";
+
+            // Use the token as needed
+            // For example, pass it to another API call or perform other actions
+           anotherApiCallWithToken(token);
+        },
+        error: function (error) {
+            console.error('Error in createHealthIdWithPreVerified call:', error);
+            // Handle errors if necessary
+        }
+    });
+}
+
+
+
+function anotherApiCallWithToken(token) {
+    console.log('Calling another API with token:', token);
+
+    // Make an API call to another endpoint with the received token in the header
+    $.ajax({
+        type: 'GET',
+        url: '/app/getPngCard',
+        headers: {
+            'X-Token': token
+        },
+        success: function (response) {
+            console.log('Another API response:', response);
+            // Handle the response as needed
+        },
+        error: function (error) {
+            console.error('Error in another API call:', error);
+            // Handle errors if necessary
+        }
+    });
+}
+
+
+
+$(document).ready(function() {
+    // Attach the input event listener to the healthId input field
+    $('#healthId').on('input', function() {
+        checkAbhaAddressExistence();
+    });
+});
+
+function checkAbhaAddressExistence() {
+    generateAuthToken();
+    var healthId = $('#healthId').val();
+    var confirmButton = $('#confirmButton');
+    var messageElement = $('#message');
+
+    $.ajax({
+        type: 'GET',
+        url: '/app/existsByHealthId',
+        data: { 'healthId': healthId },
+        success: function(response) {
+            console.log('Health ID existence check successful:', response);
+
+            // Check the response and update the confirm button visibility accordingly
+            if (response.status === true || response.status === 'true') {
+                // Health ID exists
+                confirmButton.hide();
+                messageElement.text('Health ID exists').css('color', 'green');
+            } else {
+                // Health ID does not exist
+                confirmButton.show();
+                messageElement.text('Health ID does not exist').css('color', 'red');
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error checking Health ID existence:', jqXHR.responseText);
+            messageElement.text('Error checking Health ID existence').css('color', 'red');
+        }
+    });
+}
+
+
+
+
+function saveAbhaAddress() {
+    var aadhaar = $('#aadhaarNumber').val();
+    var abhaAddress = $('#healthId').val();
+
+    // Check if Aadhaar number and Abha address are both provided
+    if (aadhaar && abhaAddress) {
+        // Make an AJAX request only if both Aadhaar number and Abha address are present
+        $.ajax({
+            type: 'POST',
+            url: '/app/saveAbhaAddress',
+            contentType: 'application/json',
+            data: JSON.stringify({ 'aadhaar': aadhaar, 'abhaAddress': abhaAddress }),
+            success: function(response) {
+                console.log('Abha address saved successfully:', response);
+                // Display success SweetAlert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Abha address saved successfully',
+                });
+                // You can handle success response if needed
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error saving Abha address:', jqXHR.responseText);
+                // Display error SweetAlert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to save Abha address',
+                });
+                // You can handle error response if needed
+            }
+        });
+    } else {
+        // Display SweetAlert for missing Aadhaar number or Abha address
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Please provide both Aadhaar number and Abha address',
+        });
+    }
+}
+
+$('#formId').on('click', ':input', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    var mobileOtpInput = document.getElementById('mobileOtp');
+
+    mobileOtpInput.addEventListener('input', function() {
+        var inputValue = mobileOtpInput.value;
+
+        // Remove non-numeric characters
+        var numericValue = inputValue.replace(/\D/g, '');
+
+        // Update the input value with the cleaned numeric value
+        mobileOtpInput.value = numericValue;
+
+        // Check if the cleaned value has 6 digits
+        if (numericValue.length !== 6) {
+            mobileOtpInput.setCustomValidity('Mobile OTP should be exactly 6 digits');
+        } else {
+            mobileOtpInput.setCustomValidity('');
+        }
+    });
+});
+
+
+
+</script>
+
+</body>
+<!-- Add this line to include SweetAlert CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+
+<!-- Add this line to include SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:src="@{/static/assets/js/abhaPatientRegister.js}" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

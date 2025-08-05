@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title th:text="${edit}?'Edit User':'Add New User'"></title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css"
+          rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css"
+          rel="stylesheet">
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <!-- <div class="breadcrumb">
+            <h1>New User</h1>
+            <ul>
+                <li><a href="">Back</a></li>
+                <li>Basic</li>
+            </ul>
+        </div> -->
+
+    <!--   <div class="separator-breadcrumb border-top"></div> -->
+
+    <div class="row">
+        <div class="col-md-2"></div>
+
+        <div class="col-md-8">
+            <h4 th:text="${edit}?'Edit profile':'Add New Profile'"></h4>
+            <!-- <p>A form control layout using row with left label alignment.</p> -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <form method="POST"
+                          th:action="${edit}?@{'/users/'+ ${user.id}}:@{/user-new}" th:object="${user}">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="firstName">First
+                                name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="firstName" placeholder="Enter your first Name"
+                                       th:field="*{firstName}" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lastName">Last
+                                name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="lastName"
+                                       placeholder="Enter your last Name" th:errorclass="fieldError" th:field="*{lastName}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="userName">User
+                                Name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="userName"
+                                       placeholder="Enter unique username" style="text-transform: none" th:errorclass="fieldError"
+                                       th:field="*{ssoId}" th:readonly="${edit}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row" th:hidden="${edit}">
+                            <label class="col-sm-3 col-form-label" for="password">Password</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="password"
+                                       name="password" placeholder="Enter unique username" style="text-transform: none"
+                                       th:errorclass="fieldError" th:readonly="${edit}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="inputEmail3">Email</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputEmail3"
+                                       placeholder="Email" style="text-transform: none"
+                                       th:errorclass="fieldError" th:field="*{email}" type="email">
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Lab</label>
+                            <div class="col-sm-9">
+
+                                <select class="form-control" required
+                                        th:errorclass="fieldError" th:field="*{labId}">
+                                    <option value="">Laboratory Name</option>
+                                    <div th:each="labl:${lablist}">
+                                        <option th:value="${labl.id}">[[${labl.hospName}]]</option>
+                                    </div>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Department</label>
+                            <div class="col-sm-9">
+
+                                <select class="form-control" required
+                                        th:errorclass="fieldError" th:field="*{departmentName}">
+                                    <option value="">--Department Name--</option>
+                                    <option value="All">All</option>
+                                    <div th:each="labl:${invlist}">
+                                        <option th:value="${labl.department}">[[${labl.department}]]</option>
+                                    </div>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Type</label>
+                            <div class="col-sm-9">
+
+                                <select class="form-control" id="pathologyType" name="pathologyType"
+                                        required
+                                        th:errorclass="fieldError" th:field="*{pathologyType}">
+                                    <option value="All">All</option>
+                                    <option value="Self">Self</option>
+
+                                </select>
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Active Pathology</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="pathologyType" name="pathologyType"
+                                        th:errorclass="fieldError"
+                                        th:field="*{activePathologist}">
+                                    <option value="0">NO</option>
+                                    <option value="1">YES</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <div class="col-form-label col-sm-3 pt-0">Rights</div>
+                                <div class="col-sm-9">
+                                    <div class="form-check" th:each="role : ${rightToUser}"
+                                         th:if="${edit}">
+                                        <input class="form-check-input" id="gridRadios1"
+                                               name="userProfiles" th:checked="${role.rightType}" th:value="${role.id}"
+                                               type="checkbox"> <label
+                                            class="form-check-label ml-3" for=""
+                                            th:text="${role.type}"> USER </label>
+                                    </div>
+
+                                    <div class="form-check" th:each="role : ${roles_type}"
+                                         th:if="!${edit}">
+                                        <input class="form-check-input" id="gridRadios1"
+                                               name="userProfiles" th:value="${role.id}" type="checkbox">
+                                        <label class="form-check-label ml-3" for=""
+                                               th:text="${role.type}"> USER </label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group row">
+                            <div class="col-sm-6"></div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-primary" th:if="${edit}" type="submit">Update</button>
+                                <button class="btn btn-primary" th:unless="${edit}"
+                                        type="submit">Register
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Test Result Print</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <style>
+        .capital{
+        text-transform: capitalize;
+        }
+        @media print
+        {
+            @page
+            {
+                 size: 8.7in 11in;
+            }
+        }
+        .ABNORMAL {
+            font-weight: bold;
+        }
+        .RESULTHIGHLIGHT {
+            font-weight: bold;
+        }
+        .footer{
+
+
+                    padding: 10px 10px 0px 10px;
+                    bottom: 0;
+                    width: 100%;
+                    /* Height of the footer*/
+                    height: 40px;
+                    font-size:1.7em;
+
+
+        }
+    </style>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="sidenav-open d-flex flex-column" id="sen" style="margin-left:135px;font-size:11px;margin-right:15px;">
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card" id="sensen" style="margin-top:75px;">
+
+                <div class="tab-content" id="myTabContent">
+                    <div aria-labelledby="invoice-tab" class="tab-pane fade show active"
+                         id="invoice" role="tabpanel">
+                        <div class="clickMeId" id="clickMeId"
+                             style="padding-bottom: 20px; display: block;">
+                            <strong class="font_13">Display Header</strong> <input
+                                checked="" class="chk_header" id="chk_header"
+                                name="check" onclick="get_header(this.id)" type="checkbox">
+                        </div>
+                        <div class="d-sm-flex mb-5" data-view="print">
+                            <span class="m-auto"></span>
+                            <button class="btn btn-primary mb-sm-0 mb-3 print-invoice" id="print_error"
+                                    onclick="errorPrint();" sec:authorize="!hasRole('Lab_Admin')"
+                                    th:data-value="${verifydetail.get(0)}" th:if="${verifydetail.get(0) > 0}">Print
+                            </button>
+                            <button class="btn btn-primary mb-sm-0 mb-3 print-invoice" onClick="printPage();"
+                                    sec:authorize="!hasRole('Lab_Admin')" th:if="${verifydetail.get(0) <= 0}">Print
+                            </button>
+                            <button class="btn btn-primary mb-sm-0 mb-3 print-invoice"
+                                    onClick="printPage();"
+                                    sec:authorize="hasRole('Lab_Admin')">Print
+                            </button>
+                        </div>
+                        <!---===== Print Area ========-->
+                        <div id="print-area">
+                            <div class="hideAdress" th:insert="address_new :: detail"></div>
+                            <div class="adressSpace" style="height:180px;display:none;"></div>
+                            <div align="center" class="col-md-12 form-group mb-6">
+                                <h5>Department of
+                                    [[${result.get(0).get(21)}]]</h5>
+                            </div>
+                            <!-- <div class="mt-3 mb-1 border"></div> -->
+                            <div class="border"></div>
+                            <table class="" id="multicolumn_ordering_table"
+                                   style="width: 100%;line-height: 1.2;">
+                                <tr>
+                                    <td colspan="3" style="text-align: left; font-size: 16px;">
+                                        <b></b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Patient Name: <b style=" font-size: 14px;">[[${result.get(0).get(42)}]].
+                                        [[${result.get(0).get(4)}]]
+                                        [[${result.get(0).get(6)}]] [[${result.get(0).get(7)}]]
+                                        [[${result.get(0).get(44)}]] [[${result.get(0).get(8)}]]</b></td>
+
+
+                                    <td>Bill No: <b>[[${result.get(0).get(48)}]]</b></td>
+
+                                </tr>
+                                <tr>
+                                    <td>Age/ Gender : <b><span id='age'></span><span>
+													/ [[${result.get(0).get(9)}]] </span></b></td>
+                                    <td>Mobile : <b>[[${result.get(0).get(36)}]]</b></td>
+                                    <td>PLUS UID: <b>[[${result.get(0).get(38)}]]/
+                                        [[${#numbers.formatInteger(result.get(0).get(39),6)}]]</b></td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Order No.: <b>[[${#numbers.formatInteger(result.get(0).get(13),3)}]][[${#dates.day(result.get(0).get(31))}]][[${#dates.format(result.get(0).get(31),
+                                        'MM')}]][[${#dates.format(result.get(0).get(31),
+                                        'yy')}]]/ [[${#numbers.formatInteger(result.get(0).get(32),8)}]]</b></td>
+                                    <td>Visit Type : <b>[[${result.get(0).get(17)}]]</b></td>
+                                    <td>OPD/IPD/ANC #: <b>[[${result.get(0).get(14)}]]</b></td>
+
+
+                                </tr>
+
+                                <tr>
+                                    <td>Referred Dept: <b
+                                            th:text="${result.get(0).get(37) != 'Select Option'} ? ${result.get(0).get(37)} : ''"></b>
+                                    </td>
+                                    <td>Referred By: <b>[[${result.get(0).get(16)}]]</b></td>
+                                    <td>Ordered On: <b>[[${#dates.format({result.get(0).get(18)}
+                                        , 'dd-MMM-yyyy hh:mm a')}]]</b></td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Sample Collection : <b>[[${#dates.format({result.get(0).get(19)}
+                                        , 'dd-MMM-yyyy hh:mm a')}]]</b></td>
+                                    <td>Reported On: <b>[[${#dates.format({result.get(0).get(20)}
+                                        , 'dd-MMM-yyyy hh:mm a')}]]</b></td>
+                                    <td>Prn. Time: <b>[[${#dates.format({result.get(0).get(45)}
+                                        , 'dd-MMM-yyyy hh:mm a')}]]</b></td>
+                                </tr>
+                                <tr>
+                            </table>
+                            <div class="mb-2 border" style="margin-top: 4px;"></div>
+                            <div class="table-responsive">
+                                <table class="" style="margin-top: -5px;">
+
+
+                                    <th:block th:each="tests,i : ${test_name}">
+                                        <tr>
+                                            <!-- <th scope="col"></th>
+                                            <th scope="col" style="text-align: center; font-size: 16px;"><u
+                                                th:text="${tests.get(0)}"></u></th>
+                                            <th scope="col"></th>
+                                            <th scope="col"></th>
+                                            <th scope="col"></th>
+                                            <th scope="col"></th> -->
+                                            <td align="" colspan="6" style="font-size: 16px;font-weight: bold;text-decoration: underline;"
+                                                th:text="${tests.get(0)}"></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" width="35%">TEST</th>
+                                            <th scope="col" style="text-align: left" width="25%">RESULT</th>
+
+                                            <th scope="col" th:if="!${#strings.equalsIgnoreCase('PS FOR COMMENTS', tests.get(0))}"
+                                                width="40%">
+                                                REFERENCE RANGE
+                                            </th>
+                                            <th scope="col"></th>
+                                            <th scope="col"></th>
+                                        </tr>
+
+                                        <tr style="line-height: 1.5;" th:each="detail,h : ${result}"
+                                            th:if="${detail.get(2)}!=''">
+
+                                            <div th:if="${detail.get(5) == tests.get(1)} and !${#strings.equalsIgnoreCase('psForComment', detail.get(43))} ">
+                                                <th scope="row"><span>[[${detail.get(1)}]]</span></th>
+                                                <td style="text-align: left"
+                                                    th:class="(${detail.get(41)}?((${detail.get(41)} > ${detail.get(2)}) ? '' : 'RESULTHIGHLIGHT'):'') + (${detail.get(40)}?((${detail.get(40)} < ${detail.get(2)}) ? '' : 'RESULTHIGHLIGHT'):'')"
+                                                    th:colspan="(${#strings.equalsIgnoreCase('PS FOR COMMENTS', tests.get(0))})?'2':'1'">
+                                                    <span style="text-align: left ;text-transform: none;">[[${detail.get(2)}]] [[${detail.get(33)}]]</span>
+                                                </td>
+
+                                                <td style="text-transform: none;"
+                                                    th:if="!${#strings.equalsIgnoreCase('PS FOR COMMENTS', tests.get(0))}">
+                                                    <span th:if="${detail.get(41)}!=null or ${detail.get(40)}!=null">[[${detail.get(41)}+' - '+${detail.get(40)}+' '+${detail.get(33)}]]</span>
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </div>
+                                        </tr>
+                                        <tr>
+                                            <th>Note:</th>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" style="font-size:10px; text-transform:none;">
+                                                <div th:each="notes : ${#strings.arraySplit(tests.get(2), '~')}"><span
+                                                        style="font-size:10px; text-transform:none;">[[${notes}]]</span>
+                                                </div>
+                                            </td>
+
+
+                                        </tr>
+
+                                    </th:block>
+
+                                </table>
+                            </div>
+                            <!-- <div class="col-md-10 form-group mb-6"
+                                style="text-align: right; font-size: 16px; height: 40px">
+                                <b>Lab Incharge</span></b>
+                            </div> -->
+                            <div class="mb-2 border" style="margin-top: 4px;"></div>
+                            <table class="" id="footern" width="100%">
+                                <!-- <tr>
+                                            <td colspan="3" >
+                                            <img th:src="@{/barcode/+${orderDeatil.barcode}}" width="180" height="40"><br>
+
+                                            </td>
+
+
+                                        </tr> -->
+                                <tr>
+                                    <td align="center" colspan="3"><b>----------------End of Report----------------</b>
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td align="center" colspan="3">&nbsp;</td>
+
+
+                                </tr>
+                                <tr>
+                                    <th width="46%">Printed By</th>
+                                    <th width="41%">Technician</th>
+                                    <th width="30%"><span> Pathologist </span></th>
+
+                                </tr>
+                                <tr>
+                                    <th width="30%"><span class="capital">[[${printed_by}]]</span></th>
+                                    <th width="30%"><span class="capital">[[${technician}]]</span></th>
+                                    <th width="30%"><span
+                                            class="capital"> [[${sign.firstName+' '+sign.lastName}]] </span></th>
+
+                                </tr>
+                                <tr>
+                                    <th width="30%">&nbsp;</th>
+                                    <th width="30%">&nbsp;</th>
+                                    <th width="30%"><span> <img height="60px"
+                                                                style="padding-top:15px"
+                                                                th:if="${sign.userSign}" th:src="@{'/static/assets/images/user_sign/'+${sign.userSign}}"
+                                                                width="150px"></span></th>
+
+                                </tr>
+
+                                <tr>
+                                    <td colspan="3" style="text-transform: none;"><b>TERMS AND CONDITION </b><br>
+                                        1. The lab does not own the responsibility regarding the authenticity of sample
+                                        requested for
+                                        investigation.<br>
+                                        2. In case of any discrepancy of the result the same should be brought in
+                                        invoice to lab for repeat of tests
+                                        free of cost.
+                                    </td>
+
+
+                                </tr>
+                            </table>
+                            <!--==== / Print Area =====-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div><img th:src="@{'/static/assets/images/qrcode/'+${pres}}" alt=""/></div> -->
+
+    </div>
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer">
+
+    </footer>
+    <script th:inline="javascript">
+        $(document).ready(function(){
+
+        var dob = /*[[${result.get(0).get(10)}]]*/ '1970';
+        var today1 = /*[[${result.get(0).get(12)}]]*/ '1970';
+
+          var today = new Date(today1);
+        var birthday = new Date(dob);
+        var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+        var year_age = Math.floor(differenceInMilisecond / 31536000000);
+        var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+        var month_age = Math.floor(day_age/30);
+        day_age = day_age % 30;
+
+        if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+            //alert("Invalid birthday - Please try again!");
+        }
+        else {
+            if(year_age != 0){
+                $("#age").html(year_age+" Y ");
+                    }else if( month_age != 0){
+                       $("#age").html(month_age+" M ");
+                    }else{
+                $("#age").html(day_age+" D ");
+                    }
+          // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+            }
+    });
+
+    </script>
+    <script type="text/javascript">
+        function printPage(val){//alert(val);
+            $("#myTabContent").css({"margin-top": "-170px"});
+            $("#setDept").css({"padding-left": "175px"});
+            $("#sen").css({"margin-left": "0px"});
+            $("#sensen").css({"margin-top": "0px"});
+            $("#footern").css({"position": "fixed"});
+
+            if($('.chk_header').not(':checked').length){
+                  // alert('Not checked');
+                   $('.hideAdress').hide();
+                   $('.adressSpace').show();
+                }else{
+                 //alert('Checked')
+
+                }
+
+            window.print();
+        }
+        (function () {
+
+            var beforePrint = function () {
+                //alert('Functionality to run before printing.');
+            };
+
+            var afterPrint = function () {
+                location.reload();
+            };
+
+            if (window.matchMedia) {
+                var mediaQueryList = window.matchMedia('print');
+
+                mediaQueryList.addListener(function (mql) {
+                    //alert($(mediaQueryList).html());
+                    if (mql.matches) {
+                        beforePrint();
+                    } else {
+                        afterPrint();
+                    }
+                });
+            }
+
+            window.onbeforeprint = beforePrint;
+            window.onafterprint = afterPrint;
+
+        }());
+    $(document).on('keydown', function(e) {
+    if(e.ctrlKey && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
+        alert("Please use the Print button below for a better rendering on the document");
+        e.cancelBubble = true;
+        e.preventDefault();
+
+        e.stopImmediatePropagation();
+    }
+});
+    function errorPrint(){
+        var total_count =  $('#print_error').attr('data-value');
+        alert("Printing facility not available due to non-verification of previous day's data. Contact lab admin for details.");
+        }
+    </script>
+
+</body>
+</html>

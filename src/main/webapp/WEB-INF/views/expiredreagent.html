@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+
+<head>
+    <title>Expired Reagent</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Expired Reagent</h1>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="display table table-striped table-bordered" id="multicolumn_ordering_table"
+                               style="width:100%">
+                            <thead>
+                            <tr>
+                                <th width="4%">SI.</th>
+                                <th width="6%">
+                                    <label class="control-label"><strong>Vendor Name</strong></label>
+                                </th>
+                                <th width="6%">
+                                    <label class="control-label"><strong>Reagent Name</strong></label>
+                                </th>
+                                <th width="6%">
+                                    <label class="control-label"><strong>Batch #</strong></label>
+                                </th>
+                                <th width="6%">
+                                    <label class="control-label"><strong>Expired Date</strong></label>
+                                </th>
+                                <th width="6%">
+                                    <label class="control-label"><strong>Current Stock</strong></label>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="nearexp,cnt: ${expiredreagent}">
+                                <td th:text="${cnt.count}">1</td>
+                                <td th:text="${nearexp.get(4)}"></td>
+                                <td th:text="${nearexp.get(0)}"></td>
+                                <td th:text="${nearexp.get(1)}"></td>
+                                <td th:text="${#dates.format({nearexp.get(2)}, 'dd-MMM-yyyy')}"></td>
+                                <td th:text="${nearexp.get(3)}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+    <!-- ============ Body content End ============= -->
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+</body>
+</html>

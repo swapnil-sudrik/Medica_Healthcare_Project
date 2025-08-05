@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>ABHA Generation</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row mx-auto">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <h1>ABHA Generation</h1><br/>
+                    <form>
+<!--                            method="post"-->
+<!--                           modelAttribute="patient" th:action="${edit}?@{'/patients/'+ ${patient.id}}:@{/patients}" th:object="${patient}">-->
+
+                        <div class="card-title  text-danger row">
+                            <div class="col-6" style="color: red;">
+                                <span>All fields marked * are mandatory</span>
+                                <br/>
+                                <span style="color: black;">Please Enter Details</span>
+                            </div>
+
+                        </div>
+                        <div class="form-group row">
+                            <!-- Aadhar Number input -->
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="Title">Aadhar Number</label> <span class="text-danger">*</span>
+                                <input class="form-control"  maxlength="12" minlength="12" placeholder="Enter Your Aadhar Number" required
+                                       oninput="validateAadharNumber(this)"><small class="text-danger" id="aadharNumberError" ></small>
+                            </div>
+                            <div class="col-md-2 form-group ">
+                                <label class="t-font-boldest" for="lastName1">Enter OTP</label>
+                                <span class="text-danger">*</span>
+                                <input  class="form-control number"
+                                        id="phone"
+                                        maxlength="6" minlength="6"
+                                        name="Enter your OTP" placeholder="Enter your OTP"
+                                        required
+                                        type="text"></div>
+
+                            <!-- Mobile# input -->
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="Title">Phone Number</label> <span class="text-danger">*</span>
+                                <input class="form-control"  maxlength="10" minlength="10" placeholder="Enter Your phone Number" required
+                                       oninput="validateNumber(this)"><small class="text-danger" id="moNumberError" ></small>
+                            </div>
+                            <div class="col-md-2 form-group ">
+                                <label class="t-font-boldest">Enter OTP</label>
+                                <span class="text-danger">*</span> <input class="form-control number" maxlength="6" minlength="6"
+                                                                          placeholder="Enter your OTP"
+                                                                          pattern="[0-9]*" required > </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-2 form-group ">
+                                <div class="col-md-0 form-group row">
+                                    <div class="col-md-1" style="margin-down: 1px; margin-right: 8px;">
+                                        <button class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;" onclick="makeApiRequest()">Send OTP</button>
+                                        <!--<a id="sendOTPBtn" class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;" type="button">
+                                            <span><b>Send OTP</b></span>
+                                        </a>-->
+                                    </div>
+
+                                    <div class="col-md-1" style="left: 70px;">
+                                        <a class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;">
+                                            <span><b>Resend OTP</b></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1 form-group mb-3"style="margin-left: 80px;">
+                                <a class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;">
+                                    <span>Verify OTP</span>
+                                </a>
+                            </div>
+                            <div class="col-md-0.9" style="margin-left: 90px;">
+                                <a class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;">
+                                    <span><b>Send OTP</b></span>
+                                </a>
+                            </div>
+                            <div class="col-md-1" >
+                                <a class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;">
+                                    <span><b>Resend OTP</b></span>
+                                </a>
+                            </div>
+                            <div class="col-md-3 form-group "style="margin-left: 60px;">
+                                <a class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;">
+                                    <span>Verify OTP</span>
+                                </a>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row" style="margin-bottom: 200px;">
+                            <!-- First Column -->
+                            <div class="col-md-3 form-group">
+                                <label class="t-font-boldest" >ABHA ID </label>
+                                <span class="text-danger">*</span>
+
+                                <div class="input-group">
+                                    <input class="form-control" placeholder="Enter ABHA ID" maxlength="14"  minlength="10"  type="text" oninput="validateABHAAddress()">
+
+                                    <div class="input-group-append" style="margin-left:1px">
+                                        <a class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white;">
+                                            <span><b>Confirm</b></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 form-group" style="margin-top:25px">
+                                <button class="btn btn-sm btn-rounded btn-icon" style="background-color: rgba(23,23,77,.95); color: white; width: 100px;" type="submit">Save</button>
+                            </div>
+
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script>
+    function makeApiRequest() {
+    // API endpoint (replace with the actual API URL)
+    const apiUrl = 'https:///api/v2/aadhaarGenerateOtp';
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('API Response:', data);
+            document.getElementById('apiResponse').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            console.error('Error making API request:', error);
+            document.getElementById('apiResponse').innerHTML = 'API Request Failed!';
+        });
+}
+
+</script>
+
+</body>
+<script th:src="@{/static/assets/js/abhaRegisterPatient.js}" type="text/javascript"></script>
+</html>

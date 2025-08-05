@@ -68,14 +68,21 @@ public class SecurityConfig {
 				.exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler));
 
 		http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
-
+		http.formLogin(
+				form ->
+						form.loginPage("/login")
+								.loginProcessingUrl("/login")
+								.defaultSuccessUrl("/patientsWeb", true)
+								.failureUrl("/login?error=true")
+								//              .defaultSuccessUrl("/home")
+								.permitAll());
 		return http.build();
 	}
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500")); // Add allowed frontend origins
+		configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500","http://localhost:5173")); // Add allowed frontend origins
 		configuration.setAllowCredentials(true); // Allow credentials (for JWT tokens)
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Content-Type","Cache-Control", "X-Requested-With"));

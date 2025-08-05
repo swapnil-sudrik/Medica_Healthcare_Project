@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<!-- /*Author: Gaurav Singh*/ -->
+<html xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>New Order</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link rel="stylesheet"
+          th:href="@{/static/assets/styles/vendor/sweetalert2.min.css}">
+    <script th:src="@{/static/assets/js/angular.min.js}"></script>
+    <style>
+        .form_labels {
+            font-weight: bold;
+        }
+
+        .dropdown-toggle::after {
+            text-align: right;
+            float: right;
+            -webkit-margin-before: 8px;
+        }
+
+        .dropdown-content {
+            background-color: #f6f6f6;
+            min-width: 230px;
+            overflow: auto;
+            max-height: 233px;
+            overflow-y: auto;
+            /* border: 1px solid #ddd; */
+            z-index: 2;
+            padding-top: 1px;
+        }
+
+        .dropdown-input {
+            margin: 1;
+            padding: 0;
+            position: sticky;
+            position: -webkit-sticky;
+            top: 0px;
+            z-index: 2;
+        }
+
+        .dropdown button {
+            /* padding: 12px 16px; */
+            border: 1px solid #e5e5e5;
+        }
+
+        .dropdown button:hover {
+            background-color: #0089ff;
+            color: white;
+        }
+
+        .dropdown button:disabled {
+            background: #ccc;
+        }
+
+        .no-gutters {
+            margin-right: 0;
+            margin-left: 0;
+        }
+
+        .no-gutters>[class^="col-"], .no-gutters>[class*=" col-"] {
+            padding-right: 3px;
+            padding-left: 0;
+        }
+
+        .row-bottom {
+            margin-bottom: 10px;
+        }
+
+        .row-top {
+            margin-top: 10px;
+        }
+
+        .has-search .form-control-feedback {
+            position: absolute;
+            z-index: 2;
+            display: block;
+            width: 2.375rem;
+            height: 2.375rem;
+            line-height: 2.375rem;
+            text-align: center;
+            pointer-events: none;
+            color: #aaa;
+        }
+
+        .border-zero {
+            border-radius: 0px;
+        }
+
+        .dropmenu-css {
+            height: auto;
+            max-height: 250px;
+            overflow-y: auto;
+            overflow-x: auto;
+            width: 100%;
+            flex-direction: column;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .in-icon-css {
+            font-size: 16px;
+            color: black;
+            padding: 12px;
+        }
+
+        .pad-icon {
+            padding-left: 2.375rem;
+        }
+
+        .in-li-css {
+            position: relative;
+            display: block;
+            padding: .75rem 1.25rem;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, .125);
+        }
+
+        .in-li-css:hover {
+            border: 1px solid #e5e5e5;
+            box-shadow: 0 0 5px #888;
+        }
+
+        .in-a-css {
+            color: #757575;
+            font-size: 0.875rem;
+        }
+
+        .in-li-css:hover a {
+            color: #e74e84;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .table-input {
+            max-width: 40px;
+            color: black;
+            border: none;
+            background-color: transparent;
+        }
+
+        .table-input-disc {
+            max-width: 40px;
+            color: black;
+            border: 1px dotted green;
+            border-radius: 3px;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-left" ng-app="ngbilling"
+      ng-controller="searchServicesController">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+
+    <form autocomplete="off" class="needs-validation" enctype="multipart/form-data"
+          method="post" novalidate
+          th:action="${register}?(${billing}?@{/billing}:@{/booking}):(${billing}?@{'/billing/'+${bookingForm.patient.id}}:@{'/booking/'+${bookingForm.patient.id}})"
+          th:object="${bookingForm}">
+
+        <div class="alert alert-card alert-success" role="alert"
+             th:if="${message}">
+            <strong class="text-capitalize">Success!</strong> [[${message}]]
+            <button aria-label="Close" class="close" data-dismiss="alert"
+                    type="button">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <div class="row mb-4">
+
+            <div class="col-md-5 mb-3">
+                <div class="card text-left">
+
+                    <div class="card-body">
+
+                        <h4 class="card-title mb-3">Order list.</h4>
+                        <!-- <p>Use <code>.table-striped</code> to add zebra-striping to any table rowwithin the <code>&lt;tbody&gt;</code>.</p> -->
+                        <div class="table-responsive">
+                            <table class="table table-striped ">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Service</th>
+
+
+                                    <th scope="col" th:if="${billing}">Price</th>
+                                    <th scope="col" th:unless="${billing}"></th>
+                                    <th scope="col" th:if="${billing}">Discount <a
+                                            class="text-success mr-2"> <i
+                                            class="nav-icon i-Pen-2 font-weight-bold"></i>
+                                    </a></th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="ro in serviceList">
+                                    <input name="rid" type="hidden" value={{ro.id}}>
+                                    <input name="tid" type="hidden" value={{ro.investigation.id}}>
+                                    <td><input class="table-input" name="index"
+                                               readonly="true" style="max-width: 30px;" type="text" value={{$index+1}}></td>
+                                    <td><input class="table-input"
+                                               name="testName" readonly="true" style="max-width: 100px;"
+                                               type="text" value={{ro.investigation.invest_name}}></td>
+
+                                    <td th:if="${billing}"><input class="table-input"
+                                                                  name="rate" readonly="true" style="max-width: 60px;"
+                                                                  type="text"
+                                                                  value={{ro.rate}}></td>
+                                    <td th:unless="${billing}"><input
+                                            class="table-input" name="rate" readonly="true"
+                                            style="max-width: 60px;" type="hidden" value={{ro.rate}}></td>
+                                    <td th:if="${billing}"><input class="table-input-disc"
+                                                                  data-rate="{{ro.rate*discount/100}}" id="disc_{{$index}}" name="disc"
+                                                                  ng-keyup="updateDiscount($event)"
+                                                                  style="max-width: 60px;"
+                                                                  type="text" value="0"></td>
+                                    <td><a class="text-danger mr-2" href="#"
+                                           ng-click="removeService($index)"> <i
+                                            class="nav-icon i-Close-Window font-weight-bold"></i>
+                                    </a></td>
+
+                                </tr>
+                                <tr>
+                                    <input name="serviceCount" type="hidden"
+                                           value="{{getCount()}}">
+                                </tr>
+                                <tr th:if="${billing}">
+                                    <td></td>
+
+                                    <td>Total</td>
+                                    <td><input class="table-input"
+                                               name="total" readonly="true" style="max-width: 60px;" type="text"
+                                               value={{getTotal()}}></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                                <tr th:if="${billing}">
+                                    <td></td>
+                                    <td>(less -)</td>
+                                    <td><input class="table-input" name="totalDiscount"
+                                               readonly="true" style="max-width: 60px;" type="text"
+                                               value={{getTotalDiscount()}}></td>
+                                    <td>Pay</td>
+                                    <td><input class="table-input" name="pay"
+                                               readonly="true" style="max-width: 60px;" type="text"
+                                               value={{getPayment()}}></td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- end of col-->
+
+            <div class="col-md-7 mb-3 ">
+                <div class="card text-left">
+
+                    <div class="card-body">
+                        <!-- <h4 class="card-title mb-3">Patient details</h4> -->
+                        <!-- <p>Use <code>.table-striped</code> to add zebra-striping to any table rowwithin the <code>&lt;tbody&gt;</code>.</p> -->
+
+                        <input autocomplete="false" name="hidden" style="display: none;"
+                               type="text">
+                        <p th:text="${error}"></p>
+                        <p th:text="${#httpServletRequest.getParameter('error')}"></p>
+                        <ul>
+
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"/>
+
+                        </ul>
+                        <div class="row row-xs row-bottom no-gutters">
+                            <label class="col-sm-2 col-form-label form_labels" for="title">Patient
+                                Name</label>
+                            <div class="col-sm-2">
+                                <select class="form-control" id="title"
+                                        name="patient.title" th:disabled="${!register}">
+                                    <option Selected
+                                            th:if="${!register}"
+                                            th:text="${bookingForm.patient.title}" th:value="${bookingForm.patient.title}"></option>
+                                    <option th:if="${register}" value="">Select</option>
+
+                                    <option th:if="${register}" value="Baby">Baby</option>
+                                    <option th:if="${register}" value="Baby of">Baby of</option>
+                                    <option th:if="${register}" value="Dr">Dr</option>
+                                    <option th:if="${register}" value="Master">Master</option>
+                                    <option th:if="${register}" value="Mr">Mr</option>
+                                    <option th:if="${register}" value="Mrs">Mrs</option>
+                                    <option th:if="${register}" value="Ms">Ms</option>
+                                    <option th:if="${register}" value="Miss">Miss</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="firstName" placeholder="First name"
+                                       required
+                                       style="text-transform: capitalize;" th:field="*{patient.firstName}"
+                                       th:readonly="${!register}" type="text">
+
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" name="lastName"
+                                       placeholder="Last name" style="text-transform: capitalize;"
+                                       th:field="*{patient.lastName}" th:readonly="${!register}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="relative">Relation
+                                Type</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="relationWithPatient"
+                                        name="patient.relationWithPatient">
+                                    <option selected
+                                            th:if="${!register}"
+                                            th:text="${bookingForm.patient.relationWithPatient}" th:value="${bookingForm.patient.relationWithPatient}"></option>
+
+                                    <option th:if="${register}" value="C/o">C/o</option>
+                                    <option th:if="${register}" value="D/o">D/o</option>
+                                    <option th:if="${register}" value="S/o">S/o</option>
+                                    <option th:if="${register}" value="W/o">W/o</option>
+                                    <option th:if="${register}" value="H/o">H/o</option>
+                                    <option th:if="${register}" value="F/o">F/o</option>
+                                    <option th:if="${register}" value="M/o">M/o</option>
+                                </select>
+                            </div>
+
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="relative">Relative</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="relative"
+                                       placeholder="Relative name" style="text-transform: capitalize;"
+                                       th:field="*{patient.relativeName}" th:readonly="${!register}"
+                                       type="text">
+                            </div>
+
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="gender">Gender</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="gender" name="patient.gender"
+                                        required>
+                                    <option selected
+                                            th:if="${!register}"
+                                            th:text="${bookingForm.patient.gender}" th:value="${bookingForm.patient.gender}"></option>
+
+                                    <option th:if="${register}" value="">Gender</option>
+                                    <option th:if="${register}" value="Male">Male</option>
+                                    <option th:if="${register}" value="Female">Female</option>
+                                    <option th:if="${register}" value="Male Child">Male
+                                        Child
+                                    </option>
+                                    <option th:if="${register}" value="Female Child">Female
+                                        Child
+                                    </option>
+                                    <option th:if="${register}" value="Other">Other</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="age">Age</label>
+                            <div class="col-sm-4">
+                                <span id="age" th:if="${!register}"></span><input
+                                    class="form-control" id="age" max="120"
+                                    placeholder="Age" required th:if="${register}"
+                                    th:readonly="${!register}" type="number">
+                            </div>
+                            <input id="dob" name="birthday"
+                                   th:field="*{patient.birthday}" type="hidden">
+
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="mobile">Contact</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="mobile"
+                                       maxlength="10" placeholder="mobile" th:field="*{patient.mobileNo}"
+                                       th:readonly="${!register}" type="text">
+                            </div>
+                        </div>
+
+
+                        <div class="border-top"></div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="search_service">Services</label>
+
+
+                            <div class="col-sm-10 col-form-label form_labels">
+                                <!-- <select name="tests"  id='tests' class="form-control" ng-model="selService" ng-change="update()">
+                                      <option  ng-repeat="i in items"  value="{{i}}">{{i.investigation.invest_name}}</option>
+                                    </select>  -->
+                                <!-- 	<input list="tests" name="test" class="form-control" autocomplete="off" ng-model="selService" ng-change="update()" >
+                                    <datalist name="tests" id="tests" >
+                                      <option  ng-repeat="i in items" data-attr="{{i}}" value="{{i.investigation.invest_name}}"></option>
+                                    </datalist>  -->
+                                <div class="dropdown">
+                                    <button aria-expanded="false"
+                                            aria-haspopup="true" class="btn btn-secondary dropdown-toggle form-control" data-toggle="dropdown"
+                                            id="dropdownMenu2" type="button">
+                                        <span>Add Test</span>
+                                    </button>
+                                    <div aria-labelledby="dropdownMenu2"
+                                         class="dropdown-menu col-sm dropdown-content keep-open">
+                                        <a class="dropdown-item dropdown-input move" href="#"> <input
+                                                autocomplete="off" class="form-control" id="searchtest"
+                                                ng-model="searchString"></a>
+
+                                        <button class="dropdown-item dropdown-button move"
+                                                name="{{i.id}}"
+                                                ng-click="update(i)"
+                                                ng-repeat="i in items | searchFor:searchString" type="button">
+
+                                            {{i.investigation.invest_name}} <span
+                                                style="display: block; float: right;"
+                                                th:if="${billing}">Rs.{{i.rate}}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="border-top"></div>
+                        <div class="row row-xs row-bottom row-top">
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="facility">Visit Type</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="facility"
+                                        name="order.facility">
+                                    <option selected value="OPD">OPD</option>
+                                    <option value="IPD">IPD</option>
+                                    <option value="ANC">ANC</option>
+
+                                </select>
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="opd-ipd">OPD/IPD/ANC
+                                #</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="opd-ipd"
+                                       name="order.facilityNumber" placeholder="OPD/IPD #"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="otherUhid">NIC UHID</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="otherUhid" name="patient.oldUhid"
+                                       placeholder="NIC UHID" th:readonly="*{patient.oldUhid != null AND patient.oldUhid != ''}"
+                                       th:value="*{patient.oldUhid}"
+                                       type="text"
+                                >
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="otherTag">Referred
+                                Center</label>
+                            <div class="col-sm-4">
+
+                                <select class="form-control" id="otherTag"
+                                        name="order.otherTag">
+                                    <option value="">Select</option>
+                                    <div style="display: none;" th:each="l:${labs}">
+                                        <!-- <option th:value="${l.initial}">[[${l.initial}]]([[${l.hospName}]])</option> -->
+                                    </div>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="file">File</label>
+                            <div class="col-sm-4">
+                                <input id="file" name="prescriptionFile" onchange="Filevalidation()"
+                                       type="file">
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="border-top"></div>
+                        <div class="row row-xs row-bottom row-top">
+                            <label class="col-sm-2 col-form-label form_labels" for="tariff"
+                                   style="display: none">Tariff</label>
+                            <div class="col-sm-4" style="display: none">
+                                <select class="form-control" id="tariff">
+                                    <option selected>General</option>
+                                    <option></option>
+                                </select>
+
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="tariff">Referred
+                                Department</label>
+                            <div class="col-sm-4">
+                                <select class="form-control " id="referredDepartment"
+                                        name="order.referredDepartment">
+                                    <option value="">Select Option</option>
+
+                                    <option th:attr="subvalue=${dm.id}" th:each="dm:${dm_list}"
+                                            th:value="${dm.dept_name}">[[${dm.dept_name}]]
+                                    </option>
+
+                                </select>
+
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="referredBy">Referred by</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="referredBy"
+                                        name="order.referredBy">
+                                    <option selected value="">Select</option>
+                                    <option th:each="rf:${rf_list}"
+                                            th:value="${rf.referredByName}">[[${rf.referredByName}]]
+                                    </option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row row-xs row-bottom row-top">
+                            <div class="col-sm-10" th:if="${!billing}"></div>
+                            <div class="col-sm-2" th:if="${!billing}">
+                                <button
+                                        class="btn btn-sm btn-primary ladda-button basic-ladda-button"
+                                        data-style="expand-left" id="save_button" type="submit">Save
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="row row-xs row-bottom row-top" th:if="${billing}">
+                            <label class="col-sm-2 col-form-label form_labels" for="tariff">Discount</label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="discount" name="discount"
+                                        ng-change="setDiscount()" ng-model="discount">
+                                    <option ng-value="0" selected>0</option>
+                                    <option
+                                            th:each="role: ${authorities}"
+                                            th:if="${#strings.containsIgnoreCase(role,'DISCOUNT_')}"
+                                            th:text="${#strings.substringAfter(role,'ROLE_')}"
+                                            th:value="${#strings.substringAfter(role,'DISCOUNT_')}"></option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2">
+                                <button
+                                        class="btn btn-sm btn-primary ladda-button basic-ladda-button"
+                                        data-style="expand-left" type="submit">Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- end of col-->
+</div>
+</form>
+<!-- end of row-->
+
+<!-- Footer Start -->
+<div class="flex-grow-1"></div>
+<!-- fotter end -->
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+<script th:src="@{/static/assets/js/globalSearch.js}"></script>
+<script th:src="@{/static/assets/js/form.validation.script.js}"></script>
+<script th:src="@{/static/assets/js/vendor/sweetalert2.min.js}"></script>
+<script th:src="@{/static/assets/js/sweetalert.script.js}"></script>
+</body>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#otherTag").select2();
+        $("#referredDepartment").select2();
+        $("#referredBy").select2();
+
+        $(window).keydown(function(event){
+               if(event.keyCode == 13) {
+                 event.preventDefault();
+                 return false;
+               }
+             });
+
+       $.ajaxSetup({
+           headers: {
+               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+           }
+       });
+       //Script for converting birthdate to Age
+       if($("#firstName").attr("readonly")){
+           //alert($("#firstName").attr("readonly"));
+           var today = new Date();
+var birthday = new Date($("#dob").val());
+
+var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+var year_age = Math.floor(differenceInMilisecond / 31536000000);
+var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+
+
+var month_age = Math.floor(day_age/30);
+
+day_age = day_age % 30;
+
+if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+//alert("Invalid birthday - Please try again!");
+}
+else {
+if(year_age != 0){
+   $("#age").html(year_age+" Years ");
+       }else if( month_age != 0){
+          $("#age").html(month_age+" Months ");
+       }else{
+   $("#age").html(day_age+" Days ");
+       }
+
+// alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+}
+       }
+
+
+   });
+
+        $('.dropdown').on('shown.bs.dropdown', function(e) {
+           $('.dropdown-menu input').focus();
+       });
+       $('.dropdown-toggle').on('click', function (e) {
+         $(this).next().toggle();
+       });
+       $('.dropdown-menu.dropdown-content').on('click', function (e) {
+         e.stopPropagation();
+       });
+
+   /*  $("[name='test']").on("input", function(){
+        alert("change");
+    }); */
+
+    $(document).keydown(
+               function(e)
+               {
+                   if (e.keyCode == 39) {
+                       $(".move:focus").next().focus();
+
+                   }
+                   if (e.keyCode == 37) {
+                       $(".move:focus").prev().focus();
+
+                   }
+               }
+           );
+
+    $("#age").on("blur",function(e){
+
+        var dob = new Date(new Date().setFullYear(new Date().getFullYear() - $(this).val()));
+        dobMonth = '' + (dob.getMonth())+1,
+        dobDay = '' + dob.getDate(),
+        dobYear = dob.getFullYear();
+
+    if (dobMonth.length < 2)
+        dobMonth = '0' + dobMonth;
+    if (dobDay.length < 2)
+        dobDay = '0' + dobDay;
+
+        $("#dob").val(dobYear+"/"+dobMonth+"/"+dobDay);
+
+    });
+$("#title").on("change",function(e){
+if ((document.getElementById('title').value == 'Mr') || (document.getElementById('title').value == 'Master'))
+{
+ for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+     if (document.getElementById("gender").options[i].value == 'Male') {
+         document.getElementById("gender").options[i].selected = true;
+     }
+ }
+
+} else if( (document.getElementById('title').value == 'Ms') || (document.getElementById('title').value == 'Mrs') || (document.getElementById('title').value == 'Miss'))
+{
+ for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+     if (document.getElementById("gender").options[i].value == 'Female') {
+         document.getElementById("gender").options[i].selected = true;
+     }
+ }
+
+} else {
+ for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+     if (document.getElementById("gender").options[i].value == '') {
+         document.getElementById("gender").options[i].selected = true;
+     }
+ }
+}
+
+
+    });
+Filevalidation = () => {
+const fi = document.getElementById('file');
+// Check if any file is selected.
+if (fi.files.length > 0) {
+ for (const i = 0; i <= fi.files.length - 1; i++) {
+
+     const fsize = fi.files.item(i).size;
+     const file = Math.round((fsize / 1024));
+     // The size of the file.
+     if (file >= 5000) {
+         swal({
+             type: 'error',
+               title: 'Error!',
+               text: 'File too Big, please select a file less than 5 MB!',
+               confirmButtonText: 'Dismiss',
+               buttonsStyling: false,
+               confirmButtonClass: 'btn btn-lg btn-danger'
+         });
+         $('#file').val('');
+         return false;
+
+     }  else {
+         document.getElementById('size').innerHTML = '<b>'
+         + file + '</b> KB';
+     }
+ }
+}
+}
+$(document).on("click", function(event){
+var $trigger = $(".dropdown");
+if($trigger !== event.target && !$trigger.has(event.target).length){
+ $(".dropdown-menu").slideUp("fast");
+}
+});
+
+
+$("#save_button").click(function(){
+
+ $('#save_button').hide();
+  //$("#saveButton").data('clicked', true);
+});
+$(document).change(function(){
+
+ $('#save_button').show();
+  //$("#saveButton").data('clicked', true);
+});
+
+
+</script>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="https://www.thymeleaf.org">
+<style>
+    .ORDERED{background-color: olivedrab; color:yellow;}
+    .SAMPLE_COLLECTED{background-color: red; color:white;}
+    .RESULT_SAVED{background-color: #e0c911; color:blue;}
+    .AUTHORIZED{color: green;}
+    .ABNORMAL{border-color: red;}
+    .PRINTED{background-color: green; color:yellow;}
+    .SAMPLE_REJECTED{background-color: #8a2142; color:white;}
+    .CANCELED{background-color: red; color:white;}
+    .VERIFIED{background-color: #fcf403;}
+    .hideContent{display:none;}
+    .RE_RUN_SAMPLE {
+	background-color: #bafc03;
+	color: black;
+}
+</style>
+<head>
+    <title>Microbiology Result</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css"
+          rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css"
+          rel="stylesheet">
+    <link href="static/assets/styles/vendor/pickadate/classic.css"
+          rel="stylesheet">
+    <link href="static/assets/styles/vendor/pickadate/classic.date.css"
+          rel="stylesheet">
+</head>
+<body class="text-left">
+
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card" style="position: sticky; top: 100px; z-index: 2;">
+                <!-- <img class="d-block w-100" src="assets/images/products/iphone-1.jpg" alt="First slide"> -->
+
+
+                <div class="card-body">
+                    <div class="ul-contact-detail__info">
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <div class="ul-contact-detail__info-1">
+                                    <h4 style="color:#663399">
+                                        [[${#strings.capitalizeWords(microbiologyOrder.order.patient.firstName)}+'
+                                        '+${#strings.capitalizeWords(microbiologyOrder.order.patient.lastName)}]] </h4>
+                                    <span>[[${microbiologyOrder.order.patient.relationWithPatient}+' '+${#strings.capitalizeWords(microbiologyOrder.order.patient.relativeName)}]]</span>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="ul-contact-detail__info-1">
+                                    <h5>Gender</h5>
+                                    <span>[[${microbiologyOrder.order.patient.gender}]]</span>
+                                </div>
+                                <div class="ul-contact-detail__info-1">
+                                    <h5>Order No.</h5>
+                                    <span>[[${lab.hospCode}+'' +${#dates.day(microbiologyOrder.order.createdAt)}+${#dates.format(microbiologyOrder.order.createdAt, 'MM')}+${#dates.format(microbiologyOrder.order.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(microbiologyOrder.order.id,8)}]]</span>
+                                </div>
+                                <div class="ul-contact-detail__info-1">
+                                    <h5>Referred By:</h5>
+                                    <span>[[${#strings.capitalizeWords(microbiologyOrder.order.ReferredBy)}]]</span>
+                                </div>
+                                <div class="ul-contact-detail__info-1" th:if="${microbiologyOrder.order.otherTag}!=''">
+                                    <h5>Center:</h5>
+                                    <span>[[${microbiologyOrder.order.otherTag}]]</span>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="ul-contact-detail__info-1">
+                                    <h5>Age</h5>
+                                    <span th:with="y1=((${microbiologyOrder.order.patient.birthday}!='NaN/undefined/NaN') and
+                                                     (${microbiologyOrder.order.patient.birthday}!='') and 
+                                                     ${microbiologyOrder.order.patient.birthday})?${#dates.year(#dates.createNow())}:'0000', 
+                                                     y2=((${microbiologyOrder.order.patient.birthday}!='NaN/undefined/NaN') and 
+                                                     (${microbiologyOrder.order.patient.birthday}!='') and 
+                                                     ${microbiologyOrder.order.patient.birthday})?${#dates.year(microbiologyOrder.order.patient.birthday)}:'0000'">
+							</span><span id="age"></span>
+                                </div>
+                                <div class="ul-contact-detail__info-1">
+                                    <h5>Visit Type</h5>
+                                    <span>[[${microbiologyOrder.order.facility}]]</span>
+                                </div>
+
+
+                                <div class="ul-contact-detail__info-1">
+                                    <h5>OPD/IPD/ANC #:</h5>
+                                    <span>[[${microbiologyOrder.order.facilityNumber}]]</span>
+                                </div>
+                            </div>
+                            <!-- <div class="col-12 text-center">
+                                <div class="ul-contact-detail__info-1">
+                                        <h5>Address</h5>
+                                        <span>DieSachbearbeiter
+                                                Choriner Straße 49
+                                                10435 Berlin</span>
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-9 mb-4">
+            <div class="card text-left">
+
+
+                <div class="card-body">
+
+
+                    <form id="formResultSave"
+                          method="post"
+                          th:action="@{'/result-microbiology/'+${microbiologyOrder.order.id}+'/'+${work_list}}" th:object="${microbiologyOrder}">
+                        <div class="col-md-12 mb-4">
+							<span>
+							<a class="btn btn-primary "
+                               th:href="${work_list} ? @{'/worklist-microbiology'} :@{'/other-worklist'}"><span class="ul-btn__text">Back</span></a></span>
+
+                            <a class="btn  btn-sm btn-rounded btn-icon m-1"
+                               sec:authorize="hasRole('Technician') or hasRole('Lab_Admin') "
+                               style="background-color: #8a2142; color:white;"
+                               th:href="@{'/sampleReject/'+ ${microbiologyOrder.order.id}+'/'+${work_list}}">
+                                <span class="ul-btn__icon"><i class="i-Atom"></i></span>
+                                <span class="ul-btn__text"><b>Sample Reject</b></span>
+
+                            </a>
+                            <button class="btn btn-success save" style="margin:0 0 5px 0; float:right" type="button">
+                                Save
+                            </button>
+                            <div>
+                                <div class="table-responsive">
+                                    <table class="table" id="table_id">
+                                        <input th:field="${microbiologyOrder.order.id}" type="hidden"/>
+                                        <th:block th:each="report,oStat : ${microbiologyOrder.microbiologyReports}">
+
+                                            <thead>
+
+                                            <tr>
+
+                                                <th colspan="6" scope="col"><span
+                                                        style="text-align: left;"><span
+                                                        style="color: #663399; font-size: 1.01625rem;">[[${oStat.index+1}+'.
+																	'+${#strings.abbreviate(report.orderDetail.investigation.invest_name,100)}+'
+																	- '+${report.orderDetail.barcode}]]</span> </span>
+                                                    <span
+                                                            style="text-align: right;"><span
+                                                            class="badge  r-badge"
+                                                            th:classappend="${report.orderDetail.status}">[[${report.orderDetail.status}]]</span>
+																<span class="badge  r-badge MACHINE"
+                                                                      th:if="${#strings.equalsIgnoreCase(report.orderDetail.machineStatus, 1)}">Machine</span>
+																</span></th>
+
+                                            </tr>
+                                            <tr>
+                                                <th colspan="6">
+                                            
+                                            <span th:if="!${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')}"> 
+                                            	<th:block
+                                                        sec:authorize="hasRole('Pathologist') or hasRole('Lab_Admin') or hasRole('Technician')"
+                                                        th:if="!${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')}">
+                                            	<span>Re-run Sample</span>
+                                            	<input name="isRerunSample"
+                                                       th:checked="${#strings.isEmpty(report.orderDetail.sampleRerunFlag)}" th:if="${!#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                       th:value="${report.orderDetail.id}"
+                                                       type="checkbox">
+                                            	
+                                            	</th:block>     
+                                            	                                      	
+                                            </span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <span>
+                                            	<th:block
+                                                        sec:authorize="hasRole('Pathologist') or hasRole('Lab_Admin') ">
+                                            	<span>Pathologist Authorization</span>                                            	
+                                            	<input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.id}"
+                                                       type="hidden">
+                                            	<input name="isAuthorized"
+                                                       th:checked="${!#strings.isEmpty(report.orderDetail.authorizedById)}" th:if="${!#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                       th:value="${report.orderDetail.id}"
+                                                       type="checkbox">
+                                                    <!-- <a href="#" class="text-success mr-2">
+
+                                                    </a> -->
+                                            	</th:block>     
+                                            	<th:block
+                                                        sec:authorize="!hasRole('Pathologist') or !hasRole('Lab_Admin') "
+                                                        style="display:none;"
+                                                        th:else="${!#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}">
+                                            	<span></span>
+                                            	<input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.id}"
+                                                       type="hidden">
+
+                                                    <!-- <a href="#" class="text-success mr-2">
+
+                                                    </a> -->
+                                            	</th:block>  
+                                            	<span class="AUTHORIZED"
+                                                      th:if="${!#strings.isEmpty(report.orderDetail.authorizedById)}"><i
+                                                        class="nav-icon i-Pen-2 font-weight-bold"></i> by_[[${report.orderDetail.authorizedById}]]</span>
+                                            </span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <span>
+                                            	<th:block
+                                                        sec:authorize="hasRole('Technician') or hasRole('Lab_Admin') ">
+                                            	<span>Technician Verification</span>
+                                            	<input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.id}"
+                                                       type="hidden">
+                                            	<input name="isTechVerified"
+                                                       th:checked="${!#strings.equalsIgnoreCase(report.orderDetail.techVerifiedById,'0')}" th:if="${!#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                       th:value="${report.orderDetail.id}"
+                                                       type="checkbox">
+                                            	<input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.status}"
+                                                       type="hidden">
+                                            	
+                                            	</th:block>     
+                                            	<th:block
+                                                        sec:authorize="!hasRole('Technician') or !hasRole('Lab_Admin') "
+                                                        style="display:none;"
+                                                        th:else="${!#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}">
+                                            	<span></span>
+                                            	<input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.id}"
+                                                       type="hidden">
+                                            	<input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.status}"
+                                                       type="hidden">
+                                            	</th:block>
+                                            	<span class="VERIFIED"
+                                                      th:if="${!#strings.equalsIgnoreCase(report.orderDetail.techVerifiedById,'0')}"><i
+                                                        class="nav-icon i-Pen-2 font-weight-bold"></i> by_[[${report.orderDetail.techVerifiedById}]]</span>
+                                            </span>
+
+                                            </tr>
+
+                                            <tr style="font-size:8px; ">
+                                                <td align="right" colspan="6">
+                                                    <input th:checked="${(report.orderDetail.corelationWithDiagnosis) == 'Y'}" th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.corelationWithDiagnosis}"
+                                                           th:value="Y"
+                                                           type="checkbox">&nbsp;<span
+                                                        style="font-size:9px; ">Co-relation with diagnosis</span>&nbsp;&nbsp;
+                                                    <input th:checked="${(report.orderDetail.reportingError) == 'Y'}" th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.reportingError}"
+                                                           th:value="Y"
+                                                           type="checkbox">&nbsp;REPORTING
+                                                    ERROR&nbsp;&nbsp;
+                                                    <input th:checked="${(report.orderDetail.toConfirmFindings) == 'Y'}" th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.toConfirmFindings}"
+                                                           th:value="Y"
+                                                           type="checkbox">&nbsp;TO
+                                                    CONFIRM FINDING&nbsp;&nbsp;
+                                                    <input th:checked="${(report.orderDetail.deviceError) == 'Y'}" th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.deviceError}"
+                                                           th:value="Y"
+                                                           type="checkbox">&nbsp;DEVICE
+                                                    ERROR&nbsp;&nbsp;
+                                                    <input th:checked="${(report.orderDetail.technicianOrOperatorError) == 'Y'}" th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.technicianOrOperatorError}"
+                                                           th:value="Y"
+                                                           type="checkbox">&nbsp;TECHNICIAN/
+                                                    OPERATOR ERROR&nbsp;&nbsp;
+                                                <td>
+                                            </tr>
+                                            <tr>
+
+                                                <th scope="col">#</th>
+                                                <th colspan="2" scope="col">Parameter</th>
+                                                <th scope="col" style="text-align:left">Result</th>
+
+                                                <th scope="col">Normal Range</th>
+                                                <th scope="col"> Updated By</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody th:if="${!#strings.equalsIgnoreCase(report.orderDetail.status,'Ordered')}
+                                    			and ${!#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}">
+
+                                            <!-- OrderDetail.LisResult objects mapping -->
+                                            <tr th:class="(${lisResult.heading} == 1)?'hideContent':''"
+                                                th:each="lisResult,iStat : ${report.orderDetail.lisResults}">
+
+                                                <th scope="row">[[${iStat.index+1}]]</th>
+                                                <td colspan="2" style="font-weight: bold;"
+                                                    th:classappend="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')?'AUTHORIZED':''}">
+                                                    [[${lisResult.testName}]]
+                                                </td>
+                                                <td th:colspan="!${#strings.equalsIgnoreCase(lisResult.test_code,'3695')}?1:2">
+                                                    <input th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.lisResults[__${iStat.index}__].id}"
+                                                           type="hidden">
+                                                    <!-- If normal input text  -->
+                                                    <input class="form-control"
+                                                           onkeyup="calculatevalues();"
+                                                           style="text-transform:none;"
+                                                           th:classappend="${lisResult.isAbnormalResult and !#strings.isEmpty(lisResult.result)}?'ABNORMAL':''"
+                                                           th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.lisResults[__${iStat.index}__].result}"
+                                                           th:id="${lisResult.loinc_code}" th:if="!${#strings.equalsIgnoreCase(lisResult.test_code,'3695')}
+                                                 				and !${lisResult.isSelectable}"
+                                                           th:readonly="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                           type="text">
+                                                    <!--END If normal input text  -->
+
+                                                    <!-- If select input text i.e. isSelectable is 1 in lis result  -->
+
+                                                    <select class="form-control" th:classappend="${lisResult.isAbnormalResult and !#strings.isEmpty(lisResult.result)}?'ABNORMAL':''"
+                                                            th:disabled="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')} or
+                                                  ${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')} or
+                                                   ${#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                            th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.lisResults[__${iStat.index}__].result}"
+                                                            th:id="${lisResult.loinc_code}"
+                                                            th:if="${lisResult.isSelectable}">
+
+                                                        <option value="">Select</option>
+                                                        <option th:each="option,i :${#strings.listSplit(lisResult.selectOptions,',')}"
+                                                                th:value="${option}">
+                                                            [[${option}]]
+                                                        </option>
+
+                                                    </select>
+
+                                                    <!--END If select input text i.e. isSelectable is 1 in lis result  -->
+                                                    <textarea cols="50" rows="4"
+                                                              th:classappend="${lisResult.isAbnormalResult and !#strings.isEmpty(lisResult.result)}?'ABNORMAL':''"
+
+                                                              th:disabled="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')} or 
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                              th:field="*{microbiologyReports[__${oStat.index}__].orderDetail.lisResults[__${iStat.index}__].result}"
+                                                              th:id="${lisResult.loinc_code}"
+                                                              th:if="${#strings.equalsIgnoreCase(lisResult.test_code,'3695')}"> </textarea>
+                                                </td>
+
+                                                <td style="text-transform: none;"
+                                                    th:if="!${#strings.equalsIgnoreCase(lisResult.test_code,'3695')}">
+                                              <span th:if="${lisResult.minRange}!=null or ${lisResult.maxRange}!=null">
+                                              [[${lisResult.minRange}+' - '+${lisResult.maxRange}+' '+${lisResult.unit}]]</span>
+                                                </td>
+
+
+                                                <td>[[${lisResult.updatedByUsername}]]
+                                                </td>
+                                            </tr>
+                                            <!-- END--OrderDetail.LisResult objects mapping -->
+
+                                            <tr>
+                                                <td colspan="5"></td>
+                                                <td>
+                                                    <button class="btn btn-primary m-1" data-target="#addOrganismReportModal"
+                                                            data-toggle="modal" th:data-test="${report.orderDetail.investigation.invest_name}"
+                                                            th:data-whatever="${report.orderDetail.id}"
+                                                            type="button">
+                                                        Add Organism Report
+                                                    </button>
+
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+
+                                                <th scope="col">#</th>
+                                                <th colspan="2" scope="col">Antibiotic</th>
+                                                <th scope="col" style="text-align:left">Result</th>
+                                                <th scope="col">Remark</th>
+                                                <th scope="col">MCI Value</th>
+
+                                            </tr>
+
+                                            <!-- OrderDetail.LisMicroResult objects mapping -->
+                                            <tr th:each="microResult,iStat : ${report.lisMicroResults}">
+                                                <th:block
+                                                        th:if="${#strings.equalsIgnoreCase(microResult.type,'Organism')}">
+                                                    <th colspan="6" scope="row" style="font-weight: bold; color:red">
+                                                        [[${'Organism Isolate: '+microResult.name}]]
+                                                    </th>
+                                                </th:block>
+                                                <th:block
+                                                        th:if="${#strings.equalsIgnoreCase(microResult.type,'Antibiotic')}">
+                                                    <th scope="row">#
+                                                        <input th:field="*{microbiologyReports[__${oStat.index}__].lisMicroResults[__${iStat.index}__].id}"
+                                                               type="hidden">
+                                                    </th>
+                                                    <td colspan="2" style="font-weight: bold;"
+                                                        th:classappend="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')?'AUTHORIZED':''}">
+                                                        [[${microResult.name}]]
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control"
+                                                                th:field="*{microbiologyReports[__${oStat.index}__].lisMicroResults[__${iStat.index}__].result}"
+                                                                th:id="${microResult.id}"
+                                                                th:readonly="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')} or
+                                                  ${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')} or
+                                                   ${#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}">
+
+                                                            <option value="">Select</option>
+                                                            <option value="Resistant">Resistant</option>
+                                                            <option value="Intermediate">Intermediate</option>
+                                                            <option value="Susceptible">Susceptible</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                                class="form-control"
+                                                                style="text-transform:none;"
+                                                                th:field="*{microbiologyReports[__${oStat.index}__].lisMicroResults[__${iStat.index}__].remark}" th:readonly="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                                type="text">
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                                class="form-control"
+                                                                style="text-transform:none;"
+                                                                th:field="*{microbiologyReports[__${oStat.index}__].lisMicroResults[__${iStat.index}__].micValue}" th:readonly="${#strings.equalsIgnoreCase(report.orderDetail.status,'Authorized')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'PRINTED')} or
+                                                 ${#strings.equalsIgnoreCase(report.orderDetail.status,'SAMPLE_REJECTED')}"
+                                                                type="text">
+                                                    </td>
+                                                </th:block>
+                                            </tr>
+
+                                            <!--END---- OrderDetail.LisMicroResult objects mapping -->
+
+                                            <!--  <tr class="rowitem">
+                                                     <th>Note:</th>
+                                                     <td colspan="4" class="td_div">
+                                                     <div th:each="notes : (${#lists.size(report.orderDetail.lisResults)}==0) ? '' :${#strings.arraySplit( report.orderDetail.lisResults[0].notes, '~')}" >
+                                                     [[${notes}]]
+                                                     </div>
+                                                     </td>
+                                                     <td></td>
+                                                     <img src="${pageContext.request.contextPath }/barcode/${report.orderDetail.barcode}" width="200" height="50">
+                                                 </tr> -->
+
+                                            </tbody>
+                                        </th:block>
+                                    </table>
+                                </div>
+                                <div align="right" class="col-md-12 mb-4">
+                                    <button class="btn btn-success save" type="button">Save</button>
+                                    <div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Organism Modal content -->
+    <div aria-hidden="true" aria-labelledby="addOrganismReport" class="modal fade" id="addOrganismReportModal" role="dialog"
+         tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="/add-microorganism-report" class="addReport" method="GET">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="verifyModalContent_title"></h5>
+                        <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="col-form-label" for="recipient-name-2">Select Organism (Sub-organism):</label>
+                            <input name="${_csrf.parameterName}" type="hidden" value="${_csrf.token}"/>
+
+                            <input class="form-control" name="order" th:value="${microbiologyOrder.order.id}"
+                                   type="hidden">
+                            <input class="form-control" id="orderId" name="orderDetail" type="hidden">
+                            <select class="form-control" name="subOrganisms">
+                                <option th:each="organism : ${microSubOrganisms}" th:value="${organism.id}">
+                                    <span style="font-weight:bold">[[${organism.organism}]]</span>
+                                    (<span style="font-weight:bold">[[${organism.subOrganism}]]</span>)
+                                </option>
+                            </select>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="message-text-1" class="col-form-label">Suborganism:</label>
+                            <textarea class="form-control" id="message-text-1"></textarea>
+                        </div> -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" id="addReportSubmit" onclick="form_submit()" type="submit">Add
+                            Organism
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--End Add Organism Modal content -->
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+</body>
+</html>
+<script th:inline="javascript">
+
+    $(document).ready(function(){
+          $('#addOrganismReportModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var subjId = button.data('whatever');
+            $('#orderId').val(subjId);
+            $('#verifyModalContent_title').html(button.data('test'));
+          })
+      })
+
+      function form_submit() {
+        e.preventDefault();
+      document.getElementById("addReport").submit();
+     }
+
+
+
+  $(document).ready(function(){
+
+      var dob = /*[[${microbiologyOrder.order.patient.birthday}]]*/ '1970';
+
+
+        var today = new Date();
+      var birthday = new Date(dob);
+
+      var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+      var year_age = Math.floor(differenceInMilisecond / 31536000000);
+      var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+
+
+      var month_age = Math.floor(day_age/30);
+
+      day_age = day_age % 30;
+
+      if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+          //alert("Invalid birthday - Please try again!");
+      }
+      else {
+          if(year_age != 0){
+              $("#age").html(year_age+" Years ");
+                  }else if( month_age != 0){
+                     $("#age").html(month_age+" Month's ");
+                  }else{
+              $("#age").html(day_age+" Days ");
+                  }
+        // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+      }
+
+      /* Note's empty value should hide */
+
+      $('.td_div').each(function(index, value) {
+            //console.log(index, $.trim($(this).text()));
+            if($.trim($(this).text()) == '')
+                {
+                   //console.log('empty');
+                   //console.log($(".rowitem")[index]);
+                   $(".rowitem").eq(index).hide();
+                }else {
+                    //console.log('value');
+                    $('.rowitem').eq(index).show();
+                }
+
+          });
+
+  });
+
+
+
+      function valueChanged()
+      {
+          if($('.nabl_question').is(":checked"))
+              $(".HideOrShow").show();
+          else
+              $(".HideOrShow").hide();
+      }
+      function calculatevalues() {
+          //Deepshikha rajput
+          //Lipid Profile
+          var v1 = document.getElementById("1001");
+          if (v1) {
+              var v11 = v1.value;
+          } else {
+              var v11 = 0;
+          }
+          var v2 = document.getElementById("1002");
+          if (v2) {
+              var v21 = v2.value;
+          } else {
+              var v21 = 0;
+          }
+          var v3 = document.getElementById("1003");
+          if (v3) {
+              var v31 = v3.value;
+          } else {
+              var v31 = 0;
+          }
+          var ldl = Number(v11)-Number(v31) - Number((v21/5));
+          var vldl = Number((v21/5));
+          var ch=  Number(v11)/Number(v31);
+          var lh = Number(ldl.toFixed(2))/Number(v31);
+          $('#1004').val(ldl.toFixed(2));
+          $('#1005').val(vldl.toFixed(2));
+          $('#1006').val(ch.toFixed(2));
+          $('#1007').val(lh.toFixed(2));
+        //Liver function test
+        //Total bilirubin- direct bilirubin= indirect bilirubin
+        //Total protein - albumin = globulin
+        //Albumin/ globulin= a/g ratio
+         var v4 = document.getElementById("2001");
+          if (v4) {
+              var v41 = v4.value;
+          } else {
+              var v41 = 0;
+          }
+          var v5 = document.getElementById("2002");
+          if (v5) {
+              var v51 = v5.value;
+          } else {
+              var v51 = 0;
+          }
+          var v6 = document.getElementById("2006");
+          if (v6) {
+              var v61 = v6.value;
+          } else {
+              var v61 = 0;
+          }
+          var v7 = document.getElementById("2007");
+          if (v7) {
+              var v71 = v7.value;
+          } else {
+              var v71 = 0;
+          }
+          var ib = Number(v41) - Number(v51);
+          var gbl = Number(v61) -  Number(v71);
+          var ag = Number(v71) /gbl.toFixed(2);
+          $('#2010').val(ib.toFixed(2));
+          $('#2008').val(gbl.toFixed(2));
+          $('#2009').val(ag.toFixed(2));
+
+      }
+      window.onload = calculatevalues;
+
+      $('.save').on('click', function() {
+          $('select').prop('disabled',false);
+          $('textarea').prop('disabled',false);
+          $('#formResultSave').submit();
+      });
+
+</script>

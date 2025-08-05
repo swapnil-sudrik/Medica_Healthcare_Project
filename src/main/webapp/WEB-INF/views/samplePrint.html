@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <style>
+
+
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+
+
+    <div class="separator-breadcrumb border-top"></div>
+    <div id="print-area">
+        <div class="d-flex flex-row text-center py-2">
+            <div class="col">
+                <img height="80" th:src="@{/static/assets/images/nhm100.png}">
+            </div>
+            <div class="col-8 text-center">
+                <div class="d-flex flex-row">
+                    <div class="col h1">Sample Pickup Manifest</div>
+                </div>
+                <div class="d-flex flex-column text-center p-2 mb-1">
+                    <div class="h1">[[${sp[0].hospName}]]</div>
+                    <div class="h3 ">[[${sp[0].hospAddress}]]</div>
+                </div>
+            </div>
+            <div class="col">
+                <img height="80" th:src="@{/static/assets/images/rj.jpeg}">
+            </div>
+        </div>
+
+        <div class="d-flex flex-row">
+            <div class="col h6">Pickup Date & Time : [[${#dates.format(sp[0].pickupTime, 'dd-MMM-yyyy hh:mm a')}]]</div>
+        </div>
+
+        <table class="display table table-striped table-bordered"
+               style="width: 100%">
+            <thead>
+            <tr>
+                <th>Spoke Name</th>
+                <th>Box Barcode No.</th>
+                <th>Sample No.</th>
+                <th>Patient Name</th>
+                <th>Test Name</th>
+            </tr>
+            </thead>
+
+            <tbody class="data-table">
+            <tr th:each="lab, i:${sp}">
+                <td>[[${lab.order.labName}]]</td>
+                <td>[[${lab.sampleBoxId}]]</td>
+                <td>[[${lab.orderDetail.barcode}]]</td>
+                <td>
+                    [[${lab.order.patient.title} + ' ' + ${lab.order.patient.firstName} + ' ' +
+                    ${lab.order.patient.lastName}
+                    + ' ' + ${lab.order.patient.relationWithPatient} +' '+ ${lab.order.patient.relativeName} +' '+
+                    ${lab.order.patient.age}
+                    ]]
+                </td>
+                <td>
+                    [[${lab.orderDetail.testName}]]
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="d-flex flex-row mt-5">
+            <div class="d-flex flex-column col-6">
+                <div>Signature</div>
+                <div class="">Collected From : [[${#strings.capitalizeWords(sp[0].collectedFromName)}]]<span></span>
+                </div>
+                <div class="">Designation : [[${#strings.capitalizeWords(sp[0].collectedFromDesignation)}]]<span></span>
+                </div>
+                <div class="">Contact No. : [[${sp[0].collectedFromNo}]]</div>
+            </div>
+            <div class="d-flex flex-column col-6 text-right">
+                <div>Signature</div>
+                <div class="">Received By : [[${#strings.capitalizeWords(sp[0].pickedBy)}]]</div>
+                <div class="">Contact No. : [[${sp[0].pickupMobile}]]</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button onClick="printPage();" class="btn btn-primary border_radius_4">Print</button>
+        <button onClick="cancelPrint();" class="btn btn-secondary border_radius_4">Cancel</button>
+    </div>
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script>
+    function printPage(val){
+        $("#myTabContent").css({"margin-top": "-140px","margin-right": "50px","margin-left": "50px"});
+        window.print();
+    }
+
+    function cancelPrint() {
+        window.location.href = "/samplePickupList";
+    }
+
+    (function () {
+
+        var beforePrint = function () {
+        };
+
+        var afterPrint = function () {
+            location.reload();
+        };
+
+        if (window.matchMedia) {
+            var mediaQueryList = window.matchMedia('print');
+
+            mediaQueryList.addListener(function (mql) {
+
+                if (mql.matches) {
+                    beforePrint();
+                } else {
+                    afterPrint();
+                }
+            });
+        }
+
+        window.onbeforeprint = beforePrint;
+        window.onafterprint = afterPrint;
+
+    }());
+</script>
+</body>
+
+</html>

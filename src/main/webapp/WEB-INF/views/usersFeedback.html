@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>User Feedback</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>User Feedback Form (Pathologist)</h1>
+
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+    <div id="search_data"></div>
+    <div class="row">
+        <div class="col-md-11">
+            <div class="card mb-4">
+                <div class="card-body">
+
+
+                    <form method="post"
+                          modelAttribute="userFeedback" th:action="${edit}?@{'/userFeedback-new/'+ ${userFeedback.id}}:@{/userFeedback-new}" th:object="${userFeedback}">
+
+                        <div class="row">
+
+
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>1. On a scale of 1 to 10 (1 being lowest while 10 being
+                                    highest) rate your overall satisfaction regarding PLUS LIS portal</h5></label>
+
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{lisPortal}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>2. Rate your satisfaction with timely reagent availability and
+                                    adequacy of stocks</h5></label>
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{reagentAvailability}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>3. Rate your satisfaction with the performance of lab
+                                    equipment</h5></label>
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{performanceLabEquipment}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>4. Rate your satisfaction with transparency in billing</h5>
+                                </label>
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{transparencyBilling}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>5. Rate your satisfaction with the support received from PLUS
+                                    LIS team</h5></label>
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{teamSupport}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>6. Rate your overall satisfaction regarding wet lease
+                                    project</h5></label>
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{wetLeaseProject}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="col-md-12 form-group mb-3">
+                                <label for="picker1"><h5>7. Rate your satisfaction regarding communication and response
+                                    from service provider </h5></label>
+                            </div>
+                            <div class="col-md-1 form-group mb-3" th:each="star:${#numbers.sequence(1,10,1)}">
+
+                                <label th:class="${y1}+' '+${y2}+' '+${y3}"
+                                       th:with="y1=((${star} < 7)?'radio radio-outline-danger ':' '),
+                                    y2=(((${star} == 7) or (${star} == 8))?'radio radio-outline-warning ':' '),
+                                    y3=((${star} > 8)?'radio radio-outline-success ':'')">
+                                    <input th:field="*{communicationAndResponse}" th:value="${star}" type="radio">
+                                    <span> [[${star}]]</span>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <button class="btn btn-primary">SUBMIT TO PROCEED TO PLUS</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+
+    });
+</script>
+
+</body>
+
+</html>

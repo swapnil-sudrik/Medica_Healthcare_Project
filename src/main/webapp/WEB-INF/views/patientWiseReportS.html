@@ -1,0 +1,67 @@
+<div id="search_data">
+    <div th:fragment="detail">
+        <div class="ExportData table-responsive">
+            <table class="display table table-striped table-bordered" id="multicolumn_ordering_table"
+                   style="width:100%">
+                <thead>
+                <tr class="border border-primary">
+                    <th>SI</th>
+                    <th>Entry Date</th>
+                    <th>SHUHID</th>
+                    <th>Test Name</th>
+
+                    <th>Order No.</th>
+                    <th>Sample Collection Time</th>
+                    <th>Status</th>
+                    <th>Patient Name</th>
+                    <th>Age/Gender</th>
+                    <th>Mobile No.</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="list,i : ${inv_list}">
+                    <td th:text=${i.count}></td>
+                    <td>[[${#dates.format({list[0]} , 'dd-MMM-yyyy hh:mm a')}]]</td>
+                    <td>[[${list[1]}+''+ ${#numbers.formatInteger(list[2],6)}]]</td>
+                    <td>[[${list[3]}]]</td>
+
+                    <td th:text="${list[15]}+'' +${#dates.day(list[0])}+${#dates.format(list[0], 'MM')}+${#dates.format(list[0], 'yy')}+${#numbers.formatInteger(list[4],8)}"></td>
+                    <td>[[${#dates.format({list[5]} , 'dd-MMM-yyyy hh:mm a')} ]]</td>
+                    <td>[[${list[6]}]]</td>
+                    <td>[[${list[7]}+' '+${list[8]}+' '+${list[9]}+' Co '+ ${list[10]}]]</td>
+
+
+                    <td th:with="y1=((${list[11]}!='NaN/undefined/NaN') and (${list[11]}!='') and (${list[11]}!='') and ${list[11]})?${#dates.year(#dates.createNow())}:'0000', y2=((${list[11]}!='NaN/undefined/NaN') and (${list[11]}!='') and  ${list[11]})?${#dates.year(list[11])}:'0000'">
+                        [[${y1} -${y2}]] Y / [[ ${list[12]}]]
+                    </td>
+                    <td>[[${list[13]}]]</td>
+
+                    <!--  <td><a th:href="@{'/result-print/'+ ${list[4]}}" ><button type="button" class="btn btn-success btn-rounded m-1" id="patient_detail">Patient Detail</button></a></td> -->
+
+                </tr>
+                </tbody>
+                <!-- <tr>
+                <td colspan="2" align="right">Total</td>
+                 <td><span th:text="${#aggregates.sum(inv_list.![[1]])}" ></span></td>
+
+
+                </tr> -->
+            </table>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    var dob= document.getElementsByClassName("gender_age");
+                    for(var i=0; i<dob.length; i++){
+                        var childs =dob[i].children;
+                        var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+                        var age_dt = new Date(diff_ms);
+                        childs[1].innerHTML = Math.abs(age_dt.getUTCFullYear() - 1970)+' / ';
+
+                    }
+                    console.log(dob);
+                });
+            </script>
+        </div>
+    </div>
+</div>
+ 

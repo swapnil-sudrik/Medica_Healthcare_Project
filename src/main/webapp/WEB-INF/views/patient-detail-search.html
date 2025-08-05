@@ -1,0 +1,451 @@
+<div class="search_detail">
+    <script th:src="@{/static/assets/js/angular.min.js}"></script>
+
+    <form autocomplete="off" class="needs-validation" enctype="multipart/form-data" method="post" ng-app="ngbilling"
+          ng-controller="searchServicesController"
+          novalidate th:action="@{/savePatientOrder}"
+          th:object="${bookingForm}">
+
+        <div class="alert alert-card alert-success" role="alert" th:if="${message}">
+            <strong class="text-capitalize">Success!</strong> [[${message}]]
+            <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+
+        <div class="row mb-4">
+
+            <div class="col-md-5 mb-3">
+                <div class="card text-left">
+
+                    <div class="card-body">
+
+                        <h4 class="card-title mb-3"> Order list. </h4>
+                        <!-- <p>Use <code>.table-striped</code> to add zebra-striping to any table rowwithin the <code>&lt;tbody&gt;</code>.</p> -->
+                        <div class="table-responsive">
+                            <table class="table table-striped ">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Service</th>
+
+
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="ro in serviceList">
+                                    <input name="rid" type="hidden" value={{ro.id}}>
+                                    <input name="tid" type="hidden" value={{ro.investigation.id}}>
+
+                                    <td><input class="table-input" name="index"
+                                               readonly="true" style="max-width: 30px;" type="text" value={{$index+1}}></td>
+                                    <td><input class="table-input"
+                                               name="testName" readonly="true" style="max-width: 100px;"
+                                               type="text" value={{ro.investigation.invest_name}}></td>
+
+                                    <td th:if="${billing}"><input class="table-input"
+                                                                  name="rate" readonly="true" style="max-width: 60px;"
+                                                                  type="text"
+                                                                  value={{ro.rate}}></td>
+                                    <td th:unless="${billing}"><input
+                                            class="table-input" name="rate" readonly="true"
+                                            style="max-width: 60px;" type="hidden" value={{ro.rate}}></td>
+                                    <td th:if="${billing}"><input class="table-input-disc"
+                                                                  data-rate="{{ro.rate*discount/100}}" id="disc_{{$index}}" name="disc"
+                                                                  ng-keyup="updateDiscount($event)"
+                                                                  style="max-width: 60px;"
+                                                                  type="text" value="0"></td>
+                                    <td><a class="text-danger mr-2" href="#"
+                                           ng-click="removeService($index)"> <i
+                                            class="nav-icon i-Close-Window font-weight-bold"></i>
+                                    </a></td>
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- end of col-->
+
+            <div class="col-md-7 mb-3 ">
+                <div class="card text-left">
+
+                    <div class="card-body">
+                        <!-- <h4 class="card-title mb-3">Patient details</h4> -->
+                        <!-- <p>Use <code>.table-striped</code> to add zebra-striping to any table rowwithin the <code>&lt;tbody&gt;</code>.</p> -->
+
+                        <input autocomplete="false" name="hidden" style="display:none;" type="text">
+                        <p th:text="${error}"></p>
+                        <p th:text="${#httpServletRequest.getParameter('error')}"></p>
+                        <ul>
+
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"/>
+
+                        </ul>
+                        <div class="row row-xs row-bottom no-gutters">
+                            <label class="col-sm-2 col-form-label form_labels" for="title">Patient Name</label>
+
+                            <div class="col-sm-4">
+                                <input class="form-control" id="firstName" placeholder="First name" required
+                                       style="text-transform: capitalize;" th:field="*{patient.firstName}"
+                                       th:readonly="${register}" type="text">
+
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" name="lastName" placeholder="Last name"
+                                       style="text-transform: capitalize;"
+                                       th:field="*{patient.lastName}" th:readonly="${register}" type="text">
+                            </div>
+                        </div>
+                        <div class="row row-xs row-bottom">
+
+
+                            <label class="col-sm-2 col-form-label form_labels" for="relative">Relative</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="relative" placeholder="Relative name"
+                                       style="text-transform: capitalize;"
+                                       th:field="*{patient.relativeName}" th:readonly="${register}" type="text">
+                            </div>
+
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="gender">Gender</label>
+                            <div class="col-sm-4">
+
+                                <input class="form-control" name="birthday" th:field="*{patient.gender}" th:readonly="${register}"
+                                       type="text">
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="age">Age</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" name="birthday" th:field="*{patient.birthday}" th:readonly="${register}"
+                                       type="text">
+                            </div>
+
+
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="mobile">Contact</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="mobile" maxlength="10"
+                                       placeholder="mobile" th:field="*{patient.mobileNo}" th:readonly="${register}" type="text">
+                            </div>
+                        </div>
+
+
+                        <div class="border-top"></div>
+                        <div class="row row-xs row-bottom row-top">
+                            <label class="col-sm-2 col-form-label form_labels" for="facility">Visit Type</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="facility" name="order.facility" required>
+                                    <option selected value="OPD">OPD</option>
+                                    <option value="IPD">IPD</option>
+                                    <option value="ANC">ANC</option>
+
+                                </select>
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="opd-ipd">OPD/IPD/ANC #</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="opd-ipd" name="order.facilityNumber" placeholder="OPD/IPD #"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="otherUhid">Hospital UHID</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="otherUhid" name="patient.oldUhid" placeholder="Hospital UHID"
+                                       required th:readonly="*{patient.oldUhid != null AND patient.oldUhid != ''}"
+                                       th:value="*{patient.oldUhid}" type="text">
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="otherTag">Referred Center</label>
+                            <div class="col-sm-4">
+
+                                <select class="form-control" id="otherTag" name="order.otherTag">
+                                    <option value="">Select</option>
+                                    <div style="display:none;" th:each="l:${labs}">
+                                        <!-- <option th:value="${l.initial}">[[${l.initial}]]([[${l.hospName}]])</option> -->
+                                    </div>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels" for="file">File</label>
+                            <div class="col-sm-4">
+                                <input id="file" name="prescriptionFile" onchange="Filevalidation()" type="file">
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row row-xs row-bottom row-top">
+                            <label class="col-sm-2 col-form-label form_labels" for="tariff"
+                                   style="display:none">Tariff</label>
+                            <div class="col-sm-4" style="display:none">
+                                <select class="form-control" id="tariff">
+                                    <option selected>General</option>
+                                    <option></option>
+                                </select>
+
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="tariff">Referred Department</label>
+                            <div class="col-sm-4">
+                                <select class="form-control " id="referredDepartment" name="order.referredDepartment">
+                                    <option value="">Select Option</option>
+                                    <div th:each="dm:${dm_list}">
+                                        <option th:value="${dm.dept_name}">[[${dm.dept_name}]]</option>
+                                    </div>
+                                </select>
+
+                            </div>
+                            <label class="col-sm-2 col-form-label form_labels" for="referredBy">Referred by</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" id="referredBy" name="order.referredBy" placeholder="Referred by"
+                                       required type="text">
+                            </div>
+                        </div>
+                        <div class="border-top"></div>
+                        <div class="row row-xs row-bottom">
+                            <label class="col-sm-2 col-form-label form_labels"
+                                   for="search_service">Services <span
+                                    class="text-danger">*</span></label>
+
+
+                            <div class="col-sm-10 col-form-label form_labels">
+                                <!-- <select name="tests"  id='tests' class="form-control" ng-model="selService" ng-change="update()">
+                                      <option  ng-repeat="i in items"  value="{{i}}">{{i.investigation.invest_name}}</option>
+                                    </select>  -->
+                                <!-- 	<input list="tests" name="test" class="form-control" autocomplete="off" ng-model="selService" ng-change="update()" >
+                                    <datalist name="tests" id="tests" >
+                                      <option  ng-repeat="i in items" data-attr="{{i}}" value="{{i.investigation.invest_name}}"></option>
+                                    </datalist>  -->
+                                <div class="dropdown">
+                                    <button aria-expanded="false"
+                                            aria-haspopup="true" class="btn btn-secondary dropdown-toggle form-control" data-toggle="dropdown"
+                                            id="dropdownMenu2" type="button">
+                                        <span>Add Test</span>
+                                    </button>
+                                    <div aria-labelledby="dropdownMenu2"
+                                         class="dropdown-menu col-sm dropdown-content keep-open">
+                                        <a class="dropdown-item dropdown-input move" href="#"> <input
+                                                autocomplete="off" class="form-control" id="searchtest"
+                                                ng-model="searchString"></a>
+
+                                        <button class="dropdown-item dropdown-button move "
+                                                name="{{i.id}}"
+                                                ng-click="update(i)"
+                                                ng-enter="update(i)" ng-repeat="i in items | searchFor:searchString" style="color:black"
+                                                type="button">
+
+                                            {{i.investigation.invest_name}} <span
+                                                style="display: block; float: right;"
+                                                th:if="${billing}">Rs.{{i.rate}}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="row row-xs row-bottom">
+
+
+                            <div class="col-sm-2" th:if="${!billing}">
+                                <button class="btn btn-sm btn-primary ladda-button basic-ladda-button"
+                                        data-style="expand-left" type="submit">Save
+                                </button>
+                            </div>
+                        </div>
+                        <div class="border-top"></div>
+                        <div class="row row-xs row-bottom row-top" th:if="${billing}">
+
+                            <div class="col-sm-2">
+                                <button class="btn btn-sm btn-primary ladda-button basic-ladda-button"
+                                        data-style="expand-left" type="submit">Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script th:src="@{/static/assets/js/globalSearch.js}"></script>
+    <script th:src="@{/static/assets/js/form.validation.script.js}"></script>
+    <script th:src="@{/static/assets/js/vendor/sweetalert2.min.js}"></script>
+    <script th:src="@{/static/assets/js/sweetalert.script.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#otherTag").select2();
+            $("#referredDepartment").select2();
+
+            $(window).keydown(function(event){
+                   if(event.keyCode == 13) {
+                     event.preventDefault();
+                     return false;
+                   }
+                 });
+
+           $.ajaxSetup({
+               headers: {
+                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+               }
+           });
+           //Script for converting birthdate to Age
+           if($("#firstName").attr("readonly")){
+               //alert($("#firstName").attr("readonly"));
+               var today = new Date();
+var birthday = new Date($("#dob").val());
+
+var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+var year_age = Math.floor(differenceInMilisecond / 31536000000);
+var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+
+
+var month_age = Math.floor(day_age/30);
+
+day_age = day_age % 30;
+
+if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+   //alert("Invalid birthday - Please try again!");
+}
+else {
+   if(year_age != 0){
+       $("#age").html(year_age+" Years ");
+           }else if( month_age != 0){
+              $("#age").html(month_age+" Months ");
+           }else{
+       $("#age").html(day_age+" Days ");
+           }
+
+ // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+}
+           }
+
+
+       });
+
+            $('.dropdown').on('shown.bs.dropdown', function(e) {
+               $('.dropdown-menu input').focus();
+           });
+           $('.dropdown-toggle').on('click', function (e) {
+             $(this).next().toggle();
+           });
+           $('.dropdown-menu.dropdown-content').on('click', function (e) {
+             e.stopPropagation();
+           });
+
+       /*  $("[name='test']").on("input", function(){
+            alert("change");
+        }); */
+
+        $(document).keydown(
+                   function(e)
+                   {
+                       if (e.keyCode == 39) {
+                           $(".move:focus").next().focus();
+
+                       }
+                       if (e.keyCode == 37) {
+                           $(".move:focus").prev().focus();
+
+                       }
+                   }
+               );
+
+        $("#age").on("blur",function(e){
+
+            var dob = new Date(new Date().setFullYear(new Date().getFullYear() - $(this).val()));
+            dobMonth = '' + (dob.getMonth())+1,
+            dobDay = '' + dob.getDate(),
+            dobYear = dob.getFullYear();
+
+        if (dobMonth.length < 2)
+            dobMonth = '0' + dobMonth;
+        if (dobDay.length < 2)
+            dobDay = '0' + dobDay;
+
+            $("#dob").val(dobYear+"/"+dobMonth+"/"+dobDay);
+
+        });
+$("#title").on("change",function(e){
+ if ((document.getElementById('title').value == 'Mr') || (document.getElementById('title').value == 'Master'))
+ {
+     for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+         if (document.getElementById("gender").options[i].value == 'Male') {
+             document.getElementById("gender").options[i].selected = true;
+         }
+     }
+
+ } else if( (document.getElementById('title').value == 'Ms') || (document.getElementById('title').value == 'Mrs') || (document.getElementById('title').value == 'Miss'))
+ {
+     for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+         if (document.getElementById("gender").options[i].value == 'Female') {
+             document.getElementById("gender").options[i].selected = true;
+         }
+     }
+
+ } else {
+     for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+         if (document.getElementById("gender").options[i].value == '') {
+             document.getElementById("gender").options[i].selected = true;
+         }
+     }
+ }
+
+
+        });
+Filevalidation = () => {
+ const fi = document.getElementById('file');
+ // Check if any file is selected.
+ if (fi.files.length > 0) {
+     for (const i = 0; i <= fi.files.length - 1; i++) {
+
+         const fsize = fi.files.item(i).size;
+         const file = Math.round((fsize / 1024));
+         // The size of the file.
+         if (file >= 5000) {
+             swal({
+                 type: 'error',
+                   title: 'Error!',
+                   text: 'File too Big, please select a file less than 5 MB!',
+                   confirmButtonText: 'Dismiss',
+                   buttonsStyling: false,
+                   confirmButtonClass: 'btn btn-lg btn-danger'
+             });
+             $('#file').val('');
+             return false;
+
+         }  else {
+             document.getElementById('size').innerHTML = '<b>'
+             + file + '</b> KB';
+         }
+     }
+ }
+}
+$(document).on("click", function(event){
+ var $trigger = $(".dropdown");
+ if($trigger !== event.target && !$trigger.has(event.target).length){
+     $(".dropdown-menu").slideUp("fast");
+ }
+});
+
+    </script>
+</div>
+                        
+               
+           
+                           
+                            
+                            

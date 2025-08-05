@@ -1,0 +1,113 @@
+<div class="search_detail">
+    <div th:fragment="patientdetail">
+        <div class="ExportData table-responsive">
+            <table class="display table table-striped table-bordered" id="alternative_pagination_table1"
+                   style="width:100%">
+                <thead>
+                <tr>
+                    <th rowspan="2">Sl.</th>
+                    <th rowspan="2">Date</th>
+                    <!--  <th rowspan="2">Created By</th> -->
+                    <th rowspan="2">Patient name</th>
+                    <th rowspan="2">Age / Gender</th>
+                    <th rowspan="2">Address</th>
+                    <th rowspan="2">Facility</th>
+                    <th rowspan="2">Mobile #</th>
+                    <th rowspan="2">Lab Name</th>
+                    <th rowspan="2">SHUHID</th>
+                    <th rowspan="2">Order No.</th>
+                    <th rowspan="2">Test Name</th>
+                    <th sec:authorize="hasRole('ABHA_USER')" rowspan="2">ABHA ID</th>
+                    <div th:each="t,i: ${testList}">
+                        <th align="center" th:colspan=" ${#lists.size(t.testParameters)}"
+                            th:if="${#lists.size(t.testParameters)} != 0">[[${t.invest_name}]]
+                        </th>
+
+                    </div>
+                </tr>
+                <tr>
+                    <div th:each="t,i: ${testList}">
+                        <div th:each="tp,i: ${parameterList}" th:if="${tp.investigation.id} == ${t.id}">
+
+                            <th>[[${tp.parameter_name}]]</th>
+                        </div>
+                    </div>
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr th:each="p,h : ${res}">
+                    <td th:text=${h.count}></td>
+
+                    <td th:text="${#dates.format({p.od.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+
+                    <!-- <td th:text=${p.patient.createdByUsername}></td> -->
+                    <td th:text="${#strings.capitalizeWords(p.patient.title) } +' ' +${#strings.capitalizeWords(p.patient.firstName) } +' ' +(${p.patient.middleName}?${#strings.capitalizeWords(p.patient.middleName)}:'')+' ' +${#strings.capitalizeWords(p.patient.lastName)}+' '+${#strings.capitalizeWords(p.patient.relationWithPatient)}+' ' +${#strings.capitalizeWords(p.patient.relativeName)}"></td>
+
+                    <td class="gender_age"><input th:value="${p.patient.birthday}" type="hidden"><span></span>/
+                        [[${p.patient.gender}]]
+                    </td>
+                    <td th:text="${p.patient.ward}+' '+${p.patient.street}+' '+${p.patient.district}+${' Madhya Pradesh'}"></td>
+                    <td th:text=${p.od.facility}></td>
+                    <td th:text=${p.patient.mobileNo}></td>
+                    <td th:text="${p.od.labName}"></td>
+                    <td th:text="${p.patient.mrn1}+'/ '+ ${#numbers.formatInteger(p.patient.mrn2,6)}"></td>
+                    <td th:text="${#strings.substring(p.patient.mrn1,0,3)}+'' +${#dates.day(p.od.createdAt)}+${#dates.format(p.od.createdAt, 'MM')}+${#dates.format(p.od.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(p.od.id,8)}"></td>
+                    <td>
+                        <div th:each="orderDetails : ${p.od.orderDetails}">
+                                          <span th:if="${orderDetails.investigation.machineType == 0}">[[${orderDetails.testName}]]
+                                          
+                                          </span> <br></div>
+                    </td>
+                    <td sec:authorize="hasRole('ABHA_USER')" rowspan="2" th:text=${p.patient.abhaHealthId}></td>
+                    <div th:each="t,i: ${testList}">
+                        <div th:each="tp,i: ${parameterList}" th:if="${tp.investigation.id} == ${t.id}">
+                            <td>
+                                <div th:each="lis,i: ${p.lisResults}">
+                                    <div th:if="${lis.tm_id} ==${tp.tm_id}">[[${lis.result}]]</div>
+                                </div>
+                            </td>
+                        </div>
+                    </div>
+                </tr>
+                <tr>
+                    <td align="center" colspan="10" th:if="${error}"><h2>[[${error}]]</h2></td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+       var dob= document.getElementsByClassName('gender_age');
+
+       for(var i=0; i<dob.length; i++){
+           var childs =dob[i].children;
+           var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+           var age_dt = new Date(diff_ms);
+
+           var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+           var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+           var age_month =   Math.floor(age_d/30);
+           var age_day = age_d % 30;
+
+           if(age_year != 0){
+           childs[1].innerHTML = age_year+' Y ';
+          }else if(age_month != 0){
+              childs[1].innerHTML =  age_month+' M ';
+          }else{
+              childs[1].innerHTML = age_day+' D ';
+          }
+
+       }
+
+
+
+   });
+
+
+</script>

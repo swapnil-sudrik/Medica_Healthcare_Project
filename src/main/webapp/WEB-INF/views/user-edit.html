@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title th:text="${edit}?'Sign Upload':'Sign Upload'"></title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/static/assets/styles/vendor/sweetalert2.min.css}">
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <!-- <div class="breadcrumb">
+        <h1>New User</h1>
+        <ul>
+            <li><a href="">Back</a></li>
+            <li>Basic</li>
+        </ul>
+    </div> -->
+
+    <!--   <div class="separator-breadcrumb border-top"></div> -->
+
+    <div class="row">
+        <div class="col-md-2"></div>
+
+        <div class="col-md-8">
+            <h4 th:text="${edit}?'Sign Upload':'Sign Upload'"></h4>
+            <!-- <p>A form control layout using row with left label alignment.</p> -->
+            <div class="card mb-5">
+                <div class="card-body">
+                    <form enctype="multipart/form-data" method="POST"
+                          th:action="${edit}?@{'/sign-upload/'+ ${user.id}}:@{/user-new}" th:object="${user}">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="firstName">First name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="firstName" placeholder="Enter your first Name" readonly th:field="*{firstName}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lastName">Last name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="lastName" placeholder="Enter your last Name" readonly
+                                       th:errorclass="fieldError" th:field="*{lastName}" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="userName">User Name</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="userName" placeholder="Enter unique username"
+                                       style="text-transform: none" th:errorclass="fieldError" th:field="*{ssoId}" th:readonly="${edit}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row" th:hidden="${edit}">
+                            <label class="col-sm-3 col-form-label" for="password">Password</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="password" name="password"
+                                       placeholder="Enter unique username" style="text-transform: none" th:errorclass="fieldError" th:readonly="${edit}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="inputEmail3">Email</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputEmail3" placeholder="Email" readonly
+                                       style="text-transform: none" th:errorclass="fieldError" th:field="*{email}" type="email">
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Lab</label>
+                            <div class="col-sm-9">
+
+                                <select class="form-control" disabled required th:errorclass="fieldError"
+                                        th:field="*{labId}">
+                                    <option value="">Laboratory Name</option>
+                                    <div th:each="labl:${lablist}">
+                                        <option th:value="${labl.id}">[[${labl.hospName}]]</option>
+                                    </div>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Mobile #</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" maxlength="10" minlength="10" placeholder="Mobile"
+                                       style="text-transform: none" th:errorclass="fieldError" th:field="*{mobile}"
+                                       type="text">
+                            </div>
+
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="lab">Designation</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" placeholder="Designation" style="text-transform: none"
+                                       th:errorclass="fieldError" th:field="*{designation}" type="text">
+                            </div>
+
+                        </div>
+
+                        <fieldset class="form-group">
+
+                            <div class="row">
+
+                                <div class="col-form-label col-sm-3 pt-0">Signature Image</div>
+                                <div class="col-sm-9">
+                                    <div class="form-check" style="padding: 0">
+                                        <input accept="image/png, image/jpeg" id="file" name="sign" onchange="loadFile(event); Filevalidation();"
+                                               type="file"/>
+                                        <span class="text-danger"> *jpeg, png</span>
+                                    </div>
+                                    <div id="instrucciones-adicionales" style="padding: 5px 0 0 0">
+                                        <img id="output" width="200"/>
+                                        <img alt="Signature"
+                                             height="100" id="imghide"
+                                             th:if="${user.signImageData}" th:src="${'data:image/png;base64,'+user.signImageData}" width="100"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group row">
+                            <div class="col-sm-6"></div>
+                            <div class="col-sm-6">
+                                <button class="btn btn-primary" th:if="${edit}" type="submit">Update</button>
+                                <button class="btn btn-primary" th:unless="${edit}" type="submit">Register</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+<script th:src="@{/static/assets/js/vendor/sweetalert2.min.js}"></script>
+<script th:src="@{/static/assets/js/sweetalert.script.js}"></script>
+
+</body>
+<script type="text/javascript">
+    var MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
+    $(function () {
+      /*   $("input:file").change(function () {
+            var fileName = $(this).val();
+            if (fileName != "") {
+                $("#instrucciones-adicionales").hide();
+            } else {
+                $("#instrucciones-adicionales").show();
+            }
+        }); */
+        Filevalidation = () => {
+            const fi = document.getElementById('file');
+            // Check if any file is selected.
+            if (fi.files.length > 0) {
+                for (const i = 0; i <= fi.files.length - 1; i++) {
+
+                    const fsize = fi.files.item(i).size;
+                    const file = Math.round((fsize / 1024));
+                    // The size of the file.
+                    if (file >= 200) {
+                        swal({
+                            type: 'error',
+                              title: 'Error!',
+                              text: 'File too Big, please select a file less than 200 KB!',
+                              confirmButtonText: 'Dismiss',
+                              buttonsStyling: false,
+                              confirmButtonClass: 'btn btn-lg btn-danger'
+                        });
+                        $('#file').val('');
+                       $('#output').hide();
+                        return false;
+
+                    }  else {
+                        document.getElementById('size').innerHTML = '<b>'
+                        + file + '</b> KB';
+                    }
+                }
+            }
+        }
+    });
+
+    var loadFile = function(event) {
+
+        $('#imghide').hide();
+        $('#output').show();
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    }
+
+</script>
+
+</html>

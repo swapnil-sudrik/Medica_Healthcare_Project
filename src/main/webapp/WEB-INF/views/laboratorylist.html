@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Laboratory</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb ">
+        <h1>Laboratory Detail</h1>
+        <ul>
+
+            <li><a th:href="@{/laboratory}">New Laboratory</a></li>
+
+        </ul>
+    </div>
+    <!--  <div class="separator-breadcrumb border-top"></div> -->
+
+    <!--  <div class="row mb-4">
+            <div class="col-md-12">
+                <h4>Users</h4>
+                <p>LIS Users</p>
+            </div>
+        </div> -->
+    <!-- end of row -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                        <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                        </p> -->
+
+                    <div class="table-responsive">
+
+                        <table class="display table table-striped table-bordered" id="alternative_pagination_table"
+                               style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>SI</th>
+                                <th>Entry Date</th>
+                                <th>Lab Name</th>
+                                <th>Location</th>
+                                <th>Contact Number</th>
+                                <th>Action</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="list,i : ${laboratorylist}">
+
+                                <td th:text=${i.count}></td>
+                                <td>[[${#dates.format({list.createdAt} , 'dd-MMM-yyyy')}]]</td>
+                                <td>[[${list.hospName}]]</td>
+                                <td>[[${list.hospAddr}]]</td>
+                                <td>[[${list.hospPhone}]]</td>
+                                <td><a th:href="@{'/laboratory/'+ ${list.id}}">
+                                    <button class="btn btn-info btn-sm m-1" type="button">View</button>
+                                </a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+
+    <!-- ============ Body content End ============= -->
+
+
+    <footer th:insert="layout :: footer"></footer>
+
+</body>
+
+</html>

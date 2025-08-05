@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html dir="" lang="en">
+
+<head>
+    <title>Schedule Task</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+    <link rel="stylesheet"
+          th:href="@{/static/assets/styles/vendor/calendar/fullcalendar.min.css}">
+
+</head>
+
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+
+<!-- ============ Body content start ============= -->
+<div class=" sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Schedule Task</h1>
+
+    </div>
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <div class="col-md-2"></div>
+        <!-- <div class="col-md-3">
+           <div class="card mb-4">
+               <div class="card-body">
+                   <div class="create_event_wrap">
+                       <form class="js-form-add-event">
+                           <div class="form-group">
+                               <label for="newEvent"> Create new Event</label> <input
+                                   type="text" name="newEvent" id="newEvent" class="form-control"
+                                   placeholder="new Event" aria-describedby="helpId">
+
+                           </div>
+
+
+                       </form>
+
+
+                       <ul class="list-group" id="external-events">
+                           <li class="list-group-item bg-primary  fc-event">Hello World
+
+                           </li>
+                           <li class="list-group-item  bg-primary fc-event">Go to
+                               Shopping</li>
+                           <li class="list-group-item  bg-primary fc-event">Payment
+                               schedule</li>
+                           <li class="list-group-item bg-primary fc-event">Rent Due</li>
+                       </ul>
+                       <p>
+                           <input type='checkbox' id='drop-remove' /> <label
+                               for='drop-remove'>remove after drop</label>
+                       </p>
+
+                   </div>
+               </div>
+           </div>
+       </div>  -->
+        <div class="col-md-9">
+            <div class="card mb-4 o-hidden">
+                <div class="card-body">
+                    <div id="calendar"></div>
+                    <div id='datepicker'></div>
+
+                    <div class="modal fade" role="dialog" tabindex="-1">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <h4 class="modal-title">Create new event</h4>
+                                    <button aria-label="Close" class="close" data-dismiss="modal"
+                                            type="button">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="col-xs-4" for="title">Event title</label> <input
+                                                class="form-control" id="title" name="title" type="text"/>
+                                            <input
+                                                    class="form-control" id="ids" name="ids" type="hidden" value="0"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="col-xs-4" for="title">Location</label>
+                                            <select class="form-control" id="labLocation" name="labLocation">
+                                                <option value="">Select</option>
+                                                <option th:data-city="${labs_list.hospCity}"
+                                                        th:each="labs_list:${labs}"
+                                                        th:text="${labs_list.hospName}+'-'+${labs_list.hospCity}"
+                                                        th:value="${labs_list.hospName}+'-'+${labs_list.hospCity}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="col-xs-4" for="starts-at">Starts at</label> <input
+                                                class="form-control" id="starts-at" name="starts_at"
+                                                type="datetime-local"/>
+                                        </div>
+
+
+                                        <div class="col-md-6">
+                                            <label class="col-xs-4" for="ends-at">Completed at</label> <input
+                                                class="form-control" id="ends-at" name="ends_at"
+                                                type="datetime-local"/>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-default" data-dismiss="modal"
+                                            type="button">Close
+                                    </button>
+                                    <button class="btn btn-primary" id="save-event" type="button">Save
+                                        Changes
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- ============ Body content End ============= -->
+</div>
+<!--=============== End app-admin-wrap ================-->
+
+<!-- ============ Search UI Start ============= -->
+
+<!-- ============ Search UI End ============= -->
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+<script th:src="@{/static/assets/js/vendor/calendar/jquery-ui.min.js}"></script>
+<script th:src="@{/static/assets/js/vendor/calendar/moment.min.js}"></script>
+<script th:src="@{/static/assets/js/vendor/calendar/fullcalendar.min.js}"></script>
+
+
+<script th:inline="javascript">
+    $(document).ready(function() {
+
+
+        /* initialize the external events
+        -----------------------------------------------------------------*/
+
+
+        function initEvent() {
+            $('#external-events .fc-event').each(function() {
+
+                // store data so the calendar knows to render an event upon drop
+                $(this).data('event', {
+
+                    title: $.trim($(this).text()), // use the element's text as the event title
+                    color: $(this).css('background-color'),
+                    stick: true // maintain when user navigates (see docs on the renderEvent method)
+                });
+
+                // make the event draggable using jQuery UI
+                $(this).draggable({
+                    zIndex: 999,
+                    revert: true, // will cause the event to go back to its
+                    revertDuration: 0 // original position after the drag
+                });
+
+            });
+        }
+        initEvent();
+
+
+        /* initialize the calendar
+        -----------------------------------------------------------------*/
+        var newDate = new Date,
+            date = newDate.getDate(),
+            month = newDate.getMonth(),
+            year = newDate.getFullYear();
+        // var time = newDate.getHours() + ":" + newDate.getMinutes() + ":" + newDate.getSeconds();
+        eventsDisplayView = [];
+        /*<![CDATA[*/
+        /*[# th:each="m : ${res}"]*/
+
+        //console.log(/*[[${m}]]*/);
+
+        var t1 = new Date();
+        var t2 = new Date();
+        eventsDisplayView.push({
+            id: /*[(${m.id})]*/,
+            title: "[(${m.taskTitle})]",
+            labLocation: "[(${m.location})]",
+            start: "[(${m.taskStartDate})]",
+            end: "[(${m.taskEndDate})]",
+            color: "[(${m.color})]",
+
+        });
+        /*[/]*/
+
+        /*]]>*/
+        $('#calendar').fullCalendar({
+
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+
+            themeSystem: "bootstrap4",
+            droppable: true,
+            editable: true,
+            eventLimit: true, // allow "more" link when too many events
+            drop: function() {
+                // is the "remove after drop" checkbox checked?
+                if ($('#drop-remove').is(':checked')) {
+                    // if so, remove the element from the "Draggable Events" list
+                    $(this).remove();
+                }
+            },
+            selectable: true,
+            selectHelper: true,
+            select: function(start, end) {
+                var d1 = new Date(start);
+                var d2 = new Date(start);
+                d2.setMinutes(d1.getMinutes()+30); //add 30minute to Completed at
+                // Display the modal.
+                // You could fill in the start and end fields based on the parameters
+                $('.modal').modal('show');
+                $('.modal').find('#starts-at').val(d1.getFullYear()+"-"+("0" + (d1.getMonth() + 1)).slice(-2) +"-"+("0" + d1.getDate()).slice(-2)+"T"+("0" +d1.getHours()).slice(-2)+":"+("0" +d1.getMinutes()).slice(-2)+":"+("0" +d1.getSeconds()).slice(-2)+"."+("00" +d1.getMilliseconds()).slice(-3));
+                $('.modal').find('#ends-at').val(d2.getFullYear()+"-"+("0" + (d2.getMonth() + 1)).slice(-2) +"-"+("0" + d2.getDate()).slice(-2)+"T"+("0" +d2.getHours()).slice(-2)+":"+("0" +d2.getMinutes()).slice(-2)+":"+("0" +d2.getSeconds()).slice(-2)+"."+("00" +d2.getMilliseconds()).slice(-3));
+                $('.modal').find('#title').val('');
+                $('.modal').find('#labLocation').val('');
+                $('.modal').find('#ids').val('');
+
+            },
+
+            events: eventsDisplayView,
+            eventClick: function(event, element) {
+
+                // Display the modal and set the values to the event values.
+                var d1 = new Date(event.start);
+                var d2 = new Date(event.end);
+                $('.modal').modal('show');
+                $('.modal').find('#title').val(event.title);
+                $('.modal').find('#labLocation').val(event.labLocation);
+                $('.modal').find('#ids').val(event.id);
+                $('.modal').find('#starts-at').val(d1.getFullYear()+"-"+("0" + (d1.getMonth() + 1)).slice(-2) +"-"+("0" + d1.getDate()).slice(-2)+"T"+("0" +d1.getHours()).slice(-2)+":"+("0" +d1.getMinutes()).slice(-2)+":"+("0" +d1.getSeconds()).slice(-2)+"."+("00" +d1.getMilliseconds()).slice(-3));
+                $('.modal').find('#ends-at').val(d2.getFullYear()+"-"+("0" + (d2.getMonth() + 1)).slice(-2) +"-"+("0" + d2.getDate()).slice(-2)+"T"+("0" +d2.getHours()).slice(-2)+":"+("0" +d2.getMinutes()).slice(-2)+":"+("0" +d2.getSeconds()).slice(-2)+"."+("00" +d2.getMilliseconds()).slice(-3));
+
+            },
+
+            events: eventsDisplayView
+        });
+
+        jQuery(".js-form-add-event").on("submit", function(e) {
+            e.preventDefault();
+
+            var data = $('#newEvent').val();
+            $('#newEvent').val('');
+            $('#external-events').prepend('<li class="list-group-item bg-success fc-event">' + data + '</li>');
+
+            initEvent();
+        });
+        // Bind the dates to datetimepicker.
+        // You should pass the options you need
+
+
+        // Whenever the user clicks on the "save" button om the dialog
+        $('#save-event').on('click', function() {
+            var title = $('#title').val();
+            var labLocation = $('#labLocation').val();
+            var id = $('#id').val();
+            if (title) {
+                var eventData = {
+                    title: title,
+                    labLocation: labLocation,
+                    start: $('#starts-at').val() ,
+                    end: $('#ends-at').val() ,
+                    id: id,
+                };
+
+
+                //Post Values
+
+                 $.post("/ajax/getCalender",
+                        {'title' : title,
+                        'labLocation': labLocation,
+                        'start' : $('#starts-at').val() ,
+                        'ids' :  $('#ids').val(),
+                        'end' : $('#ends-at').val()}, function(data) {
+
+                    //var json = JSON.parse(data);
+                    //...
+
+                }).done(function() { // hide modal
+                    $('.modal').modal('hide');
+                    location.reload();
+                }).fail(function(xhr, textStatus, errorThrown) { alert("Please fill all fields.");
+                console(xhr, textStatus, errorThrown);
+                }).complete(function() { location.reload();
+                    $("#btn-save").prop("disabled", false);
+
+                });
+                $('#calendar').fullCalendar('renderEvent', eventData, true); // stick? = true
+            }
+            $('#calendar').fullCalendar('select');
+
+            // Clear modal inputs
+            $('.modal').find('input').val('');
+            $('.modal').find('select').val('');
+
+
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

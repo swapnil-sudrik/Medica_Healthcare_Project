@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Microbiology</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+    <link href="/static/assets/styles/vendor/sweetalert2.min.css"
+          rel="stylesheet">
+    <style>
+        .btn-margin {
+            margin: 0 2px;
+        }
+
+        .MACHINE {
+            background-color: blue;
+            color: white;
+        }
+
+        .ORDERED {
+            background-color: olivedrab;
+            color: yellow;
+        }
+
+        .CANCELED {
+            color: red;
+        }
+
+        .CANCELED_TEXT {
+            color: red;
+            text-decoration: line-through;
+        }
+
+        .SAMPLE_COLLECTED {
+            background-color: red;
+            color: white;
+        }
+
+        .RESULT_SAVED {
+            background-color: #e0c911;
+            color: blue;
+        }
+
+        .AUTHORIZED {
+            background-color: orange;
+        }
+
+        .PRINTED {
+            background-color: green;
+            color: yellow;
+        }
+
+        .SAMPLE_REJECTED {
+            background-color: #8a2142;
+            color: white;
+        }
+
+        .VERIFIED {
+            background-color: #fcf403;
+        }
+
+        .RE_RUN_SAMPLE {
+            background-color: #bafc03;
+            color: black;
+        }
+        .a_btn{
+        height:25px;
+        width:35px;
+        }
+    </style>
+</head>
+<body class="text-left">
+
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <!--  <div class="breadcrumb">
+            <h1></h1>
+            <ul>
+
+                <li><a th:href="@{/test-new}">New Investigation</a></li>
+                <li>LIS Investigations</li>
+            </ul>
+        </div> -->
+    <!--  <div class="separator-breadcrumb border-top"></div> -->
+
+    <!--  <div class="row mb-4">
+            <div class="col-md-12">
+                <h4>Users</h4>
+                <p>LIS Users</p>
+            </div>
+        </div> -->
+    <!-- end of row -->
+    <div class="alert alert-card alert-success" role="alert"
+         th:if="${message}">
+        <strong class="text-capitalize">Success!</strong> [[${message}]]
+        <button aria-label="Close" class="close" data-dismiss="alert"
+                type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <h3>Microbiology Worklist</h3>
+                    <!--
+                        <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                        </p> -->
+                    <input id="barcodeConfig" th:value="${barcodeConfig}"
+                           type="hidden">
+                    <div class="table-responsive">
+                        <table class=" table table-striped " style="width: 100%">
+                            <thead>
+
+                            <tr>
+                                <td><input class="form-control" id="firstName"
+                                           placeholder="Enter  first name" type="text"></td>
+                                <td><input class="form-control" id="nic_uhid" placeholder="Enter Hospital UHID"
+                                           type="text"></td>
+                                <td><input class="form-control" id="labid" placeholder="Enter Order No."
+                                           type="text"></td>
+                                <td><input class="form-control" id="barcodeId"
+                                           placeholder="Enter Barcode No." type="text"></td>
+                                <td><input class="form-control" id="start_date"
+                                           placeholder="Start Date" type="text"></td>
+                                <td><input class="form-control" id="end_date" placeholder="End Date"
+                                           type="text"> <input id="workfor"
+                                                                          th:value="${work_list}?'true':''"
+                                                                          type="hidden"></td>
+                                <td
+                                        sec:authorize="hasRole('Pathologist') or hasRole('Lab_Admin') "><select
+                                        class="form-control" id="tecnician_verified"
+                                        name="tecnician_verified">
+                                    <option value="0">Status</option>
+                                    <option value="1">Technician Verified</option>
+
+                                </select></td>
+                                <td>
+                                    <button
+                                            class="btn btn-sm btn-dark ladda-button  example-button "
+                                            data-style="expand-left">
+                                        <span class="ladda-label" id="search">Search</span>
+                                    </button>
+                                    <span th:if="${error}"> <a><button
+                                            class="btn btn-sm btn-dark ladda-button  example-button m-1"
+                                            data-style="expand-left">Refresh</button></a></span>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </td>
+
+                            </tr>
+
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="table-responsive">
+                        <div id="LoadingImage" style="display: none">
+                            <div class="loader-bubble loader-bubble-primary m-5"></div>
+                            <div class="loader-bubble loader-bubble-primary m-5"></div>
+                            <div class="loader-bubble loader-bubble-primary m-5"></div>
+                            <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        </div>
+                        <div id="search_detail"></div>
+
+                        <div class="default">
+                            <div th:insert="worklistSearch-microbiology :: worklistdetail"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+    <!-- Large Modal Start -->
+    <div aria-hidden="true" aria-labelledby="exampleModalCenterTitle"
+         class="modal fade bd-example-modal-lg" role="dialog"
+         tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <th:block th:if="${barcodeConfig}">
+                    <form id="sampleCollect"
+                          method="post"
+                          onsubmit="return validateForm()" th:action="${barcodeConfig} ? @{/sample-collect/true} : @{/sample-collect/false}">
+                </th:block>
+                <th:block th:if="${!barcodeConfig}">
+                    <form id="sampleCollect"
+                          method="post"
+                          onsubmit="return validateForm()" th:action="${work_list} ? @{/save-sample/true} : @{/save-sample/false}">
+                </th:block>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">
+                        <span float="right" id="sample_heading"></span>
+
+                    </h5>
+                    <button aria-label="Close" class="close" data-dismiss="modal"
+                            type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+
+                        <table class="table table-striped ">
+                            <thead>
+                            <tr>
+                                <th id="fluid" scope="col">Fluid type tests</th>
+                                <!-- <th id="barcode" scope="col">Barcode</th> -->
+                                <th id="specimen" scope="col" style='display: none;'>Specimen
+                                    Type
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody id="modal-row">
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button class="btn btn-secondary" data-dismiss="modal"
+                                type="button">Close
+                        </button>
+                        <button class="btn btn-primary ml-2" id="save" type="submit">Generate Barcode</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- mukesh sen -->
+
+        <!-- mukesh sen -->
+</body>
+<script th:inline="javascript">
+    $(document).on("keydown", "form", function(event) {
+        return event.key != "Enter";
+    });
+
+
+        function Invest(id, name, fluidType, barcode, status, department, section){
+            this.id= id;
+            this.name=name;
+            this.fluidType=fluidType;
+            this.barcode = barcode;
+            this.status = status;
+            this.department =department;
+            this.section = section;
+        }
+        var Orders = new Map();
+        var key;
+        /*[# th:each="n : ${worklists}"]*/
+        key = /*[(${n.id})]*/ null;
+
+            /*[# th:each="m : ${n.orderDetails}"]*/
+            var collection = Orders.get(key);
+            var invest = new Invest("[(${m.id})]","[(${m.investigation.invest_name})]",
+            "[(${m.investigation.fluidType})]", "[(${m.barcode})]", "[(${m.status})]",
+            "[(${m.investigation.department})]","[(${m.investigation.section})]");
+            if(typeof collection ==="undefined" ){
+                Orders.set(key,[invest]);
+            }else{
+                collection.push(invest);
+            }
+
+            //console.log(invest);
+            /*[/]*/
+
+        /*[/]*/
+
+    //console.log(Orders);
+
+        function showDetails(str){
+
+            var i = $("#"+str).prop('outerHTML');
+
+                $(".modal-body").html(i);
+            }
+
+
+        function getOrderDetails(index,orderNo){
+
+            //console.log(index);
+            //console.log(Orders.get(+index));
+            var lab = "Order No. :"+orderNo+"<input type='hidden' name='l_id' value="+index+" readonly>";
+            $("#sample_heading").html(lab);
+            items=	Orders.get(+index);
+            const map = new Map();
+            items.forEach((item)=>{
+                //console.log(item);
+                const key = item.fluidType;
+                const collection = map.get(key);
+                if(item.department==='MICROBIOLOGY'){
+                     if (!collection) {
+                         map.set(key, [item]);
+                     } else {
+                         collection.push(item);
+                     }
+                    }
+            });
+            var tr="";
+            for(let key of map.keys()){
+                tr += "<tr><td><ul>";
+                var ite = map.get(key);
+                var isAnyFluidTypeBarcodePending = false;
+                for(i=0;i<ite.length;i++ ){
+                    tr+="<li>";
+                    if(ite[i].status=="ORDERED" ){
+                        tr+="<label class='checkbox checkbox-outline-danger'><input type='checkbox' checked name='i_id' value='"+ite[i].id+"'";
+                        if(ite[i].barcode==null || ite[i].barcode==""){
+                            tr+="checked";
+                        }
+
+                        tr+="readonly=''/>";
+                        isAnyFluidTypeBarcodePending = true;
+                    }
+
+                //for color TEST NAME BY VIAL Fluid Type--Start//Pm//01-07-2020
+                    var vmcode;
+                    var vcolor;
+                        /*[# th:each="m : ${vialColor}"]*/
+
+                         /*<![CDATA[*/ var vmcode =  /*[[${m.vmCode}]]*/ null; /*]]>*/
+
+                        if(key === JSON.stringify(vmcode)){
+                        //alert (JSON.stringify(vcolor));
+                         /*<![CDATA[*/ var vcolor = /*[[${m.vColor}]]*/ null ;  /*]]>*/
+                            }
+                        /*[/]*/
+                //for color TEST NAME BY VIAL Fluid Type--END
+
+                        tr+="<b  style='background-color:#fff; border:1px solid; border-color:"+vcolor+"; color:"+vcolor+";padding:1px;font-size:10px;border-radius: 4px;'><span class=' badge-round-primary m-1' style='background-color:"+vcolor+";color:#fff;' ><i  class=' i-Test-Tube'></i></span>"+ite[i].name+"  ["+ite[i].barcode+"]-"+ite[i].status+"</b><span class='checkmark'></span></label></li> ";
+                        }
+
+                tr+= "</ul></td>";
+                //alert(typeof($("#barcodeConfig").val()))
+                if($("#barcodeConfig").val()==='false'){
+                tr+="<td>";
+                if(isAnyFluidTypeBarcodePending){
+                tr+="<input type='hidden' name='fluidType'  value='"+key+"' ><input type='text' name='barcode' Placeholder='Enter Barcode' value='' >";
+                tr+="</td><td style='display:none;'><select class='form-control' name='specimen_type' >";
+                tr+="<option value='' >Select</option>";
+                tr+="<option value='TS/NPS/NS' >TS/NPS/NS</option>";
+                tr+="<option value='BAL/ETA' >BAL/ETA</option>";
+                tr+="<option value='Blood in EDTA' >Blood in EDTA</option>";
+                tr+="<option value='Acute sera' >Acute sera</option>";
+                tr+="<option value='Covalescent sera' >Covalescent sera</option>";
+                tr+="<option value='Other' >Other</option></select>";
+                }
+                tr+="</td>";
+                }
+                tr+="</tr>";
+
+            }
+            $("#modal-row").html(tr);
+
+        }
+
+            function correctBarcode(index,orderNo){
+
+            var lab = "Order No. :"+orderNo+"<input type='hidden' name='l_id' value="+index+" readonly>";
+            $("#sample_heading").html(lab);
+            items=	Orders.get(+index);
+            const map = new Map();
+            items.forEach((item)=>{
+                //console.log(item);
+                const key = item.fluidType;
+                const collection = map.get(key);
+                 if (!collection) {
+                     map.set(key, [item]);
+                 } else {
+                     collection.push(item);
+                 }
+            });
+            //console.log(map);
+            var tr="";
+            for(let key of map.keys()){
+                tr += "<tr><td><ul>";
+                var ite = map.get(key);
+                var isAnyFluidTypeBarcodePending = false;
+                for(i=0;i<ite.length;i++ ){
+                    tr+="<li>";
+                    if(ite[i].status=="SAMPLE_COLLECTED" ){
+                        tr+="<label class='checkbox checkbox-outline-danger'><input type='checkbox' name='i_id' value='"+ite[i].id+"'";
+
+                        tr+="readonly=''/>";
+                        console.log("status: "+JSON.stringify(ite[i]));
+                        isAnyFluidTypeBarcodePending = true;
+                    }
+
+
+                    //for color TEST NAME BY VIAL Fluid Type--Start//Pm//01-07-2020
+                    var vmcode;
+                    var vcolor;
+                        /*[# th:each="m : ${vialColor}"]*/
+
+                         /*<![CDATA[*/ var vmcode =  /*[[${m.vmCode}]]*/ null; /*]]>*/
+
+                        if(key === JSON.stringify(vmcode)){
+                        //alert (JSON.stringify(vcolor));
+                         /*<![CDATA[*/ var vcolor = /*[[${m.vColor}]]*/ null ;  /*]]>*/
+                            }
+                        /*[/]*/
+                //for color TEST NAME BY VIAL Fluid Type--END
+
+                        tr+="<b  style='background-color:#fff; border:1px solid; border-color:"+vcolor+"; color:"+vcolor+";padding:1px;font-size:10px;border-radius: 4px;'><span class=' badge-round-primary m-1' style='background-color:"+vcolor+";color:#fff;' ><i  class=' i-Test-Tube'></i></span>"+ite[i].name+"  ["+ite[i].barcode+"]</b><span class='checkmark'></span></label></li> ";
+
+
+                    }
+
+                tr+= "</ul></td><td>";
+                if(isAnyFluidTypeBarcodePending){
+                tr+="<input type='hidden' name='fluidType'  value='"+key+"' ><input type='text' name='barcode' Placeholder='Enter Barcode' value='' >";
+                tr+="</td><td style='display:none;'><select class='form-control' name='specimen_type' >";
+                tr+="<option value='' >Select</option>";
+                tr+="<option value='TS/NPS/NS' >TS/NPS/NS</option>";
+                tr+="<option value='BAL/ETA' >BAL/ETA</option>";
+                tr+="<option value='Blood in EDTA' >Blood in EDTA</option>";
+                tr+="<option value='Acute sera' >Acute sera</option>";
+                tr+="<option value='Covalescent sera' >Covalescent sera</option>";
+                tr+="<option value='Other' >Other</option></select>";
+                }
+                tr+="</td></tr>";
+
+            }
+            $("#modal-row").html(tr);
+            $("#sampleCollect").attr("action","save-sample/true");
+        }
+
+
+        $(document).ready(function(){
+
+            /* var dob= document.getElementsByClassName('gender_age');
+
+            for(var i=0; i<dob.length; i++){
+                var childs =dob[i].children;
+                var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+                var age_dt = new Date(diff_ms);
+
+                var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+                var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+                var age_month =   Math.floor(age_d/30);
+                var age_day = age_d % 30;
+
+                if(age_year != 0){
+                childs[1].innerHTML = age_year+' Y ';
+               }else if(age_month != 0){
+                   childs[1].innerHTML =  age_month+' M ';
+               }else{
+                   childs[1].innerHTML = age_day+' D ';
+               }
+
+            } */
+
+            $("#start_date").pickadate({max: new Date()});
+            $("#end_date").pickadate({max: new Date()});
+
+            let auth = document.getElementsByClassName("status_change");
+            for(let i=0; i < auth.length; i++){
+
+                if(auth[i].innerText == 'VERIFIED') {
+                    auth[i].innerHTML = 'TECH_VERIFIED';
+                } else {
+
+                }
+            }
+        });
+
+
+
+        function validateForm(){
+            var checked = document.querySelectorAll('[name="i_id"]:checked');
+
+            if(checked.length==0){
+                swal({
+                    type: 'warning',
+                    title: 'Please select test using checkbox!',
+                    text: 'Warning',
+                    buttonsStyling: false,
+                    confirmButtonClass: 'btn btn-lg btn-warning'
+                });
+
+                return false;
+                }
+            var submit=true;
+            var barcodes = document.querySelectorAll('[name="barcode"]');
+            for(var i=0; i<barcodes.length; i++){
+                var barcode = barcodes[i].value;
+                if(barcode!==""){
+
+                    $.ajax({url: "/getBarcode/"+barcode,
+                        dataType: "json",
+
+                        success: function(result) {
+                            if(result.length!=0){
+                                swal({
+                                    type: 'error',
+                                    title: 'Duplicate barcode!',
+                                    text: '['+barcode+']',
+                                    confirmButtonText: 'Dismiss',
+                                    buttonsStyling: false,
+                                    confirmButtonClass: 'btn btn-lg btn-danger'
+                                });
+                                submit=false;
+                            }
+                        },
+                        async: false
+                    });
+
+                }
+
+
+            }
+
+            //validation for 10 digit barcode
+             /*<![CDATA[*/ var openBarcode =  /*[[${openBarcode}]]*/ null; /*]]>*/
+             //console.log("openBarcode--"+openBarcode);
+             if(openBarcode){
+             for(var i=0; i<barcodes.length; i++){
+                var barcode = barcodes[i].value;
+                var fluidTypes = document.querySelectorAll('[name="fluidType"]');
+                var fluidType = fluidTypes[i].value;
+                if((barcode!=="") && (barcode.length != 10)){
+                    swal({
+                        type: 'error',
+                        title: 'Invalid barcode format! Minimum 10 digits required.',
+
+                        confirmButtonText: 'Dismiss',
+                        buttonsStyling: false,
+                        confirmButtonClass: 'btn btn-lg btn-danger'
+                    });
+                    submit=false;
+
+                }
+            }
+
+             }
+            return submit;
+        }
+
+        $("#search").click(function () {
+            $("#LoadingImage").show();
+            var start_date = $("#start_date").val();
+            var end_date = $("#end_date").val();
+            var firstName = $("#firstName").val();
+            var nic_uhid = $("#nic_uhid").val();
+            var labid = $("#labid").val();
+            var workfor = $("#workfor").val();
+            var barcodeId = $("#barcodeId").val();
+            var tecnicianVerified = $("#tecnician_verified").val();
+            if(tecnicianVerified == undefined){
+                tecnicianVerified = 0;
+            }
+            //alert(tecnicianVerified);
+              // alert($("#tecnician_verified").val());
+            var st_date = new Date(start_date);
+             var et_date = new Date(end_date);
+
+            var dateString1 = st_date.getFullYear()  + "-" + (st_date.getMonth() + 1) + "-" + st_date.getDate()
+            var dateString2 = et_date.getFullYear()  + "-" + (et_date.getMonth() + 1) + "-" + et_date.getDate()
+            if(labid == ''){
+                labid = '0';
+            }
+            if(($("#start_date").val() != '') && ($("#end_date").val() == '') ){
+                $(".clientmessage").addClass('text-danger');
+                $(".clientmessage").text("Please select the end date.");
+                return false;
+            }else if(($("#start_date").val() == '') && ($("#end_date").val() != '')){
+                $(".clientmessage").addClass('text-danger');
+                $(".clientmessage").text("Please select the start date.");
+                return false;
+            }else if(st_date > et_date){
+                $(".clientmessage").addClass('text-danger');
+                $(".clientmessage").text("Please select the correct date.");
+                return false;
+
+            }else if((($("#start_date").val() == '') || ($("#end_date").val() == '')) && ($("#tecnician_verified").val() != '0')){
+                $(".clientmessage").addClass('text-danger');
+                $(".clientmessage").text("Please select the start date.");
+                $("#start_date").focus();
+                return false;
+            }else{
+                $(".clientmessage").removeClass('text-danger');
+                $(".clientmessage").text("");
+            }
+
+
+
+
+            $.ajax({
+                type: "GET",
+                url: "/WorklistSearch-microbiology",
+                data: "firstName=" + firstName + "&start_date=" + dateString1+ "&end_date=" + dateString2+ "&nic_uhid=" + nic_uhid+ "&labid=" + labid+ "&workfor=" + workfor+ "&barcodeId=" + barcodeId+ "&tecnicianVerified=" + tecnicianVerified,
+                dataType: "html",
+                async:false,
+                success: function (data)
+                {
+                    $.ajax({
+                        type: "GET",
+                        url: "/WorklistSearchMap",
+                        data: "firstName=" + firstName + "&start_date=" + dateString1+ "&end_date=" + dateString2+ "&nic_uhid=" + nic_uhid+ "&labid=" + labid+ "&workfor=" + workfor+ "&barcodeId=" + barcodeId+ "&tecnicianVerified=" + tecnicianVerified,
+                        dataType: "html",
+                        async:false,
+                        success: function (data)
+                        {
+
+                            var OrdersNew = new Map();
+                            var keyid;
+                            var details =  JSON.parse(data);
+                            details.forEach((n) => {
+                            keyid = n.id;	 // alert(keyid);
+                            n.orderDetails.forEach((m) => {
+                                var collections = OrdersNew.get(keyid);
+                                var invests = new Invest(m.id,m.investigation.invest_name,
+                                        m.investigation.fluidType,m.barcode, m.status,
+                                        m.investigation.department, m.investigation.section);
+                                if(typeof collections ==="undefined" ){
+                                    OrdersNew.set(keyid,[invests]);
+                                }else{
+                                    collections.push(invests);
+                                }
+                                    })
+                                })
+
+
+                            //console.log(OrdersNew);
+                            Orders= OrdersNew;
+
+                        }
+                    });
+
+                    $("#LoadingImage").hide();
+                    $(".default").hide();
+                    $("#search_detail").html(data);
+                }
+            });
+
+
+        });
+        $("#firstName").keypress(function(event){
+            if (event.keyCode === 13) {
+                $("#search").click();
+            }
+        });
+        $("#nic_uhid").keypress(function(event){
+            if (event.keyCode === 13) {
+                $("#search").click();
+            }
+        });
+        $("#labid").keypress(function(event){
+            if (event.keyCode === 13) {
+                $("#search").click();
+            }
+        });
+        $("#barcodeId").keypress(function(event){
+            if (event.keyCode === 13) {
+                $("#search").click();
+            }
+        });
+
+        $(".setOrderNumber").click(function(event){
+            var orderNo = $(this).attr('data-value');
+            var index = $(this).attr('data-id');
+            //alert(orderNo+"====="+index);
+            getOrderDetails(index,orderNo);
+        });
+
+        $(".correctBarcode").click(function(event){
+                var orderNo = $(this).attr('data-value');
+                var index = $(this).attr('data-id');
+
+                correctBarcode(index,orderNo);
+            });
+        /*Print JSPR by Prashant SOF */
+        $(".print_jspr_report").click(function(event){
+            //alert("myfunction");
+            var orderNo = $(this).attr('data-value');
+            var index = $(this).attr('data-id');
+            //alert(index);
+            var lab = "Print :"+orderNo+"<input type='hidden' name='l_id' value="+index+" readonly>";
+            $("#sample_heading").html(lab);
+            $("#save").html('Print PDF');
+            $("#fluid").html(' ');
+            $("#barcode").html(' ');
+            $("#specimen").html(' ');
+            items=	Orders.get(+index);
+
+            const map = new Map();
+            items.forEach((item)=>{
+                console.log(item)
+                const key = item.fluidType;
+                const collection = map.get(key);
+                if(item.department==='MICROBIOLOGY'){
+                 if (!collection) {
+                     map.set(key, [item]);
+                 } else {
+                     collection.push(item);
+                 }
+                }
+            });
+            //console.log(map);
+            var tr="";
+            for(let key of map.keys()){
+                tr += "<tr><td><ul>";
+                var ite = map.get(key);
+                var isAnyFluidTypeBarcodePending = false;
+                for(i=0;i<ite.length;i++ ){
+                    tr+="<li>";
+                    if(ite[i].status=="PRINTED" || ite[i].status=="AUTHORIZED"){
+                        tr+="<label class='checkbox checkbox-outline-danger'><input type='checkbox' checked name='i_id' value='"+ite[i].id+"'";
+                        if(ite[i].barcode==null || ite[i].barcode==""){
+                            tr+="checked";
+                        }
+                        console.log("barcode val:"+ite[i].barcode)
+                        tr+="readonly=''/>";
+                        console.log("status: "+JSON.stringify(ite[i]));
+                        isAnyFluidTypeBarcodePending = true;
+                    }
+
+                        tr+="<b>"+ite[i].name+"  ["+ite[i].barcode+"]</b><span class='checkmark'></span></label></li>";
+
+
+                    }
+
+                tr+= "</ul></td><td>";
+
+                tr+="</td></tr>";
+
+            }
+            $("#modal-row").html(tr);
+            $("#sampleCollect").attr("action","/report/printJsprReport_new/microbiology");
+                $("#sampleCollect").attr("target","_blank");
+            //$("#form"). attr("th:action", "@{/processopt1}");
+
+        });
+        /*Print JSPR by Prashant  EOF */
+
+</script>
+</html>
+
+

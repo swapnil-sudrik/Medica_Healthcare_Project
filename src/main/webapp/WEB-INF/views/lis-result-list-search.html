@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<meta http-equiv="refresh">
+<head>
+    <title>LIS Search</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <script th:src="@{/static/assets/js/angular.min.js}"></script>
+    <style>
+        /* div {
+        border:1px solid black;
+        } */
+        .th_Style {
+            font-size: 14px;
+            font-family: Nunito, sans-serif;
+        }
+        .f_style {
+            font-family: Nunito, sans-serif;
+        }
+        .w-24 {
+            width: 24%;
+        }
+        .m-tb-1 {
+        margin: 1rem 0 0 1rem;
+        }
+        .m-r-half {
+            margin:0 0 0 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-left" ng-app="nglis" ng-controller="searchServicesController">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Machine Data Verification Console</h1>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+                <div class="card-body container">
+                    <!-- Search Form -->
+                    <form class="row m-r-half" ng-submit="getlist()">
+                        <div class="col"><input class="form-control mandatorychange" id="datefield" ng-model="selectedDate"
+                                                placeholder="Select Date" type="text"/></div>
+                        <div class="col"><input class="form-control" ng-model="barcode" placeholder="Barcode" type="text"
+                                                value=""/></div>
+                        <div class="col">
+                            <select class="form-control" id="machine_id" name="machine_id" ng-model="machineName">
+                                <option data-isdefault="true" value>--Choose Machine Name--</option>
+                                <option th:each="machines:${macineList}" th:text="${machines.machineName}"
+                                        th:value="${machines.machineName}"></option>
+                            </select>
+                        </div>
+                        <div class="col text-right">
+                            <button class="btn btn-dark example-button" type="submit">Search</button>
+                        </div>
+                    </form>
+                    <!-- Error  -->
+                    <div class="text-24 m-tb-1">
+                        <h3 id="errMsg"></h3>
+                        <h5 ng-if="items.length==0">Please select date!!!</h5>
+                    </div>
+
+                    <hr>
+                    <!-- Choose Verified Status -->
+                    <div class="th_Style m-tb-1 w-24">
+                        <lable><strong>Choose Verified Status</strong></lable>
+                        <select aria-label="filter items" class="form-control" id="vs" ng-model="q">
+                            <option data-isdefault="true" value>--Default--</option>
+                            <option value="YES">YES</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </div>
+                    <!--Verified button  -->
+                    <div class="d-flex flex-row align-items-end d-flex justify-content-around m-tb-1"
+                         ng-hide="((details|filter:q).length == 0)">
+                        <div class="p-2">
+                            <button class="btn btn-dark example-button" data-target="#exampleModalCenter2"
+                                    data-toggle="modal" ng-show="selectAll==true || selectAll==false"
+                                    type="submit">
+                                Verified
+                            </button>
+                        </div>
+                        <!-- user details -->
+                        <div class="p-2">
+                            <span class="text-24">{{userdetails.title.toUpperCase()}}</span>
+                            <span class="text-24">{{userdetails.firstName.toUpperCase()}}</span>
+                            <span class="text-24">{{userdetails.middleName.toUpperCase()}}</span>
+                            <span class="text-24">{{userdetails.lastName.toUpperCase()}}</span>
+                            <span class="font-weight-bold">{{getAge(userdetails.birthday) + ""}}</span>
+                            <span class="font-weight-bold">{{userdetails.gender}}</span>
+                        </div>
+                    </div>
+                    <div class="card-body row">
+                        <div class="col-md">
+                            <!--table first  -->
+                            <table class="display table table-striped table-bordered">
+                                <thead>
+                                <tr class="th_Style">
+                                    <th colspan="2">
+                                        <span><input ng-click="checkAll()" ng-hide="((details|filter:q).length == 0)" ng-model="selectAll"
+                                                     type="checkbox"/></span>
+                                        <span>SI</span>
+                                    </th>
+                                    <th>Date</th>
+                                    <th>Barcode</th>
+                                    <th>Test Name</th>
+                                    <th>Machine Result</th>
+                                    <th colspan="2">Value</th>
+                                    <th>Verified</th>
+                                </tr>
+                                </thead>
+                                <tbody ng-mode="table1">
+                                <tr ng-click="getInfo(i.orderDetail.id, i.orderDetail.patientId)"
+                                    ng-hide="!i.result"
+                                    ng-if="!i.orderDetail.authorizedById" ng-repeat="i in items | filter: { verifiedStatus : q } track by $index">
+                                    <td style="border-right: none">
+									 				<span ng-if="i.verifiedStatus == 'NO'">
+									 					<input ng-checked="exist(i)" ng-click="toggleSelection(i)" ng-model="selected"
+                                                               type="checkbox"/>
+									 					<input type="hidden" value={{i.id}}/>
+									 				</span>
+                                    </td>
+                                    <td>
+                                        <span>{{$index + 1}}</span>
+                                    </td>
+                                    <td>
+                                        {{i.createdAt | date : 'yyyy-MMM-dd'}}
+                                    </td>
+                                    <td>{{i.barcode}}</td>
+                                    <td>{{i.testName}}</td>
+                                    <td>{{i.machineResult}}</td>
+                                    <td ng-init="i.result!=''">{{i.result}}</td>
+                                    <td>
+							 						<span ng-if="i.verifiedStatus=='NO'">
+							 							<a data-target="#exampleModalCenter" data-toggle="modal"
+                                                           ng-click="setSelectedValue(i)" ng-model="i.selected">
+							 								<i class="i-Edit edit_style"></i>
+							 							</a>
+							 						</span>
+                                    </td>
+                        </div>
+                        </td>
+                        <td>
+                            <div class="col" id="statusVeri" ng-init="i.verifiedStatus=='YES'">{{i.verifiedStatus}}
+                            </div>
+                            <div>{{i.orderDetail.authorizedById}}</div>
+                        </td>
+                        </tr>
+                        </tbody>
+                        <!-- <div ng-show="(items|filter:q).length" class="text-24">
+                                  <strong>No results found!!!</strong>
+                        </div>  -->
+                        </table>
+                        <!-- error message  -->
+                        <!--  <div ng-show="items.length">No data available</div> -->
+                        <!-- <div ng-show="(items|filter:q).length==0" class="text-24"></div>  -->
+                        <!--   <p ng-repeat="selectedName in selecteditem">{{selectedName.testMaster.parameter_name}}</p>  -->
+                    </div>
+                    <div class="col-md">
+                        <!-- table second -->
+                        <table class="display table table-striped table-bordered">
+                            <thead>
+                            <tr class="th_Style">
+                                <th>Test</th>
+                                <th>Details</th>
+                                <th>Value</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-hide="((details|filter:q).length == 0)" ng-if="d.result" ng-repeat="d in details">
+                                <td><a>{{d.orderDetail.investigation.invest_name}}</a></td>
+                                <td><a>{{d.testMaster.parameter_name}}</a></td>
+                                <td><a>{{d.result}}</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!--Value Modal -->
+                    <div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
+                         role="dialog" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Value Edit</h5>
+                                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form>
+                                    <div class="modal-body input-group">
+                                        <label class="labelValue input-group-text" for="value">Value</label>
+                                        <input class="form-control" ng-model="prevalue.result" type="text"
+                                               value={{prevalue.result}}>
+                                        <input ng-model="prevalue.id" type="hidden" value={{prevalue.id}}>
+                                        <input ng-model="prevalue.orderDetail.id" type="hidden"
+                                               value={{prevalue.orderDetail.id}}>
+                                        <input ng-model="prevalue.orderDetail.patientId" type="hidden"
+                                               value={{prevalue.orderDetail.patientId}}>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-primary" data-dismiss="modal" ng-click="updateResultValue()"
+                                                type="submit">Save changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Status Modal -->
+                    <div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter2"
+                         role="dialog" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <!-- <h5 class="modal-title" id="exampleModalLongTitle">Confirm Verification</h5> -->
+                                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body input-group">
+                                    <h3 class="f_style">Do you want to verify all the selected values?</h3>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-dark example-button" data-dismiss="modal" ng-click="save()"
+                                            type="submit">Save changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of col -->
+</div>
+<!-- end of row -->
+
+
+<!-- ============ Body content End ============= -->
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<!-- <script th:src="@{/static/assets/js/lis-result-list.js}"></script> -->
+<script th:src="@{/static/assets/js/lis-result-list.js}"></script>
+</body>
+
+
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Sample Reject</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css" rel="stylesheet">
+    <link href="/static/assets/styles/vendor/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .aln_right{
+            text-align:right;
+        }
+        .table-input{
+        max-width:130px;
+        color:black;
+        border:none;
+        background-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <!-- <div class="breadcrumb">
+        <h1>New User</h1>
+        <ul>
+            <li><a href="">Back</a></li>
+            <li>Basic</li>
+        </ul>
+    </div> -->
+
+    <!--   <div class="separator-breadcrumb border-top"></div> -->
+
+    <div class="row">
+        <div class="col-md-1"></div>
+
+        <div class="col-md-10">
+            <h4></h4>
+            <!-- <p>A form control layout using row with left label alignment.</p> -->
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" onsubmit="return validateForm()" th:action="@{'/sampleReject/'+ ${order.id}}+'/'+${flag}"
+                          th:object="${order}">
+                        <div class="row ">
+                            <div class="col-md-4 col-4">
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Edit-Map text-16 mr-1"></i>Order # :
+                                        [[${lab.hospCode}+''
+                                        +${#dates.day(order.createdAt)}+${#dates.format(order.createdAt,
+                                        'MM')}+${#dates.format(order.createdAt, 'yy')}+'/
+                                        '+${#numbers.formatInteger(order.id,8)}]]</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-MaleFemale text-16 mr-1"></i> Patient:
+                                        <span style="text-transform: capitalize;">[[${order.patient.title}+' '+${order.patient.firstName}+' '+${order.patient.lastName}]]</span>
+                                    </p>
+
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-4 col-4">
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Calendar text-16 mr-1"></i> Order Date:
+                                        [[${#dates.format(order.createdAt , 'dd-MMM-yyyy hh:mm a')}]]</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-MaleFemale text-16 mr-1"></i> Gender / Age:
+                                        <span>[[${order.patient.gender}]]</span> / <span id="age"></span></p>
+                                    <input id="dob" th:value="${order.patient.birthday}" type="hidden">
+
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-4 col-6">
+
+                                <div class="mb-4">
+                                    <p class="text-primary mb-1"><i class="i-Professor text-16 mr-1"></i> Ordered By:
+                                        <span>[[${order.updatedBy.ssoId}]]</span></p>
+
+                                </div>
+                                <div class="mb-4">
+                                    <p>&nbsp;</p></div>
+
+                            </div>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Service</th>
+                                        <!--   <th >Qty.</th> -->
+                                        <!--  <th scope="col" class="col-md-3" style="text-align:right;">Price</th> -->
+                                        <th style="text-align:right;">
+                                            <span th:if="${billing}">Discount</span></th>
+                                        <th style="text-align:right;">
+                                        </th>
+                                        <th>Reason
+                                        </th>
+                                        <!-- <th scope="col">Action</th> -->
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="orderDetail,od:${order.orderDetails}"
+                                        th:if="${!billing} AND ${#strings.equalsIgnoreCase(1, orderDetail.investigation.machineType)} ">
+                                        <th>[[${od.count}]]</th>
+                                        <td>[[${orderDetail.investigation.invest_name}]]<span style="color:red"
+                                                                                              th:text="${orderDetail.packageId}?'  *Package':''"></span>
+                                        </td>
+                                        <!--  <td>1 </td> -->
+
+                                        <td align="right" style="display:none">
+                                            <input name="rid" th:value="${orderDetail.id}" type="hidden">
+                                            <input name="tid" th:value="${orderDetail.investigation.id}" type="hidden">
+                                            <input name="testName" th:value="${orderDetail.investigation.invest_name}"
+                                                   type="hidden">
+                                        </td>
+                                        <td></td>
+                                        <td class="d-flex flex-row-reverse">
+                                            <th:block
+                                                    th:if="${#strings.equalsIgnoreCase('ORDERED', orderDetail.status)} or ${#strings.equalsIgnoreCase('SAMPLE_COLLECTED', orderDetail.status)} or ${#strings.equalsIgnoreCase('RE_RUN_SAMPLE', orderDetail.status)}">
+
+                                                <div><input name="cancel" onchange="setPackage(this)" th:attr="data-package=${orderDetail.packageId}"
+                                                            th:value="${orderDetail.id}"
+                                                            type="checkbox"></div>
+                                            </th:block>
+                                            <th:block
+                                                    th:if="${#strings.equalsIgnoreCase('RESULT_SAVED', orderDetail.status)} or ${#strings.equalsIgnoreCase('AUTHORIZED', orderDetail.status)} or ${#strings.equalsIgnoreCase('PRINTED', orderDetail.status)} or ${#strings.equalsIgnoreCase('SAMPLE_REJECTED', orderDetail.status)} or ${#strings.equalsIgnoreCase('CANCELED', orderDetail.status)} or ${#strings.equalsIgnoreCase('VERIFIED', orderDetail.status)}">
+
+                                                <div> [[${orderDetail.status}]]</div>
+                                            </th:block>
+                                        </td>
+                                        <td>
+                                            <th:block
+                                                    th:if="${#strings.equalsIgnoreCase('ORDERED', orderDetail.status)} or ${#strings.equalsIgnoreCase('SAMPLE_COLLECTED', orderDetail.status)} or ${#strings.equalsIgnoreCase('RE_RUN_SAMPLE', orderDetail.status)}">
+
+                                                <select class="form-control sampleReason" name="sampleReason">
+                                                    <option value="">Select</option>
+                                                    <option value="Sample hemolyzed">Sample hemolyzed</option>
+                                                    <option value="Sample not received">Sample not received</option>
+                                                    <option value="Lipemic Sample">Lipemic Sample</option>
+                                                    <option value="Sample Quantity not sufficient">Sample Quantity not
+                                                        sufficient
+                                                    </option>
+                                                    <option value="Inappropriate sample">Inappropriate sample</option>
+                                                    <option value="Sample Spilled">Sample Spilled</option>
+                                                    <option value="Primary tube not Received">Primary tube not
+                                                        Received
+                                                    </option>
+                                                    <option value="Clotted sample">Clotted sample</option>
+                                                    <option value="Unsterile Container">Unsterile Container</option>
+                                                </select>
+                                            </th:block>
+                                            <th:block
+                                                    th:if="${#strings.equalsIgnoreCase('RESULT_SAVED', orderDetail.status)} or ${#strings.equalsIgnoreCase('AUTHORIZED', orderDetail.status)} or ${#strings.equalsIgnoreCase('PRINTED', orderDetail.status)} or ${#strings.equalsIgnoreCase('SAMPLE_REJECTED', orderDetail.status)} or ${#strings.equalsIgnoreCase('CANCELED', orderDetail.status)} or ${#strings.equalsIgnoreCase('VERIFIED', orderDetail.status)}">
+
+                                                <div>[[${#strings.equalsIgnoreCase('SAMPLE_REJECTED',
+                                                    orderDetail.status)}?${orderDetail.sampleReason}:'-']]
+                                                </div>
+                                            </th:block>
+                                        </td>
+
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div th:if="${billing}">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th class="col-md-1" scope="col"></th>
+                                        <th class="col-md-4" scope="col"></th>
+                                        <th class="col-md-1 aln_right" scope="col">Total:</th>
+                                        <th class="col-md-3 aln_right" scope="col">
+                                            [[${order.invoice.totalAmount}]]
+                                        </th>
+                                        <th class="col-md-1 aln_right" scope="col">
+                                            [[${order.invoice.discount}]]
+                                        </th>
+                                        <th class="col-md-2" style="text-align:right;"></th>
+                                        <!-- <th scope="col">Action</th> -->
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="row col-md-12">
+                            <div class="col-sm-2 aln_right"><b></b></div>
+                            <div class="col-sm-3">
+
+                            </div>
+                            <div class="col-sm-2 aln_right"><b>Remark</b></div>
+
+                            <div class="col-sm-4 ">
+                                <textarea class="form-control" name="remark"></textarea></div>
+
+
+                            <div class="col-sm-1 aln_right">
+                                <button class="btn btn-primary" onsubmit="return validate();" type="submit"> Submit
+                                </button>
+
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+</body>
+<script>
+
+
+    function setDiscount(elm){
+        var sum =0.0;
+        var rate=document.getElementsByName("rate");
+        var disc=document.getElementsByName("disc");
+        for(var i=0; i<disc.length; i++){
+            disc[i].value=rate[i].value*elm.value/100;
+            sum+=parseFloat(disc[i].value);
+        }
+        document.getElementById("totalDiscount").value=sum;
+        document.getElementById("pay").value=parseFloat(document.getElementById("total").value)  - sum;
+    }
+    function updateDiscount(elm){
+        var valid = parseFloat(elm.value.match(/^-?\d*(\.\d+)?$/));
+
+        if(valid==null || isNaN(valid)){
+            swal({
+                type: 'warning',
+                title: 'Warning!',
+                text: 'Please enter valid discount in number',
+                buttonsStyling: false,
+                confirmButtonClass: 'btn btn-lg btn-warning'
+            });
+            elm.value=0;
+        }
+
+        var sum =0.0;
+        var disc=document.getElementsByName("disc");
+        var auth_discount = parseFloat(elm.getAttribute('data-rate'))*parseFloat($("#discount").val())/100;
+        if(parseFloat(elm.value)>auth_discount){
+            elm.value=0;
+        }
+        for(var i=0; i<disc.length; i++){
+            sum+=parseFloat(disc[i].value);
+        }
+        document.getElementById("totalDiscount").value=sum;
+        document.getElementById("pay").value=parseFloat(document.getElementById("total").value) - sum;
+    }
+    function setPackage(checkbox){
+        var pack = checkbox.getAttribute("data-package");
+        if(pack!=null){
+            var stat = checkbox.checked;
+            var x = document.getElementsByName("cancel");
+            for(var i=0; i<x.length; i++){
+                if(x[i].getAttribute("data-package")==pack){
+                    x[i].checked=stat;
+                }
+
+            }
+        }
+
+    }
+    $(document).ready(function(){
+
+        $(".sampleReason").select2({width:'200px'});
+           var today = new Date();
+    var birthday = new Date($("#dob").val());
+
+    var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+    var year_age = Math.floor(differenceInMilisecond / 31536000000);
+    var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+
+
+    var month_age = Math.floor(day_age/30);
+
+    day_age = day_age % 30;
+
+    if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+    //alert("Invalid birthday - Please try again!");
+    }
+    else {
+    if(year_age != 0){
+    $("#age").html(year_age+" Years ");
+         }else if( month_age != 0){
+            $("#age").html(month_age+" Months ");
+         }else{
+    $("#age").html(day_age+" Days ");
+         }
+
+    // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+    }
+
+
+    });
+    function validateForm(){
+        var checked = document.querySelectorAll('[name="cancel"]:checked');
+
+        if(checked.length==0){
+            swal({
+                type: 'warning',
+                title: 'Please select test using checkbox!',
+                text: 'Warning',
+                buttonsStyling: false,
+                confirmButtonClass: 'btn btn-lg btn-warning'
+            });
+
+            return false;
+            }
+
+
+
+
+    }
+</script>
+
+</html>

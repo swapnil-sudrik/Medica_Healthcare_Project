@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Patient Profile</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css"
+          rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css"
+          rel="stylesheet">
+    <style>.MACHINE {
+	background-color: blue;
+	color: white;
+}
+
+.ORDERED {
+	background-color: olivedrab;
+	color: yellow;
+}
+
+.CANCELED {
+	color: red;
+}
+
+.CANCELED_TEXT {
+	color: red;
+	text-decoration: line-through;
+}
+
+.SAMPLE_COLLECTED {
+	background-color: red;
+	color: white;
+}
+
+.RESULT_SAVED {
+	background-color: #e0c911;
+	color: blue;
+}
+
+.AUTHORIZED {
+	background-color: orange;
+}
+
+.PRINTED {
+	background-color: green;
+	color: yellow;
+}
+
+.SAMPLE_REJECTED {
+	background-color: #8a2142;
+	color: white;
+}
+
+.VERIFIED {
+	background-color: #fcf403;
+}
+
+.RE_RUN_SAMPLE {
+	background-color: #bafc03;
+	color: black;
+	
+}
+    ul{margin-top: 0.2rem;
+    margin-bottom: 0rem;
+    }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <!-- <div class="breadcrumb">
+            <h1 ></h1>
+        </div>
+
+        <div class="separator-breadcrumb border-top"></div> -->
+
+    <div class="card user-profile o-hidden mb-4">
+        <!-- <div class="header-cover" style="background-image: url('/static/assets/images/photo-wide-4.jpg')"></div> -->
+        <div class="user-info">
+
+            <p style="margin: 3rem 0 0 0;">
+					<span class="text-24"
+                          th:text="${patient.title}?${#strings.capitalizeWords(patient.title)}:''"></span>
+                <span class="text-24"
+                      th:text="${#strings.capitalizeWords(patient.firstName)} +' '+${#strings.capitalizeWords(patient.lastName)}"></span>
+                <span id="age"></span> / <span class="text-muted m-0"
+                                               th:text="${patient.gender}"></span>
+            </p>
+
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs profile-nav mb-4" id="profileTab"
+                role="tablist">
+                <li class="nav-item"><a aria-controls="timeline"
+                                        aria-selected="false" class="nav-link active" data-toggle="tab" href="#timeline"
+                                        id="timeline-tab" role="tab">Orders</a></li>
+
+
+                <!-- <li class="nav-item">
+                        <a class="nav-link" id="photos-tab" data-toggle="tab" href="#photos" role="tab" aria-controls="photos" aria-selected="false">Invoices</a>
+                    </li> -->
+                <li class="nav-item"><a aria-controls="friends" aria-selected="false"
+                                        class="nav-link" data-toggle="tab" href="#friends"
+                                        id="friends-tab" role="tab">Reports</a></li>
+            </ul>
+
+            <div class="tab-content" id="profileTabContent">
+                <!-- Order tab start -->
+                <div aria-labelledby="timeline-tab" class="tab-pane fade active show"
+                     id="timeline" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="display table table-striped table-bordered"
+                               id="table_id"
+                               style="width: 100%">
+                            <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Entry Date</th>
+                                <th>Order No.</th>
+                                <th>
+                                    <ul>
+                                        <li class=" d-flex "><span>Test Name</span> <span
+                                                class="ml-auto right">Status</span></li>
+                                    </ul>
+                                </th>
+                                <th style="max-width: 100px;">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="worklist,sl: ${worklists}" th:id="${'rowitem'+sl.count}">
+                                <td th:text="${sl.count}"></td>
+
+                                <td
+                                        th:text="${#dates.format({worklist.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+
+
+                                <td
+                                        th:text="${lab.hospCode}+'' +${#dates.day(worklist.createdAt)}+${#dates.format(worklist.createdAt, 'MM')}+${#dates.format(worklist.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(worklist.id,8)}"></td>
+                                <td>
+                                    <ul th:each="sen:${worklist.orderDetails}"
+                                        th:name="${sl.count} ">
+                                        <li class=" d-flex align-items-left"><span th:text=${sen.testName}></span> <span
+                                                class="ml-auto right cancel_status" th:classappend="${sen.status}"
+                                                th:text="${sen.status}"></span></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <!-- <a th:href="@{'/invoicing/'+ ${worklist.id}}" class="btn btn-warning btn-sm btn-rounded btn-icon m-1">
+                                <span class="ul-btn__icon"><i class="i-Atom"></i></span>
+                                        <span class="ul-btn__text">Create Invoice</span>
+
+                                </a> --> <a class="btn btn-danger btn-sm btn-rounded btn-icon m-1 cancel_btn"
+                                                    th:href="@{'/cancel/'+ ${worklist.id}}"
+                                                    th:if="${worklist.labId == current_lab}"> <span
+                                        class="ul-btn__icon"><i class="i-Atom"></i></span> <span
+                                        class="ul-btn__text">Cancel</span>
+
+                                </a> <a class="btn btn-primary btn-sm btn-rounded btn-icon m-1"
+                                        th:href="@{'/bookingReceipt/'+ ${worklist.id}}">
+                                    <span class="ul-btn__icon"><i class="i-Billing"></i></span>
+                                    <span class="ul-btn__text">Slip</span>
+
+                                </a>
+                                    <!-- access on Technician, Pathologist,Lab_Data_Entry_Operator -->
+                                    <!-- <a th:href="@{'/bookingAddTest/'+ ${worklist.patient.id}+'/'+${worklist.id}}" sec:authorize="hasRole('Technician') or hasRole('Pathologist') or hasRole('Lab_Data_Entry_Operator') or hasRole('Lab_Admin')"
+                                    th:if="${#dates.format({worklist.createdAt} , 'dd-MMM-yyyy')}== ${#dates.format({#dates.createNow()} , 'dd-MMM-yyyy')}"
+                                        class="btn btn-success btn-sm btn-rounded btn-icon m-1">
+                                            <span class="ul-btn__icon"><i class="i-Billing"></i></span>
+                                            <span class="ul-btn__text">Add More Test</span>
+
+                                    </a> -->
+                                    <a class="btn btn-warning btn-sm btn-rounded btn-icon m-1"
+                                       target="blank"
+                                       th:href="@{'http://'+${#httpServletRequest.getServerName()}+':5555/'+ ${worklist.prescriptionFile}}" th:if="${worklist.prescriptionFile}" title="View Rx">
+                                        <span class="ul-btn__icon"><i class="i-Speach-Bubble-2"></i></span>
+
+                                    </a>
+
+                                </td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+
+                </div>
+                <!-- Order tab end -->
+
+                <!-- Report tab start -->
+                <div aria-labelledby="friends-tab" class="tab-pane fade" id="friends"
+                     role="tabpanel">
+
+                    <div class="table-responsive">
+                        <table class="display table table-striped table-bordered"
+                               id="multicolumn_ordering_table"
+                               style="width: 100%">
+                            <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Entry Date</th>
+                                <th>Order No.</th>
+                                <th>Test Name</th>
+                                <th>Status</th>
+                                <th style="max-width: 100px;">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="od,sl: ${orderDetail}">
+                                <td th:text="${sl.count} "></td>
+
+                                <td
+                                        th:text="${#dates.format({od.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+
+
+                                <td
+                                        th:text="${lab.hospCode}+'' +${#dates.day(od.order.createdAt)}+${#dates.format(od.order.createdAt, 'MM')}+${#dates.format(od.order.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(od.order.id,8)}"></td>
+                                <td th:text=${od.investigation.invest_name}></td>
+                                <td th:text=${od.status}></td>
+                                <td>
+                                    <!-- <a th:href="@{'/invoicing/'+ ${worklist.id}}" class="btn btn-warning btn-sm btn-rounded btn-icon m-1">
+                                <span class="ul-btn__icon"><i class="i-Atom"></i></span>
+                                        <span class="ul-btn__text">Create Invoice</span>
+
+                                </a> -->
+                                    <div th:if="${od.status == 'PRINTED'}">
+                                        <a class="btn-margin"
+                                           sec:authorize="hasRole('Technician')  or hasRole('Lab_Data_Entry_Operator') or hasRole('Lab_Admin') or hasRole('Pathologist')"
+                                           th:href="@{'/report/PrintReportPatientProfileJasper/'+${flagType}+'/'+ ${od.id}}"
+                                           th:with="flagType=${od.investigation.section} ==  'CYTOLOGY'?'cytology': ((${od.investigation.department} == 'MICROBIOLOGY')?'microbiology':true)">
+                                            <button class="btn btn-success btn-sm btn-padding-table"
+                                                    data-placement="top"
+                                                    data-toggle="tooltip" title="Print" type="button">
+														<span class="ul-btn__icon">Print<i
+                                                                class="i-Billing"></i></span>
+
+                                            </button>
+                                        </a>
+                                    </div>
+
+
+                                </td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                <!-- Report tab end -->
+                <!-- Invoice tab start -->
+                <div aria-labelledby="photos-tab" class="tab-pane fade" id="photos"
+                     role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="display table table-striped table-bordered"
+                               id="zero_configuration_table"
+                               style="width: 100%">
+                            <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Date</th>
+                                <th>Invoice #</th>
+                                <th>Est.</th>
+                                <th>Disc.</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="invoice,h : ${invoices}">
+                                <td th:text=${h.count}></td>
+                                <td
+                                        th:text="${#dates.format({invoice.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+                                <td th:text="${invoice.prefix} +' ' +${invoice.counter}"></td>
+                                <td th:text=${invoice.totalAmount}></td>
+                                <td th:text=${invoice.discount}></td>
+                                <td th:text=${invoice.paidAmount}></td>
+                                <td th:text=${invoice.balanceAmount}></td>
+                                <td><a class="btn btn-info btn-sm m-1"
+                                       th:href="@{'/invoices/'+ ${invoice.id}}">Show</a> <a
+                                        class="btn btn-danger btn-sm btn-rounded btn-icon m-1"
+                                        th:href="@{'/cancel/'+ ${invoice.order.id}}"> <span
+                                        class="ul-btn__icon"><i class="i-Atom"></i></span> <span
+                                        class="ul-btn__text btn_cancel">Cancel</span>
+
+                                </a></td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                <!-- Invoice tab end -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+</body>
+
+
+</html>
+
+
+<script th:inline="javascript">
+    $(document).ready(function(){
+
+    var dob = /*[[${patient.birthday}]]*/ '1970';
+
+
+      var today = new Date();
+    var birthday = new Date(dob);
+    var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+    var year_age = Math.floor(differenceInMilisecond / 31536000000);
+    var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+    var month_age = Math.floor(day_age/30);
+    day_age = day_age % 30;
+
+    if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+        //alert("Invalid birthday - Please try again!");
+    }
+    else {
+        if(year_age != 0){
+            $("#age").html(year_age+" Year's ");
+                }else if( month_age != 0){
+                   $("#age").html(month_age+" Month's ");
+                }else{
+            $("#age").html(day_age+" Day's ");
+                }
+      // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+        }
+
+    /* HIDE CANCEL BUTTON */
+         let tableId = $("#table_id").find("tr");
+         let r = 0;
+          let cancelStatus = document.getElementsByClassName("cancel_status");
+          $('#table_id tbody>tr').each(function () {
+             console.log(cancelStatus.length);
+
+              let a = $("#rowitem"+r).find("td").eq(3).text();
+              let b = $("#rowitem"+r).find($(".cancel_btn")).text();
+              let lc = $("#rowitem"+r).find($(".cancel_status")).length;
+             let c = $("#rowitem"+r).find($(".cancel_status")[r]).text();
+              for(let i=0; i < lc; i++){
+                  if(c == 'AUTHORIZED' || c == 'PRINTED'){
+                      $("#rowitem"+r).find($(".cancel_btn")).hide();
+                  }
+              }
+              r++;
+          });
+
+    });
+
+</script>
+

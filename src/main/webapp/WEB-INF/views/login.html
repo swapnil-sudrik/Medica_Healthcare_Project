@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>sickle_app</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: url('static/assets/images/HubSpoke.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 30px 25px;
+        }
+
+        .auth-container h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .auth-container label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .auth-container input {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .auth-container input:focus {
+            border-color: #6c63ff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(108, 99, 255, 0.5);
+        }
+
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            background: #6c63ff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .auth-container button:hover {
+            background: #5750c9;
+        }
+
+        .auth-container .error-message {
+            color: #ff4d4f;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .auth-container .forgot-password {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6c63ff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .auth-container .forgot-password:hover {
+            color: #5750c9;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 20px;
+            }
+
+            .auth-container h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <h1>Login</h1>
+<!--    <form th:action="@{/loginUser}" method="post">-->
+    <form th:action="@{/login}" method="post">
+
+<!--    <div class="error-message" th:if="${error}">-->
+<!--            <p th:text="${error}"></p>-->
+<!--        </div>-->
+
+        <div class="error-message" th:if="${param.error}">
+            <p>Invalid username or password</p>
+        </div>
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <a href="#" class="forgot-password">Forgot your password?</a>
+</div>
+
+<script th:src="@{/static/assets/js/vendor/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/static/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/static/assets/js/es5/script.min.js}"></script>
+</body>
+</html>

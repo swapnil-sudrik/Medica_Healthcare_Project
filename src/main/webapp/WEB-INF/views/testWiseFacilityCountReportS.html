@@ -1,0 +1,85 @@
+<div id="search_data">
+    <div th:fragment="detail">
+
+        <div class="ExportData table-responsive">
+
+            <table class="display table table-striped table-bordered"
+                   id="multicolumn_ordering_table" style="width: 100%">
+                <thead>
+                <tr>
+                    <td colspan="16"><b>Date: [[ ${#dates.format({start_date} , 'dd-MMMM-yyyy')}]] To [[
+                        ${#dates.format({end_date} , 'dd-MMMM-yyyy')}]]</b></br>
+                        <!-- <span>*Note: </br>1. Reporting based on 24 hours starting at 8:00 am and ending at 7:59 am next day.</br>
+                       </span> --> </td>
+                </tr>
+                <tr class="border border-primary">
+                    <th rowspan="3">SI</th>
+                    <th rowspan="3">Lab Name</th>
+                    <th rowspan="3">Test Name</th>
+                    <th class="text-center" colspan="12">Facility
+                    </th>
+
+
+                    <th class="text-right" rowspan="3">Total (<span
+                            th:text="${#aggregates.sum(inv_list.![testCount])}"></span>)
+                    </th>
+                </tr>
+                <tr>
+                    <th class="text-center" colspan="5">OPD (<span
+                            th:text="${#aggregates.sum(inv_list.![opd])}"></span>)
+                    </th>
+                    <th class="text-center" colspan="5">IPD (<span
+                            th:text="${#aggregates.sum(inv_list.![ipd])}"></span>)
+                    </th>
+                    <th class="text-center">IPD ANC (<span
+                            th:text="${#aggregates.sum(inv_list.![ipdanc_female])}"></span>)
+                    </th>
+
+                    <th class="text-center">OPD ANC (<span
+                            th:text="${#aggregates.sum(inv_list.![opdanc_female])}"></span>)
+                    </th>
+                </tr>
+                <tr>
+                    <th>Male</th>
+                    <th>Female</th>
+                    <th>Male Child</th>
+                    <th>Female Child</th>
+                    <th>Other</th>
+                    <th>Male</th>
+                    <th>Female</th>
+                    <th>Male Child</th>
+                    <th>Female Child</th>
+                    <th>Other</th>
+                    <th>Ipd</th>
+                    <th>Opd</th>
+                </tr>
+                </thead>
+                </tbody>
+                <tr th:each="list,i : ${inv_list}">
+                    <td>[[${i.count}]]</td>
+                    <td th:text="${list.labName}"></td>
+                    <td th:text="${list.testName}"></td>
+                    <td align="right">[[${list.opd_male}]]</td>
+                    <td align="right">[[${list.opd_female}]]</td>
+                    <td align="right">[[${list.opd_child_male}]]</td>
+                    <td align="right">[[${list.opd_child_female}]]</td>
+                    <td align="right">[[${list.opd_other}]]</td>
+                    <td align="right">[[${list.ipd_male}]]</td>
+                    <td align="right">[[${list.ipd_female}]]</td>
+                    <td align="right">[[${list.ipd_child_male}]]</td>
+                    <td align="right">[[${list.ipd_child_female}]]</td>
+                    <td align="right">[[${list.ipd_other}]]</td>
+                    <td align="right">[[${list.ipdanc_female}]]</td>
+                    <td align="right">[[${list.opdanc_female}]]</td>
+                    <td align="right">[[${list.testCount}]]</td>
+
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Print</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <style>
+        @media print
+        {
+            @page
+            {
+                 size: a4;
+                 margin: 0;
+            }
+        }
+
+    </style>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="card">
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="">
+                        <div class="clickMeId" id="clickMeId"
+                             style="padding-bottom: 20px; display: block;">
+                            <a class="btn btn-success" style="margin-right:10px;" th:href="@{/patients}" type="button">Back</a>
+                            <strong class="font_13">Display Header</strong> <input
+                                checked="" id="chk_header" name="check"
+                                onclick="get_header(this.id)" type="checkbox">
+                        </div>
+                        <div class="d-sm-flex mb-5" data-view="print">
+                            <span class="m-auto"></span>
+                            <strongutton class="btn btn-primary mb-sm-0 mb-3 "
+                                         onClick="printPage();">Print
+                            </strongutton>
+                        </div>
+
+                        <!---===== Print Area ========-->
+                        <div id="print-area">
+                            <div style="padding-top:2px;">
+                                <div th:insert="address :: detail"></div>
+                            </div>
+
+                            <div class="mb-2 border"></div>
+                            <div style="text-align: center; font-size: 16px; font-weight:bold">Acknowledgement Slip
+                            </div>
+                            <div class="mb-2 border"></div>
+                            <table width="100%">
+                                <tr>
+                                    <!-- First Column -->
+                                    <td valign="top" width="33%">
+                                        <table width="100%">
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>Patient Name: <strong th:text="${#strings.capitalizeWords(order.patient.title) } +' '
+                        + ${#strings.capitalizeWords(order.patient.firstName) } +' '
+                        + (${order.patient.middleName} ? ${#strings.capitalizeWords(order.patient.middleName)} : '')
+                        + ' ' + ${#strings.capitalizeWords(order.patient.lastName)}
+                        +' '+${#strings.capitalizeWords(order.patient.relationWithPatient)}+' '
+                        + ${#strings.capitalizeWords(order.patient.relativeName)}"></strong></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>Age/ Gender: <strong><span>[[${order.patient.age}]] / [[${order.patient.gender}]]</span></strong></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>Mobile: <strong>[[${order.patient.mobileNo}]]</strong></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>ABHA ID: <b th:text="${order.patient.abhaId}"></b></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <!-- Second Column -->
+                                    <td valign="top" width="33%">
+                                        <table width="100%">
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>SHUHID #: <strong th:text="${order.patient.mrn1}+'/ '+ ${#numbers.formatInteger(order.patient.mrn2,6)}"></strong></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>Referred By: <strong th:text="${order.referredBy}"></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Order No.: <strong th:text="${order.id}"></strong></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>Visit Type: <strong th:text="${order.facility}"></strong></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <!-- Third Column -->
+                                    <td valign="top" width="33%">
+                                        <table width="100%">
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>IPD/OPD #: <strong th:text="${order.facilityNumber}"></strong></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}!='EQAS'">
+                                                <td>Referred Dept: <b th:text="${order.referredDepartment}"></b></td>
+                                            </tr>
+                                            <tr th:if="${order.facility}=='EQAS'">
+                                                <td>EQAS Agency: <b th:text="${order.referredDepartment}"></b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ordered On: <strong>[[${#dates.format({order.createdAt}, 'dd-MMM-yyyy hh:mm a')}]]</strong></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="mb-2 border"></div>
+
+
+
+
+                            <table border="1" width="100%">
+                                <tr>
+                                    <td width="10%">
+                                        SI.
+                                    </td>
+                                    <td>
+                                        Service Name
+                                    </td>
+                                    <td>
+                                        Barcode
+                                    </td>
+                                </tr>
+                                <tr style="text-align:center;" th:each="od,h : ${order.orderDetails}">
+                                    <td>[[${h.count}]]</td>
+                                    <td style="text-align:left;">[[${od.testName}]]</td>
+                                    <td style="text-align:left;">[[${od.barcode}]]</td>
+                                </tr>
+                                <tr style="text-align:left; font-size:14px;">
+                                    <td colspan="3">
+
+                                        <strong>Note</strong> : Report will be delivered on showing this acknowledgement
+                                        slip.<br>
+                                        This is the computer generated slip and does not required signature.
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <!--==== / Print Area =====-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script th:inline="javascript">
+    $(document).ready(function(){
+
+    var dob = /*[[${order.patient.birthday}]]*/ '1970';
+
+
+      var today = new Date();
+    var birthday = new Date(dob);
+    var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+    var year_age = Math.floor(differenceInMilisecond / 31536000000);
+    var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+    var month_age = Math.floor(day_age/30);
+    day_age = day_age % 30;
+
+    if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+        //alert("Invalid birthday - Please try again!");
+    }
+    else {
+        if(year_age != 0){
+            $("#age").html(year_age+" Y ");
+                }else if( month_age != 0){
+                   $("#age").html(month_age+" M ");
+                }else{
+            $("#age").html(day_age+" D ");
+                }
+      // alert("You are<strongr/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+        }
+});
+
+</script>
+<script type="text/javascript">
+    function printPage(val){//alert(val);
+        $("#myTabContent").css({"margin-top": "-180px","margin-right": "0px","margin-left": "0px"});
+
+        window.print();
+    }
+
+    (function () {
+
+        var beforePrint = function () {
+            //alert('Functionality to run before printing.');
+        };
+
+        var afterPrint = function () {
+            location.reload();
+        };
+
+        if (window.matchMedia) {
+            var mediaQueryList = window.matchMedia('print');
+
+            mediaQueryList.addListener(function (mql) {
+                //alert($(mediaQueryList).html());
+                if (mql.matches) {
+                    beforePrint();
+                } else {
+                    afterPrint();
+                }
+            });
+        }
+
+        window.onbeforeprint = beforePrint;
+        window.onafterprint = afterPrint;
+
+    }());
+$(document).on('keydown', function(e) {
+if(e.ctrlKey && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
+    alert("Please use the Print button below for a better rendering on the document");
+    e.cancelBubble = true;
+    e.preventDefault();
+
+    e.stopImmediatePropagation();
+}
+});
+</script>
+</body>
+</html>

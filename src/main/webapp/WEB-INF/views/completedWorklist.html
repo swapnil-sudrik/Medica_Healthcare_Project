@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Completed Work List</title>
+    <th:block th:include="layout :: headerfiles"></th:block>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="row mb-4">
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+                <div class="card-body">
+                    <div class="alert alert-card alert-success" role="alert" th:if="${message}">
+                        <strong class="text-capitalize">Success!</strong> [[${message}]]
+                        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th colspan="2"><h3>Completed Work List</h3></th>
+                                <th colspan="10" style="text-align:right">
+                                </th>
+                            </tr>
+                            <tr>
+                                <td><input class="form-control" id="barcode" style="width:200px" placeholder="Enter barcode" type="text"></td>
+                                <td valign="top">
+                                    <button class="btn btn-dark example-button" style="margin-right:800px" data-style="expand-left"><span class="ladda-label" id="search">Search</span></button>
+                                </td>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div id="LoadingImage" style="display: none">
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    </div>
+                    <div id="search_detail"></div>
+
+                    <div class="default">
+                        <div th:insert="completedWorklistSearch :: patientdetailtest"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+</div>
+
+<script type="text/javascript">
+    $("#search").click(function () {
+        var barcode = $("#barcode").val();
+
+        $("#LoadingImage").show();
+
+        $.ajax({
+            type: "GET",
+            url: "/completedWorklistSearchWeb",
+            data: { barcode: barcode },
+            success: function (data) {
+                $("#LoadingImage").hide();
+                $(".default").hide();
+                $("#search_detail").html(data);
+            },
+            error: function () {
+                $("#LoadingImage").hide();
+                $("#search_detail").html("<h5>An error occurred while fetching patients.</h5>");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

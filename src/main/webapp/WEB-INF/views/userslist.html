@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Users</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="/static/assets/styles/css/themes/lite-purple.min.css" rel="stylesheet">
+    <link href="/static/assets/styles/vendor/perfect-scrollbar.css" rel="stylesheet">
+    <link href="/static/assets/styles/vendor/pickadate/classic.css" rel="stylesheet">
+    <link href="/static/assets/styles/vendor/pickadate/classic.date.css" rel="stylesheet">
+    <script th:src=@{http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js}></script>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Users</h1>
+        <ul>
+
+            <li><i class="i-Add"></i><a th:href="@{/user-new}">New User</a></li>
+        </ul>
+    </div>
+    <!--  <div class="separator-breadcrumb border-top"></div> -->
+
+    <!--  <div class="row mb-4">
+         <div class="col-md-12">
+             <h4>Users</h4>
+             <p>LIS Users</p>
+         </div>
+     </div> -->
+    <!-- end of row -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                    <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                    </p> -->
+
+                    <div class="table-responsive">
+                        <table class="display table table-striped table-bordered" id="multicolumn_ordering_table"
+                               style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Firstname</th>
+                                <th>Lastname</th>
+                                <th>Email</th>
+                                <th>Username</th>
+                                <th>Lab Name</th>
+                                <th>Department Name</th>
+                                <th>Privileges</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user : ${users}">
+                                <td th:text=${user.firstName}></td>
+                                <td th:text=${user.lastName}></td>
+                                <td th:text=${user.email}></td>
+                                <td th:text=${user.ssoId}></td>
+                                <td th:text=${user.labName}></td>
+                                <td th:text=${user.departmentName}></td>
+                                <td th:text=${user.userProfiles}></td>
+                                <td>
+                                    <div aria-label="Basic example" class="btn-group " role="group">
+                                        <a th:href="@{'/users/'+ ${user.id}}" title="Edit">
+                                            <button class="btn btn-outline-info btn-sm btn-padding-table" type="button">
+                                                <span class="ul-btn__icon"><i class="i-Open-Book"></i></span></button>
+                                        </a>
+                                        <a th:href="@{'/password/'+ ${user.id}}" title="Password">
+                                            <button class="btn btn-outline-danger btn-sm btn-padding-table"
+                                                    type="button">
+						                                <span class="ul-btn__icon"><i class="i-Key"></i>
+						                                </span></button>
+                                        </a>
+                                        <a th:href="@{'/user-edit/'+ ${user.id}}" title="Update Sign">
+                                            <button class="btn btn-outline-warning btn-sm btn-padding-table"
+                                                    type="button">
+                                                <span class="ul-btn__icon"><i class="i-Edit"></i></span>
+                                            </button>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+</div>
+<!-- ============ Body content End ============= -->
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+</body>
+
+
+</html>

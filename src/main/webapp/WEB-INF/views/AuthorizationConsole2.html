@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<head>
+    <title>Authorization Console</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link rel="stylesheet"
+          th:href="@{/static/assets/styles/vendor/datatables.min.css}">
+    <style>
+        .p-5 {
+            padding: 1px;
+        }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="generic-container">
+        <div class="panel panel-default">
+            <div class="panel-heading d-flex justify-content-between">
+                <h1 class="panel-title my-2">Authorization Console</h1>
+
+
+            </div>
+
+
+            <div class="search ul-task-manager__search-inline">
+
+
+                <form class="form-inline ml-auto" method="get"
+                      th:action="@{/AuthorizationConsole2}">
+                    <div class="row">
+                        <label class="ul-form__label col-1">Start Date </label> <input
+                            class="form-control  col-2" id="starts_at"
+                            name="starts_at" type="datetime-local"/> <label
+                            class="ul-form__label col-1">End Date </label> <input
+                            class="form-control  col-2" id="ends_at" name="ends_at"
+                            type="datetime-local"/> <label class="ul-form__label  col-1">Department
+                    </label> <select class="form-control col-2" id="department" name="department"
+                                     type="text">
+                        <option selected value="All">All</option>
+                        <option th:each="departments:${departmentList}"
+                                th:value="${departments.department}">
+                            [[${departments.department}]]
+                        </option>
+                    </select> <label class="ul-form__label col-1">Section </label> <select
+                            class="form-control col-2" id="section" name="section"
+                            type="text">
+                        <option selected value="all">All</option>
+                        <option th:each="sections:${sectionList}"
+                                th:value="${sections.section}">
+                            [[${sections.section}]]
+                        </option>
+                    </select> <label class="ul-form__label col-1">Test </label> <select
+                            class="form-control col-2" id="test" name="test" type="text">
+                        <option selected value="all">All</option>
+                        <option th:each="test:${testList}" th:value="${test.id}">
+                            [[${test.invest_name}]]
+                        </option>
+                    </select> <label class="ul-form__label col-1">Shift   </label> <select
+                            class="form-control col-2" id="shift" name="shift" type="text">
+                        <option selected value="all">All</option>
+                        <option value="MORNING">MORNING</option>
+                        <option value="EVENING">EVENING</option>
+                        <option value="NIGHT">NIGHT</option>
+                    </select> <label class="ul-form__label col-1">Patient Type </label> <select
+                            class="form-control col-2" id="patient_type" name="patient_type"
+                            type="text">
+                        <option selected value="all">All</option>
+                        <option value="OPD">OPD</option>
+                        <option value="IPD">IPD</option>
+                        <option value="ANC">ANC</option>
+                    </select>
+
+
+                        <label class="ul-form__label col-1">Order Status   </label>
+                        <select class="form-control col-2"
+                                id="order_status" name="orderStatus" type="text">
+                            <option selected value="all">All</option>
+                            <option value="AUTHORIZED">Authorized</option>
+                            <option value="VERIFIED">Technician Verified</option>
+                            <option value="RESULT_SAVED">Result Save</option>
+                            <option value="SAMPLE_COLLECTED">Sample Collected</option>
+                        </select>
+
+
+                    </div>
+                    <label class="ul-form__label col-1">Page #  </label>
+                    <select class="form-control col-2"
+                            id="page" name="page" type="text">
+                        <option selected value="0">0</option>
+                        <option th:each="i,no: ${#numbers.sequence(1, totalPages)}" th:value="${no.count}">
+                            [[${no.count}]]
+                        </option>
+                    </select>
+                    <label class="ul-form__label col-3">
+                        Showing
+                        [[${page.getPageNumber()*page.getPageSize()}]] to
+                        [[${page.getPageNumber()*page.getPageSize()+pageTotalElements}]]
+                        of [[${totalElements}]] entries</label>
+
+                    <div class="col-3">
+                        <button class="btn btn-success " type="submit">Search</button>
+                        <!-- 	<a th:href="@{/AuthorizationConsole2}" class="btn btn-warning"><span><i
+                                    class="i-Reload text-16" title="Refresh"></i></span></a> --> <a
+                            class=" btn btn-md btn-primary ladda-button basic-ladda-button"
+                            target="_blank"
+                            th:href="@{'/AuthorizationConsoleToExcell/'+${starts_at}+'/'+${ends_at}+'/'+${departmentAsright}+'/'+${sectionDefault}+'/'+${testDefault}+'/'+${patientTypeDefault}+'/'+${shiftDefault}}"> Export To Excel </a>
+                    </div>
+
+
+                </form>
+
+            </div>
+        </div>
+        <div class="alert alert-card alert-success" role="alert"
+             th:if="${message}">
+            <strong class="text-capitalize">Success!</strong> [[${message}]]
+            <button aria-label="Close" class="close" data-dismiss="alert"
+                    type="button">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="panel-footer text-muted">
+
+
+        </div>
+        <form class="form-inline ml-auto" method="post"
+              th:action="@{/AuthorizationConsoleSave}">
+            <div class="table-responsive">
+                <a id="viewButton" style="display: none;">
+                    <button class="btn btn-success btn-sm btn-padding-table"
+                            type="submit">
+                        <span class="ul-btn__icon"><i class="i-Open-Book"></i></span>
+                        Authorize
+                    </button>
+                </a>
+
+                <table class="display  table-bordered"
+                       id="multicolumn_ordering_table">
+                    <thead>
+                    <tr class="bg-light">
+
+                        <th>S. No.</th>
+
+                        <th>Order Date&Time</th>
+                        <th>Department</th>
+                        <th>Section</th>
+                        <th>Status</th>
+                        <!-- 	<th>UHID</th> -->
+                        <th>LAB ID</th>
+                        <th>Order ID</th>
+                        <th>Patient Name</th>
+                        <th>Age / Gender</th>
+                        <th>Patient Type</th>
+                        <th>Barcode</th>
+                        <th>Vial Type</th>
+                        <th>Sample status</th>
+                        <th>Test Name</th>
+
+                    </tr>
+                    </thead>
+                    <tbody id="names">
+                    <tr id="names" th:each="res1,h : ${res}">
+                        <td>[[${h.count}]]</td>
+
+                        <td>[[ ${#dates.format({res1.createdAt} , 'dd-MMM-yyyy
+                            hh:mm a')} ]]
+                        </td>
+                        <td>[[${res1.investigation.department}]]</td>
+                        <td>[[${res1.investigation.section}]]</td>
+                        <td>[[${res1.status}]]</td>
+                        <td><a target="_blank"
+                               th:href="@{'/result-multipleWorkList/'+ ${res1.order.id}+'/auth'}"
+                               title="Step 2">[[${res1.order.patient.mrn1}+'/ '+
+                            ${#numbers.formatInteger(res1.order.patient.mrn2,6)}]]</a></td>
+
+                        <td><a target="_blank"
+                               th:href="@{'/result-multipleWorkList/'+ ${res1.order.id}+'/auth'}"
+                               title="Step 2">[[${res1.order.id}]]</a></td>
+                        <td><a target="_blank"
+                               th:href="@{'/result-multipleWorkList/'+ ${res1.order.id}+'/auth'}"
+                               title="Step 2">[[${#strings.capitalizeWords(res1.order.patient.title)
+                            } +' '
+                            +${#strings.capitalizeWords(res1.order.patient.firstName) }
+                            +' '
+                            +(${res1.order.patient.middleName}?${#strings.capitalizeWords(res1.order.patient.middleName)}:'')+'
+                            ' +${#strings.capitalizeWords(res1.order.patient.lastName)}+'
+                            '+${#strings.capitalizeWords(res1.order.patient.relationWithPatient)}+'
+                            '
+                            +${#strings.capitalizeWords(res1.order.patient.relativeName)}]]</a></td>
+                        <td>[[${res1.order.patient.age}+' /
+                            '+${res1.order.patient.gender}]]
+                        </td>
+                        <td>[[${res1.order.facility}]]</td>
+                        <td>[[${res1.barcode}]]</td>
+                        <td>[[${res1.investigation.sampleType}]]</td>
+                        <td>[[${res1.status}=='SAMPLE_REJECTED'?'REJECTED':
+                            'COLLECTED']]
+                        </td>
+                        <td>[[${res1.testName}]]</td>
+
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </form>
+
+
+        <!-- end of col -->
+
+        <!-- end of row -->
+    </div>
+</div>
+
+
+<!-- ============ Body content End ============= -->
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+</body>
+<script th:src="@{/static/assets/js/es5/task-manager-list.min.js}"></script>
+<script th:src="@{/static/assets/js/vendor/datatables.min.js}"></script>
+
+<script th:inline="javascript">
+    // multi column ordering
+     $('#multicolumn_ordering_table').DataTable({
+        "paging" : false,
+        /*  columnDefs: [{
+             targets: [1],
+             orderable: false,
+         }], */
+        "scrollX" : true,
+    });
+    $(document).ready(
+            function() {
+                $("select").select2();
+                /*<![CDATA[*/
+
+                var departmentAsright = /*[[${departmentAsright}]]*/"All";
+                var sectionDefault = /*[[${sectionDefault}]]*/"all";
+                var testDefault = /*[[${testDefault}]]*/"all";
+                var patientTypeDefault = /*[[${patientTypeDefault}]]*/"all";
+                var shiftDefault = /*[[${shiftDefault}]]*/"all";
+                var orderStatusDefault = /*[[${order_Status}]]*/"all";
+                var starttDefault = /*[[${starts_at}]]*/"all";
+                var endtDefault = /*[[${ends_at}]]*/"all";
+                var pageDefault = /*[[${pageDefault}]]*/"0";
+                /*]]>*/
+                $('#department').val(departmentAsright).change();
+                $('#section').val(sectionDefault).change();
+                $('#test').val(testDefault).change();
+                $('#patient_type').val(patientTypeDefault).change();
+                $('#shift').val(shiftDefault).change();
+                $('#order_status').val(orderStatusDefault).change();
+                $('#starts_at').val(starttDefault).change();
+                $('#ends_at').val(endtDefault).change();
+                $('#page').val(pageDefault).change();
+
+                document.getElementById('starts-at').max = new Date(new Date()
+                        .getTime()
+                        - new Date().getTimezoneOffset() * 60000).toISOString()
+                        .split("T")[0];
+                document.getElementById('ends-at').max = new Date(new Date()
+                        .getTime()
+                        - new Date().getTimezoneOffset() * 60000).toISOString()
+                        .split("T")[0];
+
+            });
+
+    function confirmInactive(event) {
+        var message = 'Are you sure you want to inactive indent?';
+        action = confirm(message) ? true : event.preventDefault();
+    }
+</script>
+
+</html>

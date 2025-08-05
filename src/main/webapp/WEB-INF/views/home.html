@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>New Test</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/pickadate/classic.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/pickadate/classic.date.css" rel="stylesheet">
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+</body>
+
+
+</html>

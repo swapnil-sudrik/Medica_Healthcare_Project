@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>[[${edit}?'Edit Payment':'Add New Payment']] Record</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1 th:text="${edit}?'Edit ':'Add New '"></h1>
+        <ul>
+            <li><a href="/payment-list">Back</a></li>
+            <!-- <li>Basic</li> -->
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+    <div id="search_data"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title mb-3">All fields are mandatory</div>
+
+                    <form method="post" modelAttribute="paymentForm"
+                          th:action="${edit}?@{'/payment-new/'+ ${paymentForm.id}}:@{/payment-new}" th:object="${paymentForm}">
+
+                        <div class="row">
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Location</label>
+
+                                <select class="form-control" id="pLocation" required th:field="*{pLocation}">
+                                    <option value="">Select</option>
+                                    <option th:data-city="${labs_list.hospCity}" th:each="labs_list:${labs}"
+                                            th:text="${labs_list.hospName}"
+                                            th:value="${labs_list.hospName}"></option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">District</label>
+                                <input class="form-control" id="pDistrict" placeholder="District" readonly
+                                       required th:field="*{pDistrict}" type="text">
+
+                            </div>
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Invoice Generating Date</label>
+                                <input class="form-control date" placeholder="Enter Here" readonly
+                                       required th:field="*{monthName}" type="text">
+                                <!--  <select  class="form-control" id="month_list"   required>
+                                 <option value="">Select</option>
+                                 <option th:each="month_list:${months}"  th:value="${month_list}" th:text="${month_list}"></option>
+                                 </select> -->
+
+                            </div>
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Invoice No.</label>
+                                <input class="form-control" placeholder="Enter Here" required th:field="*{invoiceNo}"
+                                       type="text">
+                            </div>
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Payment Due</label>
+                                <input class="form-control" placeholder="Enter Here" required
+                                       th:field="*{paymentDue}" type="text">
+                            </div>
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Payment Received</label>
+                                <input class="form-control" placeholder="Enter Here" required
+                                       th:field="*{paymentReceive}" type="text">
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Billing Period Start Date</label>
+                                <input class="form-control date" placeholder="Enter Here" readonly
+                                       required th:field="*{billingPeriodStartDate}" type="text">
+                            </div>
+
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="phone">Billing Period End Date</label>
+                                <input class="form-control date" placeholder="Enter Here" readonly
+                                       required th:field="*{billingPeriodEndDate}" type="text">
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="status">Status</label>
+
+                                <select class="form-control" required th:field="*{status}">
+                                    <option value="">Select</option>
+                                    <option value="Bill Generated">Bill Generated</option>
+                                    <option value="Submitted to Civil Surgeon / CMHO">Submitted to Civil Surgeon /
+                                        CMHO
+                                    </option>
+                                    <option value="Approved">Approved</option>
+                                    <option value="Submitted to Head Office">Submitted to Head Office</option>
+                                    <option value="Payment Partially Cleared">Payment Partially Cleared</option>
+                                    <option value="Payment Fully Cleared">Payment Fully Cleared</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-primary">[[${edit}?'Update':'Submit' ]]</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".date").pickadate({max: new Date(),
+            format : 'yyyy-mm-dd'
+            });
+      // Initialize select2
+      $("#pLocation").select2();
+    });
+    $("#pLocation").change(function () {
+        var pLocation = $('option:selected', $("#pLocation")).attr('data-city');
+        //alert(pLocation);
+        $("#pDistrict").val(pLocation);
+    });
+</script>
+
+</body>
+
+</html>

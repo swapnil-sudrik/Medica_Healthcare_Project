@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Configuration</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="/static/assets/styles/css/themes/lite-purple.min.css"
+          rel="stylesheet">
+    <link href="/static/assets/styles/vendor/perfect-scrollbar.css"
+          rel="stylesheet">
+    <link href="/static/assets/styles/vendor/pickadate/classic.css"
+          rel="stylesheet">
+    <link href="/static/assets/styles/vendor/pickadate/classic.date.css"
+          rel="stylesheet">
+    <script
+            th:src=@{http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js}></script>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Settings</h1>
+
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                        <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                        </p> -->
+                    <form method="post" th:action="@{/config/view-update}">
+                        <div class="table-responsive">
+                            <table class="display table table-striped table-bordered"
+                                   id="multicolumn_ordering_table"
+                                   style="width: 100%">
+                                <thead>
+                                <tr>
+                                    <th>View Page</th>
+                                    <th>Property</th>
+                                    <th>Label</th>
+                                    <th>InputType</th>
+                                    <th>Enable</th>
+                                    <th>Options</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="customization,i : ${customizations}">
+                                    <td>[[${customization.view}]]</td>
+                                    <td>[[${customization.propertyName}]]</td>
+                                    <td>
+                                        <input class="form-control" name="customization"
+                                               th:value="${customization.id}"
+                                               type="hidden">
+                                        <input class="form-control" name="label"
+                                               th:value="${customization.label}"
+                                               type="text"></td>
+                                    <td>
+                                        <select class="form-control" name="inputType">
+                                            <option selected th:value="${customization.inputType}">
+                                                [[${customization.inputType}]]
+                                            </option>
+                                            <option value="text">text</option>
+                                            <option value="select">select</option>
+
+                                        </select></td>
+                                    <td><select class="form-control" name="enable">
+                                        <option selected th:value="${customization.enable}">
+                                            [[${customization.enable}]]
+                                        </option>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+
+                                    </select></td>
+                                    <td><textarea th:name="${'options_'+customization.id}">[[${#strings.listJoin(customization.selectOptions.![option],',')}]]</textarea>
+                                    </td>
+                                </tr>
+
+                                </tbody>
+
+                            </table>
+                            <div style="float:right">
+                                <button class="btn btn-sm btn-primary ladda-button basic-ladda-button"
+                                        data-style="expand-right" type="submit">Update
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+</div>
+<!-- ============ Body content End ============= -->
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+</body>
+
+
+</html>

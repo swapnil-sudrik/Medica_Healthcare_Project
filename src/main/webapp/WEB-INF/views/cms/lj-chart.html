@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>LJ Chart</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>LJ Chart</h1>
+
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+    <div id="search_data"></div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title mb-3">All fields are mandatory</div>
+
+                    <form action="/cms/lj_chart_search" method="get">
+
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="modality">Modality</label> <select class="form-control search_List"
+                                                                               name="modality"
+                                                                               required>
+                                <option value="">Select</option>
+
+                                <div th:each="machine:${machines}">
+                                    <option th:value="${machine}">[[${machine}]]</option>
+                                </div>
+                            </select>
+                            </div>
+
+
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="parameter">Parameter Name</label> <select
+                                    class="form-control tm_id search_List" name="parameter"
+                                    required>
+                                <option value="">Select</option>
+                                <div th:each="hc:${hostCodes}">
+                                    <option th:value="${hc}">[[${hc}]]</option>
+                                </div>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="start-date">From</label>
+                                <input class="form-control search_List" data-provide="datepicker" id="start-date"
+                                       name="startDate" placeholder="Start Date" type="text">
+
+                            </div>
+
+
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="end-date">Upto</label>
+                                <input class="form-control search_List" data-provide="datepicker" id="end-date"
+                                       name="endDate" placeholder="End Date" type="text">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="phone">Location</label> <select class="form-control labs search_List"
+                                                                            id="labs"
+                                                                            name="location" required>
+                                <option value="">Select</option>
+                                <div th:each="lab:${labs}">
+                                    <option th:value="${lab}">[[${lab}]]</option>
+                                </div>
+                            </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <button class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script type="text/javascript">
+    $("#start-date").pickadate({
+          weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          labelMonthNext: 'Go to the next month',
+          labelMonthPrev: 'Go to the previous month',
+          labelMonthSelect: 'Pick a month from the dropdown',
+          labelYearSelect: 'Pick a year from the dropdown',
+          formatSubmit: 'yyyy/mmmm/dd',
+          format: 'yyyy/mmmm/dd',
+          max: new Date(),
+          selectYears: 100,
+          selectMonths:true
+    });
+    $("#end-date").pickadate({
+          weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          labelMonthNext: 'Go to the next month',
+          labelMonthPrev: 'Go to the previous month',
+          labelMonthSelect: 'Pick a month from the dropdown',
+          labelYearSelect: 'Pick a year from the dropdown',
+          formatSubmit: 'yyyy/mmmm/dd',
+          format: 'yyyy/mmmm/dd',
+          max: new Date(),
+          selectYears: 100,
+          selectMonths:true
+
+    });
+
+        $(document).ready(function() {
+
+            // Initialize select2
+            $("#tm_id").select2();
+
+            // Read selected option
+
+            function getlist() {
+                // $(".hidelist").show();
+                /* var tm_id = $('.tm_id').val();
+                var machineId = $('.machineId').val();
+
+                // alert(tm_id +"-" +machineId);
+
+                $.ajax({
+                    type : "GET",
+                    url : "/getAlreadyExistTestWithMachineid",
+                    data : "tm_id=" + tm_id + "&machineId=" + machineId,
+                    dataType : "html",
+                    success : function(data) {
+
+                        $("#search_data").html(data);
+
+                    }
+                }); */
+
+            }
+
+            $('.search_List').change(function() {
+                getlist();
+            });
+
+        });
+</script>
+
+</body>
+
+</html>

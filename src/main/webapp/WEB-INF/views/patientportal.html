@@ -1,0 +1,584 @@
+<html>
+
+<head>
+    <meta content="en-us" http-equiv="Content-Language">
+    <meta content="text/html; charset=windows-1252"
+          http-equiv="Content-Type">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Online Pathology Report System</title>
+
+    <link rel='stylesheet' th:href="@{/static/select2/css/select2.min.css}"
+          type='text/css'/>
+    <style>
+        td {
+            padding: 0.7rem;
+        }
+        /* Select option */
+        .select2-results__option {
+            font-size: 12px;
+        }
+
+        @media only screen and (max-width: 600px) {
+          #infoPortal {
+            display: block;
+            width: 100%;
+            height: 50%;
+          }
+        }
+
+        @media only screen and (max-width: 600px) {
+          #form {
+            display: block;
+             width: 100%;
+            height: 50%;
+          }
+          .fields {
+              display: block;
+              width: 100%;
+          }
+        }
+
+        @media only screen and (max-width: 600px) {
+          #marqueeSection {
+            display: block;
+            width: 100%;
+            height: 50%;
+          }
+        }
+        .dis-none{
+        display:none;
+        }
+    </style>
+    <script
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td bgcolor="#1b2e66" colspan="4" id="header">&nbsp;</td>
+    </tr>
+    <tr
+            bgcolor="#EBEBEB"
+            style="border-radius: 10px; box-shadow: 0 5px 20px 1px #14144733; border: 0; display: none">
+        <td bgcolor="#EBEBEB" width="11%"><img border="0"
+                                               height="108" th:src="@{'/static/assets/img/logo_upgovt.png'}"
+                                               width="108"></td>
+        <td bgcolor="#EBEBEB" width="39%">
+            <p style="margin-top: 0; margin-bottom: 0">
+                <font color="#CC3300" face="Arial Black" size="4">Online
+                    Pathology Report System</font>
+            </p> <!-- <p style="margin-top: 0; margin-bottom: 0">
+					<font size="4">A UP Government Portal</font> -->
+        </td>
+        <td bgcolor="#EBEBEB" width="40%">
+            <p style="margin-top: 0; margin-bottom: 0">
+                <font color="#CC3300" face="Arial Black" size="4">Department
+                    of Medical Health and Family Welfare</font>
+            </p>
+            <p style="margin-top: 0; margin-bottom: 0">
+                <font size="4">Government of Uttar Pradesh</font>
+        </td>
+        <td bgcolor="#EBEBEB" width="10%">
+            <p align="center" style="margin-top: 0; margin-bottom: 0">
+                <img border="0" height="91"
+                     th:src="@{'/static/assets/img/yogi.png'}" width="95">
+            </p>
+            <p align="center" style="margin-top: 0; margin-bottom: 0">
+                <font face="Arial Black"> <font color="#CC3300" size="2">Yogi
+                    Adityanath</font><br> <font size="2">Hon'ble</font><font size="2">
+                    Chief Minister</font></font>
+        </td>
+    </tr>
+    <tr
+            bgcolor="#EBEBEB"
+            style="border-radius: 10px; box-shadow: 0 5px 20px 1px #14144733; border: 0; font-size: 30px;">
+        <td align="center" colspan="4"><font color="#CC3300"
+                                             face="Arial Black">ONLINE PATHOLOGY REPORT SYSTEM - MADHYA PRADESH</font></td>
+    </tr>
+    <tr>
+        <td colspan="2" height="322" id="infoPortal">
+            <table bgcolor="#33CCCC" border="0" cellpadding="3" cellspacing="1"
+                   height="80%" style="border-radius: 10px; box-shadow: 0 5px 20px 1px #14144733; border: 0;"
+                   width="95%">
+                <tr>
+                    <td>
+                        <p style="line-height: 200%; margin-top: 1px; margin-bottom: 1px">
+                            <b>&#2346;&#2376;&#2341;&#2379;&#2354;&#2377;&#2332;&#2368;
+                                &#2352;&#2367;&#2346;&#2379;&#2352;&#2381;&#2335;
+                                &#2342;&#2375;&#2326;&#2344;&#2375; &#2325;&#2375;
+                                &#2354;&#2367;&#2319;
+                                &#2344;&#2367;&#2352;&#2381;&#2342;&#2375;&#2358;: -</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="line-height: 200%; margin-top: 1px; margin-bottom: 1px">
+                            &#2407;. &#2309;&#2346;&#2344;&#2375;
+                            &#2332;&#2367;&#2354;&#2375; &#2325;&#2366;
+                            &#2330;&#2351;&#2344; &#2325;&#2352;&#2375;&#2306; <br>
+                            &#2408;. &#2309;&#2360;&#2381;&#2346;&#2340;&#2366;&#2354;
+                            &#2325;&#2366; &#2330;&#2351;&#2344;
+                            &#2325;&#2352;&#2375;&#2306; <br> &#2409;.
+                            &#2310;&#2346;&#2325;&#2366;
+                            &#2352;&#2375;&#2347;&#2352;&#2344;&#2381;&#2360;
+                            &#2344;&#2306;&#2348;&#2352; &#2309;&#2306;&#2325;&#2367;&#2340;
+                            &#2325;&#2352;&#2375;&#2306; <br> &#2410;&#46;
+                            &#2310;&#2346;&#2325;&#2366; &#2346;&#2306;&#2332;&#2368;&#2325;&#2371;&#2340; &#2350;&#2379;&#2348;&#2366;&#2311;&#2354;
+                            &#2344;&#2306;&#2348;&#2352; &#2309;&#2306;&#2325;&#2367;&#2340; &#2325;&#2352;&#2375;&#2306;
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>&#2344;&#2379;&#2335; : - </b>
+                        &#2346;&#2379;&#2352;&#2381;&#2335;&#2354; &#2346;&#2352; &#2346;&#2376;&#2341;&#2379;&#2354;&#2377;&#2332;&#2368;
+                        &#2352;&#2367;&#2346;&#2379;&#2352;&#2381;&#2335; &#2332;&#2366;&#2352;&#2368; &#2325;&#2367;&#2319;
+                        &#2332;&#2366;&#2344;&#2375; &#2325;&#2368; &#2340;&#2367;&#2341;&#2367; &#2360;&#2375; &#2310;&#2327;&#2366;&#2350;&#2368;
+                        &#2409;&#2406; &#2342;&#2367;&#2344;&#2379; &#2325;&#2375; &#2354;&#2367;&#2319; &#2313;&#2346;&#2354;&#2348;&#2381;&#2343;
+                        &#2352;&#2361;&#2375;&#2327;&#2368; &#2404;
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td align="center" colspan="2" height="322" id="form">
+            <table border="0" cellspacing="0" height="100%" style="border-radius: 10px; box-shadow: 0 5px 20px 1px #14144733; line-height:18px"
+                   width="95%">
+                <tr
+                        bgcolor="#EBEBEB"
+                        style="border-radius: 10px; box-shadow: 0 5px 20px 1px #14144733; border: 0;">
+                    <td align="center" colspan="2">
+                        <p style="margin-top: 1px; margin-bottom: 1px">
+                            <font face="Arial Rounded MT Bold">DOWNLOAD PATHOLOGY
+                                REPORT</font>
+                    </td>
+                </tr>
+
+
+                <form method="post" th:action="@{/patient-portal/print-report/c}">
+                    <tr>
+                        <td align="left" class="fields" width="40%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold">Select Your City:<br>
+                                    &#2309;&#2346;&#2344;&#2375; &#2332;&#2367;&#2354;&#2375;
+                                    &#2325;&#2366; &#2330;&#2351;&#2344;
+                                    &#2325;&#2352;&#2375;&#2306;
+                                </font>
+                            </p>
+                        </td>
+                        <td align="left" class="fields" width="57%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold"> <select class="reset"
+                                                                            id="cityname" name="labId">
+                                    <option value="">Select</option>
+                                    <option th:each="c:${SpokeFacilityMaster}" th:value="${c.district}">
+                                        [[${c.district}]]
+                                    </option>
+                                </select><span id="cityname_span"></span></font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left" class="fields" width="40%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold">Select Your Health Center:<br>
+                                    &#2360;&#2381;&#2357;&#2366;&#2360;&#2381;&#2341;&#2381;&#2351; &#2325;&#2375;&#2306;&#2342;&#2381;&#2352;
+                                    &#2325;&#2366; &#2330;&#2351;&#2344;&#9;&#2325;&#2352;&#2375;&#2306;
+                                </font>
+                            </p>
+                        </td>
+                        <td align="left" class="fields" width="57%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <!-- <input type="text" name="facility" class="reset" style="width: 290px;" /> -->
+                                <font face="Arial Rounded MT Bold"> <select class="reset"
+                                                                            id="hospname" name="facilityCode">
+                                    <option value="">Select</option>
+
+                                </select>
+                                    <div class="clear"></div>
+                                    <span id="hospname_span"></span></font>
+                    </tr>
+                    <tr>
+                        <td align="left" class="fields" width="40%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold">Enter Reference/Order No.:<br>
+                                    &#2310;&#2346;&#2325;&#2366;
+                                    &#2352;&#2375;&#2347;&#2352;&#2344;&#2381;&#2360;/
+                                    &#2323;&#2352;&#2381;&#2337;&#2375;&#2352;&#2381;
+                                    &#2344;&#2306;&#2348;&#2352;
+                                    &#2309;&#2306;&#2325;&#2367;&#2340;
+                                    &#2325;&#2352;&#2375;&#2306;
+                                </font>
+                            </p>
+                        </td>
+                        <td align="left" class="fields" width="57%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold"> <input class="reset"
+                                                                           id="refNo" name="refNo" required
+                                                                           style="width: 290px;" type="number"></font>
+                            <div class="clear"></div>
+                            <span id="refNo_span"></span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="left" class="fields" width="40%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold">Enter Mobile No.:<br>
+                                    &#2310;&#2346;&#2325;&#2366;
+                                    &#2346;&#2306;&#2332;&#2368;&#2325;&#2371;&#2340;
+                                    &#2350;&#2379;&#2348;&#2366;&#2311;&#2354;
+                                    &#2344;&#2306;&#2348;&#2352;
+                                    &#2309;&#2306;&#2325;&#2367;&#2340;
+                                    &#2325;&#2352;&#2375;&#2306;
+                                </font>
+                            </p>
+                        </td>
+                        <td align="left" class="fields" width="57%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold"> <input class="reset"
+                                                                           id="mobile" maxlength="10"
+                                                                           name="mobile" style="width: 290px;"
+                                                                           type="number"></font>
+                            <div class="clear"></div>
+                            <span id="mobile_span"></span>
+                        </td>
+                    </tr>
+                    <tr class="dis-none" id="showOtpDiv">
+                        <td align="left" class="fields" width="40%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold">Enter OTP.:<br>
+                                    &#2323;&#2335;&#2368;&#2346;&#2368;
+                                    &#2342;&#2352;&#2381;&#2332;
+                                    &#2325;&#2352;&#2375;&#2306;&#2404;
+                                </font>
+                            </p>
+                        </td>
+                        <td align="left" class="fields" width="57%">
+                            <p style="margin-top: 1px; margin-bottom: 1px">
+                                <font face="Arial Rounded MT Bold">
+                                    <input id="txtNewOtp" onkeyup='checkPasswordMatch();' type="number">
+                                    <span class='divCheckPasswordMatch' style='padding:10px;font-weight:bold;'></span>
+                                </font>
+                            <div class="clear"></div>
+                            <span id="mobile_span"></span>
+                        </td>
+                    </tr>
+                    <tr class="dis-none" id="submitDiv">
+                        <td align="left" class="fields" colspan="2" width="40%">
+                            <p align="center">
+                                <input type="submit" value="Download Report"/>
+                                <input id="txtConfirmOtp" type="hidden">
+
+                            </p>
+                            <p><span id="error_span"></span></p>
+                        </td>
+                    </tr>
+                </form>
+
+
+                <tr id="getotp">
+                    <td align="left" class="fields" colspan="2" width="40%">
+                        <p align="center">
+                            <!-- 	<input type="submit"  onclick="getOtp();" /> -->
+                            <button onclick="getOtp();">Send OTP</button>
+
+
+                        </p>
+                        <p><span id="error_span"></span></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" class="fields" colspan="2" th:if="${message}"><strong
+                            class="text-capitalize">Success!</strong> [[${message}]]
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" id="marqueeSection">
+            <marquee behavior="scroll" direction="left"
+                     height="80%" onmouseout="this.start();" onmouseover="this.stop();"
+                     scrollamount="9" width="100%">
+                <img height="220" th:src="@{'/static/assets/img/portal-1.jpeg'}"
+                     width="500"> <img
+                    height="220" th:src="@{'/static/assets/img/portal-2.jpeg'}"
+                    width="500">
+                <img
+                        height="220" th:src="@{'/static/assets/img/portal-3.jpeg'}"
+                        width="500">
+                <img height="220" th:src="@{'/static/assets/img/portal-4.jpeg'}"
+                     width="500"> <img
+                    height="220" th:src="@{'/static/assets/img/portal-1.jpeg'}"
+                    width="500"> <img
+                    height="220" th:src="@{'/static/assets/img/portal-2.jpeg'}"
+                    width="500">
+                <img height="220" th:src="@{'/static/assets/img/portal-3.jpeg'}"
+                     width="500"> <img
+                    height="220" th:src="@{'/static/assets/img/portal-4.jpeg'}"
+                    width="500"> <!-- <img
+						th:src="@{'/static/assets/img/Covid-3.jpg'}" width="500"
+						height="220"> -->
+            </marquee>
+        </td>
+    </tr>
+
+    <!-- <tr>
+        <td colspan="4" bgcolor="#1b2e66" align="center"><font
+            color="#FFFFFF"> Copyright : Mediquity India </font></td>
+    </tr> -->
+</table>
+
+</body>
+
+<script th:src='@{/static/select2/js/select2.min.js}'
+        type='text/javascript'></script>
+<script type='text/javascript'>
+    $(document).ready(function() {
+        //	alert();
+        $("#cityname").select2({
+            width : "290px"
+        });
+        $("#hospname").select2({
+            width : "290px"
+        });
+
+        $(window).keydown(function(event){
+            if(event.keyCode == 13) {
+                alert('Please click on the "Send OTP" button');
+              event.preventDefault();
+              return false;
+            }
+          });
+    });
+
+    function getOtp() {
+        if( ($("#cityname").val() == '') ){
+            $("#cityname").css('border-color', '#F5A9A9');
+            $("#cityname_span").css('color','#CC3300');
+            $("#cityname_span").text("Please select the City.");
+            return false; }
+        else{
+            $("#cityname").css('color','#0a0a0a');
+            $("#cityname_span").text("");
+            }
+
+         if( ($("#hospname").val() == '')){
+             $("#hospname").css('border-color', '#F5A9A9');
+            $("#hospname_span").css('border-color', '#F5A9A9');
+            $("#hospname_span").text("Please select the Hospital.");
+            return false;
+        }else {
+            $("#hospname").css('color','#0a0a0a');
+            $("#hospname_span").text("");
+            }
+
+         if(($("#refNo").val() == '')){
+                $("#refNo").css('border-color', '#F5A9A9');
+                $("#refNo_span").css('color','#CC3300');
+                $("#refNo_span").text("Please input the Reference No.");
+                return false; }else{
+                    $("#refNo").css('color','#0a0a0a');
+                    $("#refNo_span").text("");
+                }
+
+         if( ($("#mobile").val() == '')){
+                $("#mobile").css('border-color', '#F5A9A9');
+                $("#mobile_span").css('color','#CC3300');
+                $("#mobile_span").text("Please input the Mobile No.");
+                return false;
+            }else if($("#mobile").val().length !=10){
+                $("#mobile").css('border-color', '#F5A9A9');
+                $("#mobile_span").css('color','#CC3300');
+                $("#mobile_span").text("Please input the 10 digit Mobile No.");
+                return false; }
+                else{
+                  $("#mobile").css('color','#0a0a0a');
+                $("#mobile_span").text("");
+
+            }
+         let facilityCode = $("#hospname").val();
+            let mobile = $("#mobile").val();
+            let refNo = $("#refNo").val();
+            //$("#spiner").show();
+
+        //alert(hospname);
+
+
+         $.ajax({
+                type : "GET",
+                url : "/patient-portal/get-otp",
+                data : "refNo=" + refNo + "&facilityCode=" + facilityCode + "&mobile="
+                        + mobile,
+                dataType : "html",
+                success : function(data) {
+                    console.log(data);
+
+                    if("false"===data){
+                        //alert(data);
+                        $("#showErrorDiv").css('display', 'table-row');
+                        alert("The information provided is incorrect.");
+                        window.location.reload();
+                    }else{
+                        $("#txtConfirmOtp").val(data)
+                        $('#refNo').attr('readonly', 'true');
+                        $('#mobile').attr('readonly', 'true');
+                        $('#cityname option:not(:selected)').attr('disabled', true);
+                        $('#hospname option:not(:selected)').attr('disabled', true);
+                        //alert(data);
+                        $("#getotp").css('display', 'none');
+                        $("#showOtpDiv").css('display', 'table-row');
+                    }
+                    /* $(".reset").val('').trigger('change')
+                    $(".reset").val("");
+                alert(data);
+                    if(data=="Success"){
+                        $("#spiner").hide();
+                        $("#error_span").css('color','#009846');
+                        $("#error_span").text(data);
+                    window.open(url, '_blank');
+                    }else{
+                        $("#spiner").hide();
+                        $("#error_span").css('color','#CC3300');
+                        $("#error_span").text(data);
+                    } */
+//					window.open(url, '_blank');
+
+                }
+
+            });
+
+    }
+
+    function exportFile() {
+        //alert($("#mobile").val().length);
+        if( ($("#cityname").val() == '') ){
+            $("#cityname").css('border-color', '#F5A9A9');
+            $("#cityname_span").css('color','#CC3300');
+            $("#cityname_span").text("Please select the City.");
+            return false; }
+        else{
+            $("#cityname").css('color','#0a0a0a');
+            $("#cityname_span").text("");
+            }
+         if( ($("#hospname").val() == '')){
+             $("#hospname").css('border-color', '#F5A9A9');
+            $("#hospname_span").css('border-color', '#F5A9A9');
+            $("#hospname_span").text("Please select the Hospital.");
+            return false;
+        }else {
+            $("#hospname").css('color','#0a0a0a');
+            $("#hospname_span").text("");
+            }
+            if(($("#refNo").val() == '')){
+            $("#refNo").css('border-color', '#F5A9A9');
+            $("#refNo_span").css('color','#CC3300');
+            $("#refNo_span").text("Please input the Reference No.");
+            return false; }else{
+                $("#refNo").css('color','#0a0a0a');
+                $("#refNo_span").text("");
+            }
+         if( ($("#mobile").val() == '')){
+            $("#mobile").css('border-color', '#F5A9A9');
+            $("#mobile_span").css('color','#CC3300');
+            $("#mobile_span").text("Please input the Mobile No.");
+            return false;
+        }else if($("#mobile").val().length !=10){
+            $("#mobile").css('border-color', '#F5A9A9');
+            $("#mobile_span").css('color','#CC3300');
+            $("#mobile_span").text("Please input the 10 digit Mobile No.");
+            return false; }
+            else{
+              $("#mobile").css('color','#0a0a0a');
+            $("#mobile_span").text("");
+
+        }
+
+        let hospname = $("#hospname").val();
+        let mobile = $("#mobile").val();
+        let refNo = $("#refNo").val();
+        $("#spiner").show();
+        // Set the href property.
+        //  var url = "http://localhost:6060/report?testFile=" + hospname + "_" + refNo + "_"+ mobile + ".pdf";
+        /* var url = "http://updhpathreport.com/report?testFile=MPLABREPORT.pdf"; */
+        var url = "http://updhpathreport.com/report?testFile=" + hospname + "_" + refNo + "_"+ mobile + ".pdf";
+        //window.open(url, '_blank');
+         $.ajax({
+            type : "GET",
+            url : "/download-report",
+            data : "refNo=" + refNo + "&hospname=" + hospname + "&mobile="
+                    + mobile,
+            dataType : "html",
+            success : function(data) {
+                $(".reset").val('').trigger('change')
+                $(".reset").val("");
+            //alert(data);
+                if(data=="Success"){
+                    $("#spiner").hide();
+                    $("#error_span").css('color','#009846');
+                    $("#error_span").text(data);
+                window.open(url, '_blank');
+                }else{
+                    $("#spiner").hide();
+                    $("#error_span").css('color','#CC3300');
+                    $("#error_span").text(data);
+                }
+//				window.open(url, '_blank');
+
+            }
+
+        });
+    }
+
+    $("#cityname")
+            .on(
+                    "change",
+                    function(e) {
+var cityname = $("#cityname").val();
+                        $("#hospname").empty();
+
+                        var cityname = $("#cityname").val();
+                //		alert(cityname);
+                        $.ajax({
+                                    type : "GET",
+                                    url : "/patient-portal/spoke-list",
+                                    data : "cityName=" + cityname,
+                                    dataType : "html",
+                                    success : function(data) {
+
+                                        var city_detail = JSON.parse(data);
+                                        //alert(city_detail);
+                                        var cnt = city_detail.length;
+
+                                        for (var i = 0; i < cnt; i++) {
+                                            //alert(city_detail[i].cityName);
+
+                                            var a = '<option value="'+city_detail[i].facilityCode+'">'
+                                                    + city_detail[i].centerName
+                                                    + '</option>';
+                                            $("#hospname").append(a);
+
+                                        }
+
+                                    }
+                                });
+
+                    });
+
+    function checkPasswordMatch() {
+
+        var password = $("#txtNewOtp").val();
+        var confirmPassword = $("#txtConfirmOtp").val();
+        //alert(password);
+        if (password != confirmPassword) {
+            $(".divCheckPasswordMatch").html("OTP does not match!");
+            $(".divCheckPasswordMatch").css("color", "red");
+            $("#submitDiv").css('display', 'none');
+        } else {
+            $(".divCheckPasswordMatch").html("OTP matched.");
+            $(".divCheckPasswordMatch").css("color", "green");
+            $("#submitDiv").css('display', 'table-row');
+            //$(".btnselectnew").show();
+        }
+    }
+</script>
+</html>

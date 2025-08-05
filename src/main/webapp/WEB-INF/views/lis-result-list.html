@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>LIS List</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>LIS Result</h1>
+
+    </div>
+
+
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                        <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                        </p> -->
+
+                    <div class="table-responsive">
+                        <table class="display table table-striped table-bordered"
+                               id="multicolumn_ordering_table"
+                               style="width: 100%">
+                            <thead>
+
+                            <tr>
+                                <th width="4%">SI.</th>
+                                <th width="6%"><label class="control-label"><strong>Date</strong></label></th>
+                                <th width="6%"><label class="control-label"><strong>Sample</strong></label></th>
+                                <th width="6%"><label class="control-label"><strong>Test Name</strong></label></th>
+                                <th width="10%"><label class="control-label"><strong>Value</strong></label></th>
+                                <!-- <th width="10%"><label class="control-label"><strong>Edit Value</strong></label></th> -->
+                                <th width="10%"><label class="control-label"><strong>Verified</strong></label></th>
+
+                            </tr>
+
+
+                            </thead>
+                            <tbody>
+                            <tr th:each="lis,sl : ${lisResult}">
+
+                                <td th:text="${sl.count}">1</td>
+                                <td>[[${#dates.format({lis.createdAt} , 'dd-MMM-yyyy')}]]</td>
+                                <td>[[${lis.barcode}]]</td>
+                                <td>[[${lis.testMaster.parameter_name}+ ' / ' +${lis.testMaster.tm_id}]]</td>
+                                <td>[[${lis.result}]]</td>
+                                <td></td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+
+    <!-- ============ Body content End ============= -->
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+</body>
+
+
+</html>

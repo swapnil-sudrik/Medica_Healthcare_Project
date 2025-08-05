@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+<head>
+    <title>Authorization Console</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link rel="stylesheet"
+          th:href="@{/static/assets/styles/vendor/datatables.min.css}">
+    <script th:src="@{/static/assets/js/angular.min.js}"></script>
+    <style>
+        .p-5 {
+            padding: 1px;
+        }
+
+        .ORDERED {
+            background-color: olivedrab;
+            color: yellow;
+        }
+
+        .CANCELED {
+            color: red;
+        }
+
+        .CANCELED_TEXT {
+            color: red;
+            text-decoration: line-through;
+        }
+
+        .SAMPLE_COLLECTED {
+            background-color: red;
+            color: white;
+        }
+
+        .RESULT_SAVED {
+            background-color: #e0c911;
+            color: blue;
+        }
+
+        .AUTHORIZED {
+            background-color: orange;
+        }
+
+        .PRINTED {
+            background-color: green;
+            color: yellow;
+        }
+
+        .SAMPLE_REJECTED {
+            background-color: #8a2142;
+            color: white;
+        }
+
+        .VERIFIED {
+            background-color: #fcf403;
+        }
+
+        .RE_RUN_SAMPLE {
+            background-color: #bafc03;
+            color: black;
+        }
+    </style>
+</head>
+
+<body class="text-left" ng-app="nglis"
+      ng-controller="searchServicesController">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="generic-container">
+        <div class="panel panel-default">
+            <div class="panel-heading d-flex justify-content-between">
+                <h1 class="panel-title my-2">Authorization Console</h1>
+
+
+            </div>
+
+
+            <div class="search ul-task-manager__search-inline">
+
+
+                <form class="form-inline ml-auto" method="get"
+                      th:action="@{/AuthorizationConsole2}">
+                    <div class="row">
+                        <label class="ul-form__label col-1">Start Date </label> <input
+                            class="form-control  col-2" id="starts_at"
+                            name="starts_at" type="date"/> <label
+                            class="ul-form__label col-1">End Date </label> <input
+                            class="form-control  col-2" id="ends_at" name="ends_at"
+                            readonly type="date"/>
+                        <label class="ul-form__label col-1">Shift   </label> <select class="form-control col-2"
+                                                                                     id="shift" name="shift"
+                                                                                     type="text">
+                        <option selected value="all">All</option>
+                        <option value="MORNING">MORNING</option>
+                        <option value="EVENING">EVENING</option>
+                        <option value="NIGHT">NIGHT</option>
+                    </select>
+                        <div class="col-3">
+                            <a class="btn btn-success getResult color_white" style="color:white;">Search</a> <a
+                                class="btnExport btn btn-md btn-primary color_white" style="color:white;"
+                                target="_blank">Export To Excel</a>
+                        </div>
+
+
+                        <label class="ul-form__label  col-1">Department </label> <select
+                            class="form-control col-2" id="department" name="department"
+                            ng-model="q.orderDetail.investigation.department" type="text">
+                        <option data-isdefault="true" value>All</option>
+                        <option ng-repeat="itemSelect in allDepartmentList"
+                                value="{{itemSelect.department}}">{{itemSelect.department}}
+                        </option>
+                    </select> <label class="ul-form__label col-1">Section </label> <select
+                            class="form-control col-2" id="section" name="section"
+                            ng-model="q.orderDetail.investigation.section" type="text">
+                        <option data-isdefault="true" value>All</option>
+                        <option ng-repeat="itemSelect in allSectionlist"
+                                value="{{itemSelect.section}}">{{itemSelect.section}}
+                        </option>
+                    </select> <label class="ul-form__label col-1">Test </label> <select
+                            class="form-control col-2" id="test" name="test" ng-model="q.orderDetail.testName"
+                            type="text">
+                        <option data-isdefault="true" value>All</option>
+                        <option ng-repeat="itemSelect in allTestList "
+                                value="{{itemSelect.invest_name}}">{{itemSelect.invest_name}}
+                        </option>
+                    </select> <label class="ul-form__label col-1">Patient Type </label> <select
+                            class="form-control col-2" id="patient_type" name="patient_type"
+                            ng-model="q.order.facility" type="text">
+                        <option data-isdefault="true" value>All</option>
+                        <option value="OPD">OPD</option>
+                        <option value="IPD">IPD</option>
+                        <option value="ANC">ANC</option>
+                    </select> <label class="ul-form__label col-1 "> Status  </label> <select
+                            class="form-control col-2" id="status" ng-model="searchStatus">
+                        <option data-isdefault="true" value>All</option>
+                        <option value="AUTHORIZED">Authorized</option>
+                        <option value="VERIFIED">Technician Verified</option>
+                        <option value="RESULT_SAVED">Result Save</option>
+                        <option value="SAMPLE_COLLECTED">Sample Collected</option>
+                        <option value="PENDING">Pending</option>
+                    </select>
+                        <label class="ul-form__label  col-1">Machine   </label> <select
+                            class="form-control col-2" id="status" ng-model="q.orderDetail.machineStatus">
+                        <option data-isdefault="true" value>All</option>
+                        <option value=1>Received</option>
+                        <option value=0>Not Received</option>
+                    </select>
+
+                        <div class="col-3 text-right">
+                            <input class="form-control" ng-model="search" placeholder="search..." type="search">
+
+
+                        </div>
+
+                        <div class="impline text-success font-weight-bold p-1"><span>*</span>Note: Reporting based on 24
+                            hours starting from start date at 8:00 am and ending from end date at 8:00 am.
+                        </div>
+                </form>
+
+            </div>
+        </div>
+        <div class="alert alert-card alert-success" role="alert"
+             th:if="${message}">
+            <strong class="text-capitalize">Success!</strong> [[${message}]]
+            <button aria-label="Close" class="close" data-dismiss="alert"
+                    type="button">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        <form class="form-inline ml-auto" method="post"
+              th:action="@{/AuthorizationConsoleSave}">
+            <div class="table-responsive ExportData">
+                <a id="viewButton" style="display: none;">
+                    <button class="btn btn-success btn-sm btn-padding-table"
+                            type="submit">
+                        Authorize
+                    </button>
+                </a>
+
+                <div id="LoadingImage" style="display: none">
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    <div class="loader-bubble loader-bubble-primary m-5"></div>
+                </div>
+
+                <div class="row align-items-center footerPage">
+                    <div class="col">
+							<span> Showing
+								{{consoleRes[0].page.pageNumber * consoleRes[0].page.pageSize + 1 || "0"}} to
+								{{consoleRes[0].page.pageNumber * consoleRes[0].page.pageSize + consoleRes[0].pageTotalElements || "0"}}
+								of {{consoleRes[0].totalElements || "0"}} entries</span>
+                    </div>
+                    <div class="col">
+                        <ul class="pagination justify-content-end">
+                            <li class="page-item"><a class="page-link" style="cursor: none;">
+                                Pagination
+                            </a>
+                            </li>
+
+                            <li class="page-item " data-ng-repeat="i in range">
+                                <a class="page-link" ng-click="nextpagelist(i);">{{i + 1}}</a>
+                            </li>
+
+
+                        </ul>
+                    </div>
+
+                </div>
+                <table class="display table-bordered" id=""
+                       style="width: 100%;">
+                    <thead>
+                    <tr class="bg-light">
+
+                        <th>S. No.</th>
+
+                        <th>
+                            Order Date&Time
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor" height="10"
+                                 ng-class='sortClass("orderDetail.createdAt")' ng-click='sortColumn("orderDetail.createdAt")' viewBox="0 0 16 16" width="10"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Department
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor"
+                                 height="10" ng-class='sortClass("orderDetail.investigation.department")' ng-click='sortColumn("orderDetail.investigation.department")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Section
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor"
+                                 height="10" ng-class='sortClass("orderDetail.investigation.section")' ng-click='sortColumn("orderDetail.investigation.section")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Status
+                            <svg class="bi bi-arrow-down-up" fill="currentColor"
+                                 height="10" ng-class='sortClass("orderDetail.status")' ng-click='sortColumn("orderDetail.status")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <!-- 	<th>UHID</th> -->
+                        <th>
+                            Machine
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor" height="10"
+                                 ng-class='sortClass("orderDetail.machineStatus")' ng-click='sortColumn("orderDetail.machineStatus")' viewBox="0 0 16 16" width="10"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            LAB ID
+                            <svg class="bi bi-arrow-down-up" fill="currentColor"
+                                 height="10" ng-class='sortClass("order.patient.mrn1")' ng-click='sortColumn("order.patient.mrn1")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Order ID
+                            <svg class="bi bi-arrow-down-up" fill="currentColor"
+                                 height="10" ng-class='sortClass("order.id")' ng-click='sortColumn("order.id")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Patient Name
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor" height="10"
+                                 ng-class='sortClass("order.patient.title")' ng-click='sortColumn("order.patient.title")' viewBox="0 0 16 16" width="10"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Age / Gender
+                            <svg class="bi bi-arrow-down-up" fill="currentColor"
+                                 height="10" ng-class='sortClass("order.patient.age")' ng-click='sortColumn("order.patient.age")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Patient Type
+                            <svg class="bi bi-arrow-down-up" fill="currentColor"
+                                 height="10" ng-class='sortClass("order.facility")' ng-click='sortColumn("order.facility")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Barcode
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor" height="10"
+                                 ng-class='sortClass("orderDetail.barcode")' ng-click='sortColumn("orderDetail.barcode")' viewBox="0 0 16 16" width="10"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Vial Type
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor"
+                                 height="10" ng-class='sortClass("orderDetail.investigation.sampleType")' ng-click='sortColumn("orderDetail.investigation.sampleType")' viewBox="0 0 16 16"
+                                 width="10" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+                        <th>
+                            Sample status
+
+                        </th>
+                        <th>
+                            Test Name
+                            <svg class="bi bi-arrow-down-up"
+                                 fill="currentColor" height="10"
+                                 ng-class='sortClass("orderDetail.testName")' ng-click='sortColumn("orderDetail.testName")' viewBox="0 0 16 16" width="10"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"
+                                      fill-rule="evenodd"/>
+                        </th>
+
+                    </tr>
+                    </thead>
+                    <tbody id="names">
+
+                    <tr ng-repeat="res1 in consoleRes | filter: q | searchFor: search | searchForStatus: searchStatus| orderBy:column:reverse ">
+                        <td>{{$index + consoleRes[0].page.pageNumber * consoleRes[0].page.pageSize + 1}}</td>
+                        <td>{{res1.orderDetail.createdAt | date : 'dd-MMM-yyyy hh:mm a'}}</td>
+                        <td>{{res1.orderDetail.investigation.department}}</td>
+                        <td>{{res1.orderDetail.investigation.section}}</td>
+                        <td class="{{res1.orderDetail.status}}">
+                            {{res1.orderDetail.status}}
+                        </td>
+                        <td><span ng-if="res1.orderDetail.machineStatus==1">Received</span>
+                            <span ng-if="res1.orderDetail.machineStatus!=1">Not Received</span>
+
+                        <td><a href="result-multipleWorkList/{{res1.order.id}}/auth" ng-if="res1.orderDetail.investigation.department!='MICROBIOLOGY'"
+                               target="_blank"
+                               title="Step 2"> {{res1.order.patient.mrn1 + '/ '+
+                            res1.order.patient.mrn2.toString().padStart(6, '0')}} </a>
+                            <a href="result-microbiology/{{res1.order.id}}/true" ng-if="res1.orderDetail.investigation.department=='MICROBIOLOGY'"
+                               target="_blank"
+                               title="Step 2"> {{res1.order.patient.mrn1 + '/ '+
+                                res1.order.patient.mrn2.toString().padStart(6, '0')}} </a></td>
+
+                        <td>{{res1.order.id}}</td>
+                        <td><a href="result-multipleWorkList/{{res1.order.id}}/auth" ng-if="res1.orderDetail.investigation.department!='MICROBIOLOGY'"
+                               target="_blank"
+                               title="Step 2"> {{res1.order.patient.title +' '
+                            +res1.order.patient.firstName +' ' +res1.order.patient.middleName +'
+                            ' + res1.order.patient.lastName +' '
+                            +res1.order.patient.relationWithPatient +' '
+                            +res1.order.patient.relativeName}}</a>
+                            <a href="result-microbiology/{{res1.order.id}}/true" ng-if="res1.orderDetail.investigation.department=='MICROBIOLOGY'"
+                               target="_blank"
+                               title="Step 2"> {{res1.order.patient.title +' '
+                                +res1.order.patient.firstName +' ' +res1.order.patient.middleName +'
+                                ' + res1.order.patient.lastName +' '
+                                +res1.order.patient.relationWithPatient +' '
+                                +res1.order.patient.relativeName}}</a>x
+                        </td>
+                        <td>{{res1.order.patient.age +' / '+
+                            res1.order.patient.gender}}
+                        </td>
+                        <td>{{res1.order.facility}}</td>
+                        <td>{{res1.orderDetail.barcode}}</td>
+                        <td>{{res1.orderDetail.investigation.sampleType}}</td>
+                        <td><span ng-if="res1.orderDetail.status=='SAMPLE_REJECTED'">REJECTED</span>
+                            <span ng-if="res1.orderDetail.status!='SAMPLE_REJECTED'">COLLECTED</span>
+                        </td>
+                        <td>{{res1.orderDetail.testName}}</td>
+
+                    </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </form>
+
+
+        <!-- end of col -->
+
+        <!-- end of row -->
+    </div>
+</div>
+
+
+<!-- ============ Body content End ============= -->
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script th:src="@{/static/assets/js/AuthorizationConsole4.js}"></script>
+</body>
+<script th:src="@{/static/assets/js/es5/task-manager-list.min.js}"></script>
+<script th:src="@{/static/assets/js/vendor/datatables.min.js}"></script>
+<script th:inline="javascript">
+    // multi column ordering
+     $('#multicolumn_ordering_table').DataTable({
+        "paging" : false,
+         columnDefs: [{
+             targets: [1],
+             orderable: false,
+         }],
+        "scrollX" : true,
+    });
+</script>
+
+</html>

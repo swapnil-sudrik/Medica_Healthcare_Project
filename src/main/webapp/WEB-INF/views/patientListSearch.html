@@ -1,0 +1,38 @@
+<div class="search_detail">
+    <div th:fragment="patientdetail">
+        <div class="table-responsive">
+            <table class="display table table-striped table-bordered" id="alternative_pagination_table1" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Sl.</th>
+                    <th>Registered On</th>
+                    <th>Patient Name</th>
+                    <th>Age/Gender</th>
+                    <th>Mobile No</th>
+                    <th>ABHA ID</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="patient, iterStat : ${patients}">
+                    <td th:text="${iterStat.index + 1}">1</td>
+                    <td th:text="${#dates.format({patient.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+                    <td th:text="${patient.firstName + ' ' + patient.lastName}"></td>
+                    <td th:text="${patient.age + ' / ' + patient.gender}"></td>
+                    <td th:text="${patient.mobileNumber}"></td>
+                    <td th:text="${patient.abhaNumber}"></td>
+                    <td>
+                        <a href="#" th:href="@{'/booking/'+ ${patient.id}}" title="Add Test"><i style="font-size: 18px;" class="ri-add-box-fill"></i></a>
+<!--                        <a href="#" th:href="@{/patient/{id}(id=${patient.id})}"><i style="font-size: 14px;" class="ri-first-aid-kit-fill"></i></a>-->
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5" align="center" th:if="${error}">
+                        <h2 th:text="${error}"></h2>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

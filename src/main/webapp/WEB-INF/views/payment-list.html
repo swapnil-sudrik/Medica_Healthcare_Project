@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Payment Status Report</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Payment Status Report</h1>
+        <ul>
+
+            <li><a th:href="@{/payment-new}"> Add New Payment Record</a></li>
+
+        </ul>
+    </div>
+
+    <div class="alert alert-card alert-danger" role="alert" th:if="${errormessage}">
+        <strong class="text-capitalize">Alert!</strong> [[${errormessage}]]
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                    <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                    </p> -->
+
+                    <div class="table-responsive">
+                        <table style="width:100%">
+
+                            <tr>
+
+                                <th width="8%">Billing Period Start Date</th>
+                                <td width="10%">
+
+                                    <input class="form-control start_date  mandatorychange" id="start_date"
+                                           name="sd" placeholder="Start Date">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+
+                                </td>
+                                <th width="8%">Billing Period End Date</th>
+                                <td width="10%"><input class="form-control end_date mandatorychange" id="end_date"
+                                                       name="ed" placeholder="End Date">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </td>
+                                <th align="center" width="6%">Location</th>
+                                <td width="15%">
+                                    <select class="form-control" id="pLocation" name="pLocation">
+                                        <option value="">Select</option>
+                                        <option th:each="labs_list:${labs}" th:text="${labs_list.hospName}"
+                                                th:value="${labs_list.hospName}"></option>
+                                    </select>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-lg btn-primary ladda-button basic-ladda-button" id="search"
+                                            type="button">Search
+                                    </button>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span></td>
+                                <td>
+                                    <button class="btnExport btn btn-lg btn-primary ladda-button basic-ladda-button"
+                                            target="_blank">Export To Excel
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="6%">District</th>
+                                <td width="15%">
+                                    <select class="form-control" id="pDistrict" name="pDistrict">
+                                        <option value="">Select</option>
+                                        <option th:each="city_list:${labscity}" th:text="${city_list.hospCity}"
+                                                th:value="${city_list.hospCity}"></option>
+                                    </select>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </td>
+                                <th width="6%">Status</th>
+                                <td width="15%">
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="">Select</option>
+                                        <option value="Bill Generated">Bill Generated</option>
+                                        <option value="Submitted to Civil Surgeon / CMHO">Submitted to Civil Surgeon /
+                                            CMHO
+                                        </option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Submitted to Head Office">Submitted to Head Office</option>
+                                        <option value="Payment Partially Cleared">Payment Partially Cleared</option>
+                                        <option value="Payment Fully Cleared">Payment Fully Cleared</option>
+                                    </select>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </td>
+
+
+                            </tr>
+
+                        </table>
+                        </br>
+                    </div>
+                    <div id="LoadingImage" style="display: none">
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    </div>
+                    <div id="search_data"></div>
+                    <div class="default">
+                        <div th:insert="paymentlistSearch :: detail"></div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+
+    <!-- ============ Body content End ============= -->
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+
+          $("#start_date").pickadate({max: new Date()});
+            $("#end_date").pickadate({max: new Date()});
+             $("#pLocation").select2();
+             $("#pDistrict").select2();
+             $("#status").select2();
+
+          // Read selected option
+
+        });
+        $("#search").click(function () {
+            var start = $(".start_date").val();
+            var end = $(".end_date").val();
+
+            var startDate = new Date(start.replace(/-/g, "/"));
+            var endDate = new Date(end.replace(/-/g, "/"));
+
+
+            if ($(".start_date").val() == '') {
+
+                $(".start_date").siblings('span.clientmessage').addClass('error');
+                $(".start_date").siblings('span.clientmessage').text("Please select the start date.");
+                $(".start_date").css('border-color', '#F5A9A9');
+                $(".start_date").focus();
+                return false;
+            } else if ($(".end_date").val() == '') {
+
+                $(".end_date").siblings('span.clientmessage').addClass('error');
+                $(".end_date").siblings('span.clientmessage').text("Please select the end date.");
+                $(".end_date").css('border-color', '#F5A9A9');
+                document.getElementsByClassName("end_date").focus();
+                return false;
+            }else if(startDate > endDate){
+                $("#search").siblings('span.clientmessage').addClass('error');
+                $("#search").siblings('span.clientmessage').text("Please select the correct date.");
+                return false;
+
+            }else{
+                $("#search").siblings('span.clientmessage').removeClass('error');
+                $("#search").siblings('span.clientmessage').text("");
+            }
+
+
+            $("#LoadingImage").show();
+
+            //CHANGE DATE FORMATE
+            var st_date = new Date(start);
+             var et_date = new Date(end);
+
+            var dateString1 = $(".start_date").val(); //st_date.getFullYear()  + "-" + (st_date.getMonth() + 1) + "-" + st_date.getDate()
+            var dateString2 = $(".end_date").val(); //et_date.getFullYear()  + "-" + (et_date.getMonth() + 1) + "-" + et_date.getDate()
+
+            $.ajax({
+                type: "GET",
+                url: "/payment-listS",
+                data: "start_date=" + dateString1 + "&end_date=" + dateString2+ "&location=" +  $("#pLocation").val()+ "&district=" +  $("#pDistrict").val()+ "&status=" +  $("#status").val(),
+                dataType: "html",
+                success: function (data)
+                {
+                    $("#LoadingImage").hide();
+                    $(".default").hide();
+                    $("#search_data").html(data);
+                }
+            });
+        });
+
+
+    </script>
+</body>
+
+
+</html>

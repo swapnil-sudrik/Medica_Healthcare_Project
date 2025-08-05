@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:insert="layout :: headerfiles">
+</head>
+<body class="vertical-layout boxed">
+<div class="page-box">
+    <div class="app-container">
+        <div th:insert="layout :: left-navigation"></div>
+        <div th:insert="layout :: header"></div>
+        <main class="main-content">
+            <div class="app-loader">
+                <i class="icofont-spinner-alt-4 rotate"></i>
+            </div>
+            <div class="main-content-wrap">
+                <form method="post" th:action="@{/app/consents-hip-on-notify}">
+                    <div class="page-content">
+                        <div class="card">
+                            <div class="card-header">Consents to Health Information</div>
+                            <div class="card-body">
+                                <div class="row" >
+
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Consent Id" value="" name="consentId" id="consentId" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Request Id" value="" name="requestId" id="requestId" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6" >
+                                        <button type="submit" class="btn btn-info">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <footer th:insert="layout :: footer"></footer>
+    </div>
+</div>
+</body>
+</html>

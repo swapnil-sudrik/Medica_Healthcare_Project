@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Report</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Investigation Detail Report</h1>
+
+    </div>
+
+
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                    <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                    </p> -->
+
+                    <div class="table-responsive">
+                        <table style="width:100%">
+
+                            <tr>
+
+                                <th>Start Date</th>
+                                <td>
+                                    <label class="control-label " for="typeahead">
+                                        <input class="start_date form-control mandatorychange" id="start_date"
+                                               name="sd" placeholder="Start Date">
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </label>
+                                </td>
+                                <th>End Date</th>
+                                <td><input class="form-control end_date mandatorychange" id="end_date"
+                                           name="ed" placeholder="End Date">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </td>
+                                <th>Tests</th>
+                                <td>
+                                    <select class="mandatory" data-rel="chosen" id="invest_ids" name='investigation.id'
+                                            required>
+                                        <option value="0">Select</option>
+
+                                        <optgroup align="center" id="investid" label="INVESTIGATIONS">
+
+                                            <option th:each="invests_lists : ${inv_name}" th:text=${invests_lists.invest_name}
+                                                    th:value="${invests_lists.id}"></option>
+
+                                        </optgroup>
+
+                                    </select>
+
+                                </td>
+                                <td>
+                                    <button class="btn btn-lg btn-primary ladda-button basic-ladda-button" id="search"
+                                            type="button">Search
+                                    </button>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span></td>
+                                <td>
+                                    <button class="btnExport btn btn-lg btn-primary ladda-button basic-ladda-button"
+                                            target="_blank">Export To Excel
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </table>
+                    </div>
+                    <div id="LoadingImage" style="display: none">
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    </div>
+                    <div id="search_data"></div>
+                    <div class="default">
+                        <div th:insert="patientWiseReportS :: detail"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+
+    <!-- ============ Body content End ============= -->
+
+
+    <footer th:insert="layout :: footer"></footer>
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+          // Initialize select2
+          $("#invest_ids").select2({width:'300px'});
+          $("#start_date").pickadate({max: new Date()});
+            $("#end_date").pickadate({max: new Date()});
+
+          // Read selected option
+
+        });
+        $("#search").click(function () {
+            var start = $(".start_date").val();
+            var end = $(".end_date").val();
+
+            var startDate = new Date(start.replace(/-/g, "/"));
+            var endDate = new Date(end.replace(/-/g, "/"));
+
+
+            if ($(".start_date").val() == '') {
+
+                $(".start_date").siblings('span.clientmessage').addClass('error');
+                $(".start_date").siblings('span.clientmessage').text("Please select the start date.");
+                $(".start_date").css('border-color', '#F5A9A9');
+                $(".start_date").focus();
+                return false;
+            } else if ($(".end_date").val() == '') {
+
+                $(".end_date").siblings('span.clientmessage').addClass('error');
+                $(".end_date").siblings('span.clientmessage').text("Please select the end date.");
+                $(".end_date").css('border-color', '#F5A9A9');
+                document.getElementsByClassName("end_date").focus();
+                return false;
+            }else if(startDate > endDate){
+                $("#search").siblings('span.clientmessage').addClass('error');
+                $("#search").siblings('span.clientmessage').text("Please select the correct date.");
+                return false;
+
+            }else{
+                $("#search").siblings('span.clientmessage').removeClass('error');
+                $("#search").siblings('span.clientmessage').text("");
+            }
+
+
+            $("#LoadingImage").show();
+            //CHANGE DATE FORMATE
+            var st_date = new Date(start);
+             var et_date = new Date(end);
+
+            var dateString1 = st_date.getFullYear()  + "-" + (st_date.getMonth() + 1) + "-" + st_date.getDate()
+            var dateString2 = et_date.getFullYear()  + "-" + (et_date.getMonth() + 1) + "-" + et_date.getDate()
+
+            $.ajax({
+                type: "GET",
+                url: "/patientWiseReportSearch",
+                data: "im_id=" + $("#invest_ids").val() + "&start_date=" + dateString1 + "&end_date=" + dateString2,
+                dataType: "html",
+                success: function (data)
+                {
+
+                    $("#LoadingImage").hide();
+                    $(".default").hide();
+                    $("#search_data").html(data);
+                }
+            });
+        });
+
+
+    </script>
+</body>
+
+
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<head>
+    <title>Authorization Console</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link rel="stylesheet"
+          th:href="@{/static/assets/styles/vendor/datatables.min.css}">
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="generic-container">
+        <div class="panel panel-default">
+            <div class="panel-heading d-flex justify-content-between">
+                <h1 class="panel-title my-2">Authorization Console</h1>
+
+
+            </div>
+
+
+            <div class="search ul-task-manager__search-inline">
+
+
+                <form class="form-inline ml-auto" method="get"
+                      th:action="@{/AuthorizationConsole}">
+                    <div class="row">
+                        <label class="ul-form__label col-1">Strat Date </label> <input
+                            class="form-control  col-2" id="starts-at" name="starts_at"
+                            type="datetime-local"/>
+                        <label class="ul-form__label col-1">End Date </label> <input
+                            class="form-control  col-2" id="ends-at" name="ends_at"
+                            type="datetime-local"/>
+                        <label class="ul-form__label  col-1">Department </label>
+                        <select class="form-control col-2" name="department" type="text">
+                            <option selected value="">All</option>
+                            <option th:each="departments:${departmentList}" th:value="${departments.department}">
+                                [[${departments.department}]]
+                            </option>
+                        </select>
+
+
+                        <label class="ul-form__label col-1">Section </label>
+                        <select class="form-control col-2" name="section" type="text">
+                            <option selected value="">All</option>
+                            <option th:each="sections:${sectionList}" th:value="${sections.section}">
+                                [[${sections.section}]]
+                            </option>
+                        </select>
+
+                        <label class="ul-form__label col-1">Test </label>
+                        <select class="form-control col-2" name="test" type="text">
+                            <option selected value="">All</option>
+                            <option th:each="test:${testList}" th:value="${test.id}">
+                                [[${test.invest_name}]]
+                            </option>
+                        </select>
+
+                        <label class="ul-form__label col-1">Parameter </label>
+                        <select class="form-control col-2" name="parameter" type="text">
+                            <option selected value="">All</option>
+                            <option th:each="parameters:${parametersList}" th:value="${parameters.tm_id}">
+                                [[${parameters.parameter_name} +' - '+${parameters.investigation.invest_name}]]
+                            </option>
+                        </select>
+
+                        <label class="ul-form__label col-1">Patient Type </label>
+                        <select class="form-control col-2" name="patient_type" type="text">
+                            <option selected value="">All</option>
+                            <option value="OPD">OPD</option>
+                            <option value="IPD">IPD</option>
+                            <option value="ANC">ANC</option>
+                        </select>
+
+                        <div class="col-2">
+                            <button class="btn btn-success " type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+            <div class="alert alert-card alert-success" role="alert"
+                 th:if="${message}">
+                <strong class="text-capitalize">Success!</strong> [[${message}]]
+                <button aria-label="Close" class="close" data-dismiss="alert"
+                        type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="form-inline ml-auto" method="post"
+                  th:action="@{/AuthorizationConsoleSave}">
+                <div class="table-responsive">
+                    <a id="viewButton" style="display: none;">
+                        <button class="btn btn-success btn-sm btn-padding-table"
+                                type="submit">
+                            <span class="ul-btn__icon"><i class="i-Open-Book"></i></span>
+                            Authorize
+                        </button>
+                    </a>
+                    <table class="display table-bordered  table-bordered  custom-sm-width"
+                           id="multicolumn_ordering_table">
+                        <thead>
+                        <tr class="bg-light">
+
+                            <th>S. No.</th>
+                            <th title="Authorization Check">Auth <input id="verify" type="checkbox"></th>
+                            <th>Order Date & Time</th>
+                            <th>Department</th>
+                            <th>Section</th>
+                            <th>Status</th>
+                            <!-- 	<th>UHID</th> -->
+                            <th>LAB ID</th>
+                            <th>Order ID</th>
+                            <th>Patient Name</th>
+                            <th>Age / Gender</th>
+                            <th>Patient Type</th>
+                            <th>Barcode</th>
+                            <!-- <th>Vial Type</th> -->
+                            <th>Test Name</th>
+                            <th>Parameter Name</th>
+                            <th>Machine Value</th>
+                            <th>Corrected Value</th>
+                        </tr>
+                        </thead>
+                        <tbody id="names">
+                        <tr id="names" th:each="res1,h : ${res}">
+                            <td>[[${h.count}]]</td>
+                            <td><input class="verifySelected" name="iv_id" th:value="${res1.orderDetail.id}"
+                                       type="checkbox"></td>
+                            <td>[[ ${#dates.format({res1.createdAt} , 'dd-MMM-yyyy hh:mm a')} ]]</td>
+                            <td>[[${res1.orderDetail.investigation.department}]]</td>
+                            <td>[[${res1.orderDetail.investigation.section}]]</td>
+                            <td>[[${res1.orderDetail.status}]]</td>
+                            <td>[[${res1.orderDetail.order.patient.mrn1}+'/ '+
+                                ${#numbers.formatInteger(res1.orderDetail.order.patient.mrn2,6)}]]
+                            </td>
+                            <!-- <td>[[${res1.orderDetail.order.patient.mrn1}]]</td> -->
+                            <td>[[${res1.orderDetail.order.id}]]</td>
+                            <td><a target="_blank"
+                                   th:href="@{'/result-multipleWorkList/'+ ${res1.orderDetail.order.id}+'/true'}"
+                                   title="Step 2">[[${#strings.capitalizeWords(res1.orderDetail.order.patient.title) }
+                                +' ' +${#strings.capitalizeWords(res1.orderDetail.order.patient.firstName) } +' '
+                                +(${res1.orderDetail.order.patient.middleName}?${#strings.capitalizeWords(res1.orderDetail.order.patient.middleName)}:'')+'
+                                ' +${#strings.capitalizeWords(res1.orderDetail.order.patient.lastName)}+'
+                                '+${#strings.capitalizeWords(res1.orderDetail.order.patient.relationWithPatient)}+' '
+                                +${#strings.capitalizeWords(res1.orderDetail.order.patient.relativeName)}]]</td>
+                            <td>[[${res1.orderDetail.order.patient.age}+' /
+                                '+${res1.orderDetail.order.patient.gender}]]
+                            </td>
+                            <td>[[${res1.orderDetail.order.facility}]]</td>
+                            <td>[[${res1.orderDetail.barcode}]]</td>
+
+                            <td>[[${res1.orderDetail.testName}]]</td>
+                            <td>[[${res1.testName}]]</td>
+                            <td>[[${res1.machineResult}]]</td>
+                            <td>[[${res1.result}]]</td>
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </form>
+
+
+            <!-- end of col -->
+
+            <!-- end of row -->
+        </div>
+    </div>
+
+
+    <!-- ============ Body content End ============= -->
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+</body>
+<script th:src="@{/static/assets/js/es5/task-manager-list.min.js}"></script>
+<script th:src="@{/static/assets/js/vendor/datatables.min.js}"></script>
+
+<script>
+    $('#verify').on('click', function() {
+        if (this.checked) {
+            $('.verifySelected').each(function() {
+                this.checked = true;
+                $("#viewButton").show();
+            });
+        } else {
+            $('.verifySelected').each(function() {
+                this.checked = false;
+                $("#viewButton").hide();
+            });
+        }
+    });
+
+    $('.verifySelected')
+            .on(
+                    'click',
+                    function() {
+                        var total = 0;
+                        if ($('.verifySelected:checked').length == $('.verifySelected').length) {
+                            $('#verify').prop('checked', true);
+                            $("#viewButton").show();
+                        } else {
+                            $('#verify').prop('checked', false);
+
+                        }
+                        //alert($('.verifySelected:checked').length);
+                        if ($('.verifySelected:checked').length>0){
+                            $("#viewButton").show();
+                        }else{
+                            $("#viewButton").hide();
+                        }
+                    });
+
+
+
+         // multi column ordering
+        $('#multicolumn_ordering_table').DataTable({
+         "paging": false,
+            columnDefs: [{
+                targets: [1],
+                orderable: false,
+            }],
+            "scrollX":true,
+        });
+        $(document).ready(
+                function() {
+                    $("select").select2();
+
+                    document.getElementById('starts-at').max = new Date(new Date()
+                            .getTime()
+                            - new Date().getTimezoneOffset() * 60000).toISOString()
+                            .split("T")[0];
+                    document.getElementById('ends-at').max = new Date(new Date()
+                            .getTime()
+                            - new Date().getTimezoneOffset() * 60000).toISOString()
+                            .split("T")[0];
+
+                });
+
+        function confirmInactive(event) {
+            var message = 'Are you sure you want to inactive indent?';
+            action = confirm(message) ? true : event.preventDefault();
+        }
+
+</script>
+
+</html>

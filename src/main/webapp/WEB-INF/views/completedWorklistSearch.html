@@ -1,0 +1,41 @@
+<div class="search_detail" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div th:fragment="patientdetailtest">
+        <div class="table-responsive">
+            <table class="display table table-striped table-bordered" id="alternative_pagination_table1" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Sl.</th>
+                    <th>Registered On</th>
+                    <th>Patient Name</th>
+                    <th>Mobile No</th>
+                    <th>ABHA ID</th>
+                    <th>Barcode</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="res, iterStat : ${testsResult}">
+                    <td th:text="${iterStat.index + 1}">1</td> <!-- Sl. column -->
+                    <td th:text="${#dates.format(res.createdAt, 'dd-MMM-yyyy HH:mm')}"></td> <!-- Registered On -->
+                    <td th:text="${res.patient.firstName + ' ' + res.patient.lastName}"></td> <!-- Patient Name -->
+                    <td th:text="${res.patient.mobileNumber}"></td> <!-- Mobile No -->
+                    <td th:text="${res.patient.abhaNumber}"></td> <!-- ABHA ID -->
+                    <td th:text="${res.barcode}"></td> <!-- Barcode -->
+                    <td th:text="${res.status}"></td> <!-- Status -->
+                    <td>
+                        <a th:href="@{'/printCompletedWorkList/' + ${res.patient.id}}" title="Print"><i style="font-size: 18px;" class="ri-printer-line"></i></a>
+<!--                        <a th:href="@{/patient/{id}(id=${res.patient.id})}"><i style="font-size: 14px;" class="ri-first-aid-kit-fill"></i></a>-->
+                    </td>
+                </tr>
+                <tr th:if="${error != null}">
+                    <td colspan="8" align="center">
+                        <h2 th:text="${error}"></h2>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

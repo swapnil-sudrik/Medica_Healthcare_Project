@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Print</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <style>
+    </style>
+
+</head>
+<body class="text-left">
+
+
+<!-- ============ Body content start ============= -->
+<div id="print-area">
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div>
+                <!-- Outer table start -->
+                <table height="100%" width="100%">
+                    <tr>
+                        <td width="100%">
+
+
+                            <table width="100%">
+
+                                <tr>
+                                    <td align="center" style="font-size: 18px;"><b>PURCHASE
+                                        ORDER</b></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table style="line-height: normal;" width="100%">
+
+
+                                            <tr style="font-size: 14px;">
+                                                <td align="left"><img
+                                                        height="120px"
+                                                        th:src="@{'/static/assets/images/vendor_logo/BIOSYSTEMS.png'}" width="120px"></td>
+                                                <td align="center"><b>POCT Science House Pvt.Ltd<br>
+                                                    17/1 Shanti Niketan Near Chetak Bridge Bhopal (MP) -
+                                                    462023<br> Email Id :- logistic@shmpl.com<br>
+                                                    Name & Contact Person :- Dr.Abhishek Upadhyay (
+                                                    9691677234)
+                                                </b></td>
+                                                <td align="right"><img
+                                                        height="120px"
+                                                        th:src="@{'/static/assets/images/vendor_logo/BIOSYSTEMS.png'}" width="120px"></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <td align="center">
+                                        <table align="left" height="100%" width="100%">
+                                            <tr>
+                                                <td align="left" width="50%"><b>PO No : </b>[[${purchaseOrder.purchaseMrn}+''+
+                                                    ${#numbers.formatInteger(purchaseOrder.counter,6)}]]
+                                                </td>
+
+                                                <td align="left"><b>PO Date : </b>[[${purchaseOrder.poDate}]]</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="height: 15px;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="left" width="50%"><b>Shipped Via : </b></td>
+
+                                                <td align="left"><b>Terms of Payment : </b>
+                                                    [[${purchaseOrder.paymentTermsConditions}]]
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="height: 15px;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="left" width="50%"><b>F.O.B. Point: </b>BHOPAL
+                                                </td>
+
+                                                <td align="left"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="height: 15px;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="left" style="max-width: 20px; word-wrap: break-word;"
+                                                    valign="top"><b>To,</b>
+                                                    <br>[[${vendorMaster.companyName}]] <br>
+                                                    <div
+                                                            th:each="notes : ${#strings.arraySplit(vendorMaster.vendorAddress, '~')}">
+                                                        <span style="text-transform: none;">[[${notes}]]</span>
+                                                    </div>
+                                                    GSTN NO. : [[${vendorMaster.vendorGstNo}]], <br>[[${vendorMaster.mobileNo}]]
+
+                                                </td>
+
+                                                <td align="left" style="font-size: 12px;" valign="top">
+                                                    <b>SHIP TO,</b> <br> POCT Science House Pvt.Ltd <br>
+                                                    17/1 Shanti Niketan Near Chetak Bridge <br> Bhopal
+                                                    (MP) <br>GSTN NO. : 23AAKCP2939C1ZL
+
+
+                                                </td>
+                                            </tr>
+
+
+                                            <tr>
+                                                <td align="left" colspan="2" valign="top" width="98%">
+                                                    <table border="1" cellpadding="0" width="100%">
+                                                        <tr class="boldclass-alignCenter">
+                                                            <th width="2%">Sl.</th>
+                                                            <th>DESCRIPTION OF GOODS</th>
+                                                            <th>QTY</th>
+                                                            <!-- <th>Received QTY. </th> -->
+
+                                                            <th>UNIT</th>
+                                                            <th>RATE</th>
+
+
+                                                            <th>TOTAL</th>
+                                                        </tr>
+
+                                                        <tr th:each="item,i:${purchaseOrder.purchaseOrderItems}">
+                                                            <td th:text="${i.count}"></td>
+                                                            <td><span
+                                                                    th:text="${item.invProductMaster.productName}"></span><span>
+																		[[${item.invProductMaster.productCode}]]</span>
+                                                            <td align="right">[[${item.orderedQty}]]</td>
+
+                                                            <td align="right">[[${item.invProductMaster.productUnit}]]
+                                                            </td>
+                                                            <td align="right">[[${item.rate}-${item.discount}]]</td>
+
+
+                                                            <td align="right">
+                                                                [[${#numbers.formatDecimal(item.orderedQty*(item.rate-item.discount),
+                                                                0, 'COMMA', 2, 'POINT')}]]
+                                                            </td>
+                                                            <!-- <td align="right">[[${item.discount}]]</td> -->
+
+                                                            <!-- <td align="right">[[${item.orderedQty} *( ${item.rate} -${item.discount} )]]</td>
+                                            <td align="right">[[${item.gst}]]&nbsp;</td> -->
+
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="right" colspan="5"><b>Total</b></td>
+
+
+                                                            <td align="right"><b>[[${#numbers.formatDecimal(#aggregates.sum(purchaseOrder.purchaseOrderItems.![(rate-discount)*orderedQty]),
+                                                                0, 'COMMA', 2, 'POINT')} ]]</b></td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="right" colspan="5"><b>GST 12%</b></td>
+
+
+                                                            <td align="right"><b>[[${#numbers.formatDecimal(#aggregates.sum(purchaseOrder.purchaseOrderItems.![((rate-discount)*orderedQty)*0.12]),
+                                                                0, 'COMMA', 2, 'POINT')} ]]</b></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="right" colspan="5"><b>Grand Total</b></td>
+
+
+                                                            <td align="right"><b>[[${#numbers.formatDecimal(#aggregates.sum(purchaseOrder.purchaseOrderItems.![(((rate-discount)*orderedQty)*0.12)+((rate-discount)*orderedQty)]),
+                                                                0, 'COMMA', 2, 'POINT')} ]]</b></td>
+                                                        </tr>
+
+
+                                                    </table>
+
+
+                                                </td>
+
+                                            </tr>
+                                            <tr style="height: 30px;">
+                                                <td><b>TERMS & CONDITION :-</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>[[${purchaseOrder.termsConditions}]]</b></td>
+                                            </tr>
+                                            <tr style="height: 30px;">
+                                                <td align="center"><b></b></td>
+                                            </tr>
+
+
+                                            <tr>
+                                                <td colspan="2" valign="top" width="80%">
+                                                    <table border="0" cellpadding="0" width="100%">
+                                                        <tr>
+                                                            <td align="center">
+                                                                <button class="btn btn-primary "
+                                                                        id="hideprintbtn" onClick="printPage();"
+                                                                        type="button">Print
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table> <!-- inner table End -->
+                        </td>
+                    </tr>
+                </table>
+                <!-- Outer table End -->
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function printPage(val) {
+            var printButton = document.getElementById("hideprintbtn");
+            printButton.style.visibility = 'hidden';
+
+            window.print();
+        }
+
+        $(document)
+                .on(
+                        'keydown',
+                        function(e) {
+                            if (e.ctrlKey
+                                    && (e.key == "p" || e.charCode == 16
+                                            || e.charCode == 112 || e.keyCode == 80)) {
+                                alert("Please use the Print button below for a better rendering on the document");
+                                // e.cancelBubble = true;
+                                // e.preventDefault();
+
+                                // e.stopImmediatePropagation();
+                            }
+                        });
+    </script>
+</body>
+</html>

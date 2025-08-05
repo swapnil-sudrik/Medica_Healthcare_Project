@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Report</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<!-- <div th:insert="layout :: preloader">  -->
+<!-- </div> -->
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Patient's Report</h1>
+
+    </div>
+
+
+    <div class="row mb-4">
+
+        <div class="col-md-12 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <!-- <h4 class="card-title mb-3">Multi-column ordering</h4>
+
+                        <p>DataTables allows ordering by multiple columns at the same time, which can be activated in a number of different ways
+                        </p> -->
+
+                    <div class="table-responsive">
+                        <table style="width: 100%">
+
+                            <tr>
+
+                                <th>Start Date</th>
+                                <td><input class="startcheck10 start_date  mandatorychange"
+                                           id="start_date" name="sd"
+                                           placeholder="Start Date">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span></td>
+                                <th>End Date</th>
+                                <td><input class="endcheck10 end_date mandatorychange" id="end_date"
+                                           name="ed" placeholder="End Date">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage text-danger"></span></td>
+                                <th th:if="${pathologyType}==All">Lab</th>
+                                <td th:if="${pathologyType}==All">
+                                    <select id="labNameId">
+                                        <option value="">Select</option>
+                                        <option th:each="lists:${lab}" th:value="${lists.id}">[[${lists.hospName}]]
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-md btn-primary ladda-button basic-ladda-button"
+                                            id="search"
+                                            type="button">Search
+                                    </button>
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span></td>
+                                <td>
+                                    <button
+                                            class="btnExport btn btn-md btn-primary ladda-button basic-ladda-button"
+                                            target="_blank">Export To Excel
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </table>
+                    </div>
+                    <div id="LoadingImage" style="display: none">
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                        <div class="loader-bubble loader-bubble-primary m-5"></div>
+                    </div>
+                    <div id="search_data"></div>
+                    <div class="default">
+                        <div th:insert="patientReportS :: patientdetail"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of col -->
+    </div>
+    <!-- end of row -->
+
+
+    <!-- ============ Body content End ============= -->
+
+
+    <footer th:insert="layout :: footer"></footer>
+    <script th:src="@{/static/assets/js/dateSearch.script.js}"></script>
+    <script type="text/javascript">
+        $("#labNameId").select2({width:'150px'});
+$(document).ready(function(){
+ 
+  // Initialize select2
+ 
+  $("#start_date").pickadate({max: new Date()});
+    $("#end_date").pickadate({max: new Date()});
+
+  // Read selected option
+    var dob= document.getElementsByClassName('gender_age');
+
+    for(var i=0; i<dob.length; i++){
+        var childs =dob[i].children;
+        var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+        var age_dt = new Date(diff_ms);
+
+        var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+        var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+        var age_month =   Math.floor(age_d/30);
+        var age_day = age_d % 30;
+
+        if(age_year != 0){
+        childs[1].innerHTML = age_year+' Y ';
+       }else if(age_month != 0){
+           childs[1].innerHTML =  age_month+' M ';
+       }else{
+           childs[1].innerHTML = age_day+' D ';
+       }
+
+    }
+});
+$("#search").click(function () {
+    var start = $(".start_date").val();
+    var end = $(".end_date").val();
+    var lab_id = $("#labNameId").val();
+    var startDate = new Date(start.replace(/-/g, "/"));
+    var endDate = new Date(end.replace(/-/g, "/"));
+
+
+    if ($(".start_date").val() == '') {
+
+        $(".start_date").siblings('span.clientmessage').addClass('error');
+        $(".start_date").siblings('span.clientmessage').text("Please select the start date.");
+        $(".start_date").css('border-color', '#F5A9A9');
+        $(".start_date").focus();
+        return false;
+    } else if ($(".end_date").val() == ' ') {
+
+        $(".end_date").siblings('span.clientmessage').addClass('error');
+        $(".end_date").siblings('span.clientmessage').text("Please select the end date.");
+        $(".end_date").css('border-color', '#F5A9A9');
+        document.getElementsByClassName("end_date").focus();
+        return false;
+    }else if(startDate > endDate){
+        $("#search").siblings('span.clientmessage').addClass('error');
+        $("#search").siblings('span.clientmessage').text("Please select the correct date.");
+        return false;
+
+    }else{
+        $("#search").siblings('span.clientmessage').removeClass('error');
+        $("#search").siblings('span.clientmessage').text("");
+    }
+
+
+    $("#LoadingImage").show();
+    //CHANGE DATE FORMATE
+    var st_date = new Date(start);
+     var et_date = new Date(end);
+
+    var dateString1 = st_date.getFullYear()  + "-" + (st_date.getMonth() + 1) + "-" + st_date.getDate()
+    var dateString2 = et_date.getFullYear()  + "-" + (et_date.getMonth() + 1) + "-" + et_date.getDate()
+var baseUrl = "";
+    if (window.location.pathname.indexOf("/covid19") !== -1) {
+        console.log('sucess')
+        baseUrl = "/covid19";
+    }
+    $.ajax({
+        type: "GET",
+        url: baseUrl+"/patientReportSearch",
+        data: "start_date=" + dateString1 + "&end_date=" + dateString2 + "&lab_id=" + lab_id,
+        dataType: "html",
+        success: function (data)
+        {
+
+            $("#LoadingImage").hide();
+            $(".default").hide();
+            $("#search_data").html(data);
+        }
+    });
+});
+
+
+    </script>
+</body>
+
+
+</html>

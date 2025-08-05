@@ -1,0 +1,65 @@
+<div id="search_data">
+    <div th:fragment="detail">
+        <div class="ExportData table-responsive">
+
+            <table class="display table table-striped table-bordered" id="multicolumn_ordering_table"
+                   style="width:100%">
+                <thead>
+
+                <tr>
+                    <th width="4%">SI.</th>
+                    <th><label class="control-label"><strong>Entry Date</strong></label></th>
+                    <th><label class="control-label"><strong>Created By</strong></label></th>
+                    <th><label class="control-label"><strong>Location</strong></label></th>
+                    <th><label class="control-label"><strong>District</strong></label></th>
+                    <th><label class="control-label"><strong>Invoice Generating Date</strong></label></th>
+                    <th><label class="control-label"><strong>Invoice No.</strong></label></th>
+                    <th><label class="control-label"><strong>Payment Due (<span
+                            th:text="${#numbers.formatDecimal(#aggregates.sum(result.![paymentDue]), 0, 'COMMA', 2, 'POINT')}"></span>)</strong></label>
+                    </th>
+                    <th><label class="control-label"><strong>Payment Received (<span
+                            th:text="${#numbers.formatDecimal(#aggregates.sum(result.![paymentReceive]), 0, 'COMMA', 2, 'POINT')}"></span>)</strong></label>
+                    </th>
+                    <th><label class="control-label"><strong>Balance (<span
+                            th:with="y2=((${(#aggregates.sum(result.![paymentDue]))}!=null)?${(#aggregates.sum(result.![paymentDue]))}:0)-
+                 ((${(#aggregates.sum(result.![paymentReceive]))}!=null)?${(#aggregates.sum(result.![paymentReceive]))}:0)"
+                    >[[(${y2}!=0)?${#numbers.formatDecimal(y2, 0, 'COMMA', 2, 'POINT')}:0]]</span>)</strong></label>
+                    </th>
+                    <th><label class="control-label"><strong>Status</strong></label></th>
+                    <th><label class="control-label"><strong>Actions</strong></label></th>
+                </tr>
+
+
+                </thead>
+                <tbody>
+                <tr th:each="res,i : ${result}">
+
+                    <td th:text="${i.count}">1</td>
+                    <td th:text="${#dates.format({res.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+                    <td th:text=${res.createdByUsername}></td>
+                    <td th:text=${res.pLocation}></td>
+                    <td th:text=${res.pDistrict}></td>
+                    <td th:text="${#dates.format({res.monthName} , 'dd-MMM-yyyy')}"></td>
+                    <td th:text=${res.invoiceNo}></td>
+                    <td th:text="${res.paymentDue}?${#numbers.formatDecimal(res.paymentDue, 0, 'COMMA', 2, 'POINT')}:0"></td>
+                    <td th:text="${res.paymentReceive}?${#numbers.formatDecimal(res.paymentReceive, 0, 'COMMA', 2, 'POINT')}:0"></td>
+                    <td th:with="y1 = ((${res.paymentDue}!=null)?${res.paymentDue}:0)-((${res.paymentReceive}!=null)?${res.paymentReceive}:'0')"
+                    >[[${#numbers.formatDecimal(y1, 0, 'COMMA', 2, 'POINT')}]]
+                    </td>
+                    <td th:text=${res.status}></td>
+                    <td><a th:href="@{'/payment-new/'+ ${res.id}}">
+                        <button class="btn btn-success btn-sm m-1" type="button">Edit</button>
+                    </a>
+                        <a th:href="@{'/payment-delete/'+ ${res.id}}">
+                            <button class="btn btn-danger btn-sm m-1" type="button">Delete</button>
+                        </a>
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>

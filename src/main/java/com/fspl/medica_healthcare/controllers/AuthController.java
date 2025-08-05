@@ -54,6 +54,7 @@ public class AuthController {
             @Valid @RequestBody AuthRequest authRequest,
             HttpServletRequest request,
             @RequestHeader(value = "User-Agent", defaultValue = "Unknown") String userAgent) {
+        System.out.println("===authcontroller==Call==");
         User user = null;
         String clientIp = getClientIp(request, authRequest);
         try {

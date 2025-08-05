@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title>Error</title>
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,400i,600,700,800,900" rel="stylesheet">
+    <link href="/static/assets/styles/css/themes/lite-purple.min.css" rel="stylesheet">
+    <link href="/static/assets/styles/vendor/perfect-scrollbar.css" rel="stylesheet">
+</head>
+
+<body th:with="httpStatus=${T(org.springframework.http.HttpStatus).valueOf(#response.status)}">
+<div class="not-found-wrap text-center">
+    <h1>Something went wrong! </h1>
+    <h2 th:text="|${httpStatus} - ${httpStatus.reasonPhrase}|"></h2>
+    <h3>Our Engineers are on it</h3>
+    <p class="text-36 subheading mb-3">Error!</p>
+    <p class="mb-5  text-muted text-18">Sorry! The page you were looking for doesn't exist.</p>
+    <a class="btn btn-lg btn-primary btn-rounded" th:href="@{/dashboard-v1}">Go back to home</a>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+    <style type="text/css">
+
+        .black_bottom_border {
+            border-bottom:1px solid #000000;
+            margin-bottom:10px;
+            padding-bottom:5px;
+        }
+        tr.row_border td,tr.row_border th {
+            border-top:1px solid #444;
+            border-left:1px solid #444;
+        }
+
+        .order_class {
+            border-right:1px solid #444;
+            border-bottom:1px solid #444;
+            font-size:13px;
+            font-family:verdana,Helvetica, Arial,sans-serif;
+        }
+        .font_13{
+            font-size:13px;
+            font-family:verdana,Helvetica, Arial,sans-serif;
+        }
+
+    .font td { font-size:13px; }
+    .saprint { page-break-after: always; }
+    </style>
+</head>
+<body>
+<div>
+
+    <table align="center" border="0" cellpadding="0" cellspacing="0" height="40">
+        <tr>
+            <td style="font-size:12px;">[[${#strings.capitalizeWords(boxMaster.box_owner)} ]]</td>
+
+        </tr>
+
+        <tr>
+            <td align="center" colspan="2" valign="top">
+                <img align="top" height="50px" th:src="@{'/barcode/'+${boxMaster.boxNumber}}" width="150px"><br/><span
+                    style="font-size:10px; margin-top:-10px"><strong>[[${boxMaster.boxNumber}]]</strong></span>
+            </td>
+        </tr>
+
+
+        <table>
+            <tr>
+                <td height="4"></td>
+            </tr>
+        </table>
+
+
+</div>
+
+<script type="text/javascript">
+
+    window.onload = (event) => {
+        window.print();
+        };
+
+
+</script>
+</body>
+</html>

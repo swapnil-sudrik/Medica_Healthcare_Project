@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <title>ABHA Generation</title>
+    <script th:src="@{https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js}"></script>
+    <th:block th:include="layout :: headerfiles"></th:block>
+    <style>
+        #responseFields label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div id="scannerDiv" class="main-content-wrap">
+        <form method="post" th:action="@{/app/patientInit}">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-header">Patient Authentication</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <input class="form-control"
+                                       type="text" placeholder="Enter ABHA Number"
+                                       value="" name="healthId" required>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="dropdown bootstrap-select">
+                                    <select name="authMethod" id="authMethod" title="Authentication Method" class="selectpicker" required>
+                                        <option value="AADHAAR_OTP">AADHAAR_OTP</option>
+                                        <option value="MOBILE_OTP">MOBILE_OTP</option>
+                                    </select>
+                                    <div class="valid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <button type="submit" class="btn btn-info">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span th:text="'Or'" style="font-size: 18px; text-align: center;"></span>
+        </form>
+      <div>
+          <h3>Using QR Code Reader</h3>
+          <button id="startScanningButton">Start Scanning</button>
+      </div>
+        <div class="row">
+            <div class="col">
+                <div id="reader"></div>
+            </div>
+            <div  class="col" style="padding: 30px">
+                <h4>Scan Result</h4>
+
+                <div id="responseFields" style="display: none;">
+                    <form id="myForm" th:action="@{/patient-check-abha}" method="post" modelAttribute="patient" th:object="${patient}">
+                        <div>
+                            <label for="hidn">Abha Number:</label>
+                            <span id="hidn" name="hidn"></span>
+                        </div>
+                        <div>
+                            <label for="phr">Abha Address:</label>
+                            <span id="phr" name="phr"></span>
+                        </div>
+                        <div>
+                            <label for="name">Name:</label>
+                            <span id="name" name="name"></span>
+                        </div>
+                        <div>
+                            <label for="gender">Gender:</label>
+                            <span id="gender" name="gender"></span>
+                        </div>
+
+                        <div>
+                            <label for="dob">DOB:</label>
+                            <span id="dob" name="dob1"></span>
+                        </div>
+                        <div>
+                            <label for="stateName">State Name:</label>
+                            <span id="stateName" name="stateName"></span>
+                        </div>
+                        <div>
+                            <label for="distName">District Name:</label>
+                            <span id="distName" name="distName"></span>
+                        </div>
+                        <div>
+                            <label for="mobile">Mobile:</label>
+                            <span id="mobile" name="mobile"></span>
+                        </div>
+                        <div>
+                            <label for="alreadyExiststatus">Status</label>
+                            <span id="alreadyExiststatus" name="alreadyExiststatus"></span>
+                        </div>
+                        <div>
+                            <button style="display: none;" type="submit" id="AddPatient" class="btn btn-info">Continue With Patient Registration</button>
+                        </div>
+                        <div>
+                            <input type="hidden" id="qrCodeData" name="qrCodeData">
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="PatientRegitstrationDiv" class="main-content-wrap">
+        <div class="breadcrumb">
+            <h1 th:text="'Add New Patient'"></h1>
+        </div>
+
+        <div class="separator-breadcrumb border-top"></div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form
+                                method="post"
+                                modelAttribute="patient" th:action="${edit}?@{'/patients/'+ ${patient.id}}:@{/patients}" th:object="${patient}">
+                            <div class="card-title  text-danger row">
+                                <div class="col-6">
+                                    <span>All fields marked * are mandatory</span>
+                                </div>
+                                <div align="right" class="col-6">
+                                    <!-- <button class="btn "
+                                        style="background-color: orange; color: white;" name="submit"
+                                    value="save" id=save_button>[[${edit}?Update:Save]]</button>  -->
+                                    <button class="btn " id=save_button
+                                            name="submit" style="background-color: orange; color: white;"
+                                            th:if="${edit}" value="save">Update
+                                    </button>
+                                    <button class="btn "
+                                            id="submitandcontinue_button"
+                                            name="submit" style="background-color: #3d8b40; color: white;" th:if="(!${edit})"
+                                            value="saveAndContinue">Save & Continue
+                                    </button>
+                                </div>
+
+
+                            </div>
+                            <div class="card-title mb-3 text-primary">Patient Detail</div>
+
+                            <!--  <ul>
+                            <li class="fontred"th:if="${#fields.hasErrors('mobile_no')}" th:errors="*{mobile_no}"></li>
+                            </ul> -->
+                            <div class="form-group row">
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="Title">Title</label> <span
+                                        class="text-danger">*</span> <select class="form-control"
+                                                                             id="title" name="title" required
+                                                                             th:field="*{title}">
+                                    <option Selected value="">Select</option>
+                                    <option value="Baby">Baby</option>
+                                    <option value="Baby of">Baby of</option>
+                                    <option value="Dr">Dr</option>
+                                    <option value="Master">Master</option>
+                                    <option value="Mr">Mr</option>
+                                    <option value="Mrs">Mrs</option>
+                                    <option value="Ms">Ms</option>
+                                    <option value="Miss">Miss</option>
+                                </select>
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="firstName1">First
+                                        Name</label> <span class="text-danger">*</span> <input class="form-control"
+                                                                                               id="firstName1"
+                                                                                               name="firstName"
+                                                                                               placeholder="Enter your first name"
+                                                                                               required
+                                                                                               th:field="*{firstName}" type="text">
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="MiddleName">Middle
+                                        Name </label> <input class="form-control" id="middlename"
+                                                             name="lastName" placeholder="Enter your middle name"
+                                                             th:field="*{middleName}" type="text">
+                                </div>
+
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="lastName1">Last Name</label>
+                                    <span class="text-danger">*</span> <input class="form-control"
+                                                                              id="lastName1" name="lastName"
+                                                                              placeholder="Enter your last name"
+                                                                              required
+                                                                              th:field="*{lastName}" type="text">
+                                </div>
+
+
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="picker1">Gender</label> <span
+                                        class="text-danger">*</span> <select class="form-control"
+                                                                             id="gender1" name="gender" required
+                                                                             th:field="*{gender}">
+                                    <option value="">Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Male Child">Male Child</option>
+                                    <option value="Female Child">Female Child</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                </div>
+
+
+                                <div class="col-md-3 form-group mb-3 ">
+                                    <label class="t-font-boldest" for="age">Age</label> <span
+                                        class="text-danger">*</span>
+
+                                    <!--  <input type="number" class="form-control"   id="age" placeholder="(year)" max="120" required> -->
+                                    <div class="input-group mb-3">
+                                        <input id="agey" max="120" min="0" name="agey" placeholder="Year"
+                                               style="width: 33%" type="number"/> <input
+                                            id="agem" max="11" min="0" name="agem" placeholder="Month"
+                                            style="width: 33%" type="number"/> <input
+                                            id="aged" max="31" min="0" name="aged" placeholder="Day"
+                                            style="width: 33%" type="number"/>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="dob">Date of Birth</label> <span
+                                        class="text-danger">*</span> <input class="form-control" id="dob1"
+                                                                            name="birthday" placeholder="Date of Birth"
+                                                                            required
+                                                                            tabindex="-1" th:field="*{birthday}" type="text">
+
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="phone">Mobile No</label> <span
+                                        class="text-danger">*</span> <input class="form-control number"
+                                                                            id="phone"
+                                                                            maxlength="10" minlength="10"
+                                                                            name="mobileNo" placeholder="Enter Mobile No"
+                                                                            required
+                                                                            th:field="*{mobileNo}" type="text">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </div>
+                                <div class="col-md-3 form-group mb-4 ">
+                                    <label class="t-font-boldest" for="age">Relation Type</label> <select
+                                        class="form-control" th:field="*{relationWithPatient}">
+                                    <option value=" ">Select</option>
+                                    <option value="D/o">D/o</option>
+                                    <option value="S/o">S/o</option>
+                                    <option value="W/o">W/o</option>
+                                    <option value="H/o">H/o</option>
+                                    <option value="F/o">F/o</option>
+                                    <option value="M/o">M/o</option>
+                                    <option value="C/o">C/o</option>
+
+                                </select>
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="phone">Emergency
+                                        Contact Name</label> <input
+                                        class="form-control" name="relativeName" placeholder="Enter Relative Name"
+                                        th:field="*{relativeName}" type="text">
+                                </div>
+
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="phone">Emergency
+                                        Contact Number</label> <input class="form-control number"
+                                                                      id="phone"
+                                                                      maxlength="10"
+                                                                      minlength="10"
+                                                                      name="emergencyContact"
+                                                                      placeholder="Enter Emergency Contact Number" th:field="*{emergencyContact}" type="text">
+                                    <div class="clear"></div>
+                                    <span class="clientmessage"></span>
+                                </div>
+
+
+                                <div class="col-md-3 form-group mb-3" style="display: none">
+                                    <label class="t-font-boldest" for="exampleInputEmail1">
+                                        Email Address </label> <input class="form-control" id="exampleInputEmail1"
+                                                                      name="email" placeholder="Enter email"
+                                                                      th th:field="*{email}" type="email">
+                                    <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                                </div>
+
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="street">Village /
+                                        Ward</label> <input class="form-control" placeholder="Enter here"
+                                                            th:field="*{ward}" type="text">
+                                </div>
+
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="street">Block /
+                                        Tehsil</label> <input class="form-control" placeholder="Enter here"
+                                                              th:field="*{street}" type="text">
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="district">District</label> <select
+                                        class="form-control" id="citylist" th:field="*{district}">
+                                    <option
+                                            th:value="${Lab.hospCity}">[[${Lab.hospCity}]]
+                                    </option>
+                                    <option value="">Select District</option>
+                                    <option th:each="cities:${cmlist}"
+                                            th:value="${cities.cityName}">[[${cities.cityName}]]
+                                    </option>
+
+                                </select>
+                                </div>
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest" for="state">State</label> <select
+                                        class="form-control" id="state" required th:field="*{state}">
+                                    <option value="0">Select State</option>
+                                    <option th:each="states:${state}" th:value="${states.id}">[[${states.state}]]</option>
+
+                                </select>
+                                </div>
+                                <!-- <div class="col-md-3 form-group mb-3">
+                                    <label for="phone" class="t-font-boldest">Hospital UHID</label>
+                                    <input  type="text"
+                                        th:field="*{oldUhid}" class="form-control uhid"
+                                        placeholder="Enter Hospital UHID" name="oldUhid">
+                                </div> -->
+                                <div class="col-md-3 form-group mb-3">
+                                    <label class="t-font-boldest">Aadhaar No. </label> <input
+                                        class="form-control" name="aadhar" maxlength="12"  placeholder="Enter Aadhar No."
+                                        th:field="*{aadhaarNo}" type="text"/>
+                                </div>
+
+                                <div class="col-md-3 form-group mb-3" sec:authorize="hasRole('ABHA_USER')">
+                                    <label class="t-font-boldest" for="phone">ABHA ID</label>
+                                    <input class="form-control" maxlength="14" placeholder="Enter ABHA ID" th:field="*{abhaId}" type="text">
+                                </div>
+
+                                <div class="col-md-12"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <input id="hosp_state" th:value="${hosp_state.hospState}"
+                   type="hidden">
+
+
+        </div>
+
+    </div>
+</div>
+
+<footer th:insert="layout :: footer"></footer>
+
+
+<script>
+
+
+    var jsonResponse;
+    // Function to start scanning when the button is clicked
+    function startScanning() {
+        // Initialize the QR code scanner
+        var html5QrCodeScanner = new Html5QrcodeScanner("reader", {
+            fps: 10,
+            qrbox: 250
+        });
+
+        // Define the scan success and error handlers
+        html5QrCodeScanner.render(onScanSuccess, onScanError);
+    }
+
+    // When scan is successful, produce data
+   function onScanSuccess(qrCodeMessage) {
+
+        inputElement = document.getElementById("qrCodeData");
+        inputElement.value = qrCodeMessage;
+        jsonResponse = JSON.parse(qrCodeMessage);;
+        var checkButton = document.getElementById("AddPatient");
+        checkButton.style.display = "block";
+         var response = JSON.parse(qrCodeMessage); // Parse the JSON response
+        var responseFieldsDiv = document.getElementById("responseFields");
+
+        // Set the inner text of each span element
+        responseFieldsDiv.querySelector("#hidn").innerText = response.hidn;
+        responseFieldsDiv.querySelector("#phr").innerText = response.phr;
+        responseFieldsDiv.querySelector("#name").innerText = response.name;
+        responseFieldsDiv.querySelector("#gender").innerText = response.gender;
+        responseFieldsDiv.querySelector("#dob").innerText = response.dob;
+        responseFieldsDiv.querySelector("#stateName").innerText = response["state name"];
+        responseFieldsDiv.querySelector("#distName").innerText = response["dist name"];
+        responseFieldsDiv.querySelector("#mobile").innerText = response.mobile;
+
+        // Show the div containing the response fields
+
+        responseFieldsDiv.style.display = "block";
+   }
+
+    $('#myForm').submit(function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        success: function(response) {
+            if (response.trim() === "success") {
+              $("#scannerDiv").hide();
+              populateFields();
+              $("#PatientRegitstrationDiv").show();
+            } else {
+                document.getElementById("alreadyExiststatus").innerText = "Patient Already Exists";
+                alert("Patient Already exists");
+            }
+        }
+    });
+});
+
+    // When scan is unsuccessful, produce an error message
+    function onScanError(errorMessage) {
+        //
+    }
+
+    // Initialize the scanner when the button is clicked
+    document.getElementById("startScanningButton").addEventListener("click", startScanning);
+
+
+
+    $("#agey, #agem, #aged").on("change",function(e){
+        var agey =  $("#agey").val() || 0;
+        var agem =	$("#agem").val() || 0;
+        var aged = 	$("#aged").val() || 0;
+        //alert(agem);
+
+        var currentDate = new Date();
+        var dob = new Date(currentDate.getFullYear() - agey, currentDate.getMonth() - agem, currentDate.getDate() - aged);
+
+        if (dob > currentDate) {
+        dob.setFullYear(dob.getFullYear() - 1);
+        }
+
+        var dobMonth = ('0' + (dob.getMonth() + 1)).slice(-2);
+        var dobDay = ('0' + dob.getDate()).slice(-2);
+        var dobYear = dob.getFullYear();
+
+
+        $("#dob1").val(dobYear+'/'+dobMonth+'/'+dobDay);
+
+    });
+    $(document).ready(function(){
+        $('#PatientRegitstrationDiv').hide();
+        $('#dob1').pickadate({
+            weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+              labelMonthNext: 'Go to the next month',
+              labelMonthPrev: 'Go to the previous month',
+              labelMonthSelect: 'Pick a month from the dropdown',
+              labelYearSelect: 'Pick a year from the dropdown',
+              formatSubmit: 'yyyy/mm/dd',
+              format: 'yyyy/mm/dd',
+              min: new Date(1920,0,1),
+              max: new Date(),
+              selectYears: 100,
+              selectMonths:true
+            });
+
+            $.ajax({
+            type : "GET",
+            url : "/ageCalculator",
+            data : "birthday=" + $("#dob1").val(),
+            dataType : "html",
+            success : function(data) {
+                $("#agey").val(data.split("~")[0]);
+                $("#agem").val(data.split("~")[1]);
+                $("#aged").val(data.split("~")[2]);
+            }
+        });
+    });
+    $("#dob1").on("change",function(e){
+       $.ajax({
+            type : "GET",
+            url : "/ageCalculator",
+            data : "birthday=" + $("#dob1").val(),
+            dataType : "html",
+            success : function(data) {
+                $("#agey").val(data.split("~")[0]);
+                $("#agem").val(data.split("~")[1]);
+                $("#aged").val(data.split("~")[2]);
+            }
+        });
+    });
+
+    //on title change, change the dropdown for genders and the relation type
+    $("#title").on("change",function(e){
+        let title = $(this).val();
+        if (title === 'Mr' || title === 'Master'){
+            //gender dropdown
+            for (var i = 0; i < $("#gender option").length; i++) {
+                let gender = $("#gender option:eq(" + i + ")").val();
+                if (gender === 'Male' || gender === 'Male Child')
+                {
+                    $("#gender option:eq(" + i + ")").show();
+                }
+                else if(gender === 'Female' || gender === 'Female Child'){
+                    $("#gender option:eq(" + i + ")").hide();
+                }else{
+                    $("#gender option:eq(" + i + ")").show();
+                }
+            }
+            $('#gender').val('Male');
+
+            //relationType dropdown
+            for (var i = 0; i < $("#relationType option").length; i++){
+                let relationType = $("#relationType option:eq(" + i + ")").val();
+
+                if (relationType === 'S/o' || relationType === 'H/o' || relationType === 'F/o' )
+                {
+                    $("#relationType option:eq(" + i + ")").show();
+                }
+                else if(relationType === 'W/o' || relationType === 'D/o' || relationType === 'M/o'){
+                    $("#relationType option:eq(" + i + ")").hide();
+                }else{
+                    $("#relationType option:eq(" + i + ")").show();
+                }
+            }
+
+        } else if( (title === 'Ms') || (title === 'Mrs') || (title === 'Miss')){
+            //dropdown gender
+            for (var i = 0; i < $("#gender option").length; i++) {
+                let gender = $("#gender option:eq(" + i + ")").val();
+                if (gender === 'Male' || gender === 'Male Child')
+                {
+                    $("#gender option:eq(" + i + ")").hide();
+                }
+                else if(gender === 'Female' || gender === 'Female Child'){
+                    $("#gender option:eq(" + i + ")").show();
+                }else{
+                    $("#gender option:eq(" + i + ")").show();
+                }
+            }
+            $('#gender').val('Female');
+
+             //relationType dropdown
+             for (var i = 0; i < $("#relationType option").length; i++){
+                let relationType = $("#relationType option:eq(" + i + ")").val();
+
+                if (relationType === 'S/o' || relationType === 'H/o' || relationType === 'F/o' )
+                {
+                    $("#relationType option:eq(" + i + ")").hide();
+                }
+                else if(relationType === 'W/o' || relationType === 'D/o' || relationType === 'M/o'){
+                    $("#relationType option:eq(" + i + ")").show();
+                }else{
+                    $("#relationType option:eq(" + i + ")").show();
+                }
+            }
+        }else{
+            $("#gender option").show();
+            $("#relationType option").show();
+        }
+    });
+
+
+    //validation on name fields in entry
+    function containsNumber(name, id){
+        return !/^[a-zA-Z.\s]*$/.test(name);
+    }
+    $(document).ready(function(){
+        $("#firstName1, #middleName1, #lastName1, #emergencyName").on("change", function() {
+            let value = $(this).val();
+
+            if(containsNumber(value, $(this).attr('id'))){
+                $(this).css('border-color', '#F5A9A9');
+                $(this).siblings('span.clientmessage').addClass('error');
+                $(this).siblings('span.clientmessage').text('Please enter a valid name');
+                $(this).val('');
+            }else{
+                    $(this).css('border-color', '#CCCCCC');
+                    $(this).siblings('span.clientmessage').removeClass('error');
+                    $(this).siblings('span.clientmessage').text('');
+            }
+        });
+    });
+
+       function isDateOfBirthEmpty() {
+            return $("#dob1").val().trim() === '';
+        }
+
+        $("#patientNewForm").on("submit", function(e) {
+            if (isDateOfBirthEmpty()) {
+                    $("#dob1").css('border-color', '#F5A9A9');
+                    $("#dob1").siblings('span.clientmessage').addClass('error');
+                    $("#dob1").siblings('span.clientmessage').text('Please enter valid age or date of birth');
+                    $("#dob1, #agey, #agem, #aged").on("change", function() {
+                            $("#dob1").css('border-color', '#CCCCCC');
+                            $("#dob1").siblings('span.clientmessage').removeClass('error');
+                            $("#dob1").siblings('span.clientmessage').text('');
+                    });
+                e.preventDefault();
+            }
+        });
+
+    function populateFields() {
+         var fullName = jsonResponse.name;
+         var names = fullName.split(' ');
+         var firstName = names[0];
+         var lastName = names.slice(1).join(' ');
+         var genderValue;
+            if (jsonResponse.gender === 'M') {
+                genderValue = 'Male';
+            } else if (jsonResponse.gender === 'F') {
+                genderValue = 'Female';
+            } else {
+                genderValue = '';
+            }
+
+        var dobParts = jsonResponse.dob.split('-');
+        var dobYear = dobParts[2];
+        var dobMonth = ('0' + dobParts[1]).slice(-2);
+        var dobDay = ('0' + dobParts[0]).slice(-2);
+        var formattedDOB = dobYear + '/' + dobMonth + '/' + dobDay;
+
+        $("#firstName1").val(firstName);
+        $("#lastName1").val(lastName);
+        $("#gender1").val(genderValue);
+       // $("#oldUhid").val(jsonResponse.hidn);
+        $("#abhaId").val(jsonResponse.hidn);
+        $("#phone").val(jsonResponse.mobile);
+        $("#dob1").val(formattedDOB);
+
+        $.ajax({
+            type: "GET",
+            url: "/ageCalculator",
+            data: "birthday=" + $("#dob1").val(),
+            dataType: "html",
+            success: function(data) {
+                $("#agey").val(data.split("~")[0]);
+                $("#agem").val(data.split("~")[1]);
+                $("#aged").val(data.split("~")[2]);
+            }
+        });
+    }
+
+
+
+</script>
+</body>
+</html>

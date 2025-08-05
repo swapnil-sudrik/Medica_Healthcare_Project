@@ -1,0 +1,278 @@
+<!-- Author Deepshikha Rajput -->
+<div class="search_detail">
+    <div th:fragment="worklistdetail">
+        <div><b>VIAL COLOR CODE: </b><span style="font-weight: bold; text-transform: uppercase;"
+                                           th:each="v:${vialColor}"><div aria-label="Basic example"
+                                                                                                      class="btn-group "
+                                                                                                      role="group"
+                                                                                                      th:style="' border: 0.2px solid black; width: 12px;  height: 13px; background:'+@{${v.vColor}}+';'"> </div> [[${v.vName}]] </span>
+        </div>
+        <table class="display table table-striped table-bordered"
+               id="multicolumn_ordering_table1"
+               style="width: 100%">
+            <thead>
+            <tr align="center">
+                <th>Sl.</th>
+                <th>Hospital UHID</th>
+                <th>LAB ID</th>
+                <th th:if="${!work_list}">Other Tag</th>
+                <th>Entry Date</th>
+                <th style="min-width: 150px;">Patient Name</th>
+                <th>Age / Gender</th>
+                <th>Patient Type</th>
+                <th>Order No.</th>
+                <th style="min-width: 400px;">Sample Details</th>
+
+
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="worklist,sl: ${worklists}">
+                <th:block th:if="${#strings.equals(worklist.status, 'MICROBIOLOGY')}">
+                    <td th:text="${sl.count} "></td>
+                    <td th:text="${worklist.patient.oldUhid} "></td>
+                    <td th:text="${worklist.patient.mrn1}+'/ '+ ${#numbers.formatInteger(worklist.patient.mrn2,6)}"></td>
+                    <td th:if="${!work_list}" th:text="${worklist.otherTag} "></td>
+                    <td
+                            th:text="${#dates.format({worklist.createdAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+                    <div class="font-weight-bold" th:each="pat:${worklist.patient}">
+                        <td style=" font-weight: bold;"
+                            th:text="${#strings.capitalizeWords(pat.title) } +' ' +${#strings.capitalizeWords(pat.firstName) } +' ' +(${pat.middleName}?${#strings.capitalizeWords(pat.middleName)}:'')+' ' +${#strings.capitalizeWords(pat.lastName)}+' '+${#strings.capitalizeWords(pat.relationWithPatient)}+' ' +${#strings.capitalizeWords(pat.relativeName)}"></td>
+
+                        <td class="">[[${pat.age}]] /
+                            [[ ${#strings.substring(pat.gender, 0, 1)}]]
+                        </td>
+                    </div>
+                    <td th:text="${worklist.custom1} "></td>
+                    <td
+                            th:text="${lab.hospCode}+'' +${#dates.day(worklist.createdAt)}+${#dates.format(worklist.createdAt, 'MM')}+${#dates.format(worklist.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(worklist.id,8)}"></td>
+
+                    <td>
+                        <ul class="list-group list-group-flush" th:name="${sl.count}">
+                            <li class="list-group-item d-flex align-items-left"
+                                style="background-color: transparent; border: none;"
+                                th:classappend="${#strings.equalsIgnoreCase(sen.status,'CANCELED')?'CANCELED_TEXT':''}"
+                                th:each="sen,no:${worklist.orderDetails}"
+                                th:if="${#strings.equalsIgnoreCase(sen.investigation.department,'MICROBIOLOGY')}">
+									<span class="badge  r-badge status_change" style="min-width: 98px;"
+                                          th:classappend="${sen.status}">
+										[[${#strings.abbreviate(#strings.toLowerCase(sen.status),20)}]]</span>
+                                <span
+                                        class="badge  r-badge MACHINE"
+                                        th:if="${#strings.equalsIgnoreCase(sen.machineStatus, 1)}">machine </span>
+                                <div th:each="vcolor,h:${vialColor}">
+                                    <div th:if="${sen.investigation.fluidType == vcolor.vmCode}">
+											<span th:styleappend="'color:'+@{${vcolor.vColor}}+';'">&nbsp;[[${#strings.abbreviate(sen.testName,32)}]]
+											</span>
+
+                                    </div>
+                                </div>
+                                <span class="ml-auto"
+                                      th:classappend="${#strings.equalsIgnoreCase(sen.barcode, null)?'CANCELED_TEXT':''}">
+										[[${#strings.equalsIgnoreCase(sen.barcode,
+										null)?'Sample':sen.barcode}]] </span>&nbsp;&nbsp;&nbsp;
+                                <span class="text-info font-weight-bold">[[${sen.sampleStatus}]]</span>
+                            </li>
+                        </ul>
+                    </td>
+                    <td th:data-count="${sl.count} ">
+                        <div aria-label="Basic example" class="btn-group " role="group">
+                            <a class="setOrderNumber btn-margin "
+                               data-target=".bd-example-modal-lg"
+                               data-toggle="modal" href="#" sec:authorize="!hasRole('Lab_Data_Entry_Operator') or hasRole('Sample_Collection')"
+                               th:data-id="${worklist.id}"
+                               th:data-value="${lab.hospCode}+'' +${#dates.day(worklist.createdAt)}+${#dates.format(worklist.createdAt, 'MM')}+${#dates.format(worklist.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(worklist.id,8)}">
+                                <button class="btn btn-danger btn-sm btn-padding-table a_btn"
+                                        data-placement="top"
+                                        data-toggle="tooltip" title="Sample Collection" type="button">
+										<span class="ul-btn__icon">1<i
+                                                class=" i-Test-Tube"></i></span>
+                                </button>
+                            </a> <a class="btn-margin "
+                                    sec:authorize="!hasRole('Lab_Data_Entry_Operator')"
+                                    th:href="${work_list} ? @{'/result-microbiology/'+ ${worklist.id}+'/true'} : @{'/result/'+ ${worklist.id}+'/false'}">
+                            <button class="btn btn-info btn-sm btn-padding-table a_btn"
+                                    data-placement="top"
+                                    data-toggle="tooltip" title="Result" type="button">
+                                <span class="ul-btn__icon">2<i class="i-Edit"></i></span>
+                            </button>
+                        </a> <a class="btn-margin print_jspr_report" data-target=".bd-example-modal-lg"
+                                data-toggle="modal" href="#"
+                                th:data-id="${worklist.id}"
+                                th:data-value="${lab.hospCode}+'' +${#dates.day(worklist.createdAt)}+${#dates.format(worklist.createdAt, 'MM')}+${#dates.format(worklist.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(worklist.id,8)}">
+                            <button class="btn btn-dark btn-sm btn-padding-table"
+                                    data-placement="top"
+                                    data-toggle="tooltip" title="Print Report"
+                                    type="button">
+										<span class="ul-btn__icon"><i class=" i-Test-Tube">Print
+												PDF</i></span>
+                            </button>
+                        </a>
+                        </div>
+                        <div aria-label="Basic example" class="btn-group " role="group"
+                             style="margin-top: 3px;">
+                            <a class="btn-margin correctBarcode"
+                               data-target=".bd-example-modal-lg"
+                               data-toggle="modal" href="#" sec:authorize="hasRole('Technician')  or hasRole('Lab_Data_Entry_Operator') or hasRole('Lab_Admin')"
+                               th:data-id="${worklist.id}"
+                               th:data-value="${lab.hospCode}+'' +${#dates.day(worklist.createdAt)}+${#dates.format(worklist.createdAt, 'MM')}+${#dates.format(worklist.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(worklist.id,8)}">
+                                <button class="btn btn-dark btn-sm btn-padding-table a_btn"
+                                        data-placement="top"
+                                        data-toggle="tooltip" title="Correct Barcode"
+                                        type="button">
+                                    <span class="ul-btn__icon"><i class=" i-Test-Tube"></i></span>
+                                </button>
+                            </a> <a class="btn-margin sendDataToPortal" data-target=".bd-example-modal-lg"
+                                    data-toggle="modal" href="#"
+                                    th:data-id="${worklist.id}"
+                                    th:data-value="${lab.hospCode}+'' +${#dates.day(worklist.createdAt)}+${#dates.format(worklist.createdAt, 'MM')}+${#dates.format(worklist.createdAt, 'yy')}+'/ '+${#numbers.formatInteger(worklist.id,8)}">
+                            <button class="btn btn-dark btn-sm btn-padding-table a_btn"
+                                    data-placement="top"
+                                    data-toggle="tooltip" title="Send SMS" type="button">SMS
+                            </button>
+                        </a> <a class="btn-margin"
+                                th:href="@{'/sample-barcode/'+ ${worklist.id}}">
+                            <button class="btn btn-dark btn-sm btn-padding-table a_btn"
+                                    data-placement="top"
+                                    data-toggle="tooltip" style="height:25px; width:36px" title="BarCode"
+                                    type="button">
+                                <img height=100% th:src="@{/static/assets/images/faces/barcode.png}" width="100%">
+                            </button>
+                        </a>
+                        </div>
+                    </td>
+                </th:block>
+            </tr>
+            <tr>
+                <td align="center" colspan="10" th:if="${error}">[[${error}]]
+                    <a th:href="${work_list}?@{'/worklist'} : @{'/other-worklist'}">
+                        <button
+                                class="btn btn-outline-info btn-icon m-1" type="button">
+                            <span class="ul-btn__icon"><i class="i-Shutter"></i>Refresh</span>
+                        </button>
+                    </a>
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+         /* 	var dob= document.getElementsByClassName('gender_age');
+
+             for(var i=0; i<dob.length; i++){
+                 var childs =dob[i].children;
+                 var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+                 var age_dt = new Date(diff_ms);
+
+                 var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+                 var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+                 var age_month =   Math.floor(age_d/30);
+                 var age_day = age_d % 30;
+
+                 if(age_year != 0){
+                 childs[1].innerHTML = age_year+' Y ';
+                }else if(age_month != 0){
+                    childs[1].innerHTML =  age_month+' M ';
+                }else{
+                    childs[1].innerHTML = age_day+' D ';
+                }
+
+             } */
+
+             let auth = document.getElementsByClassName("status_change");
+             for(let i=0; i < auth.length; i++){
+
+                 if(auth[i].innerText == 'VERIFIED') {
+                     auth[i].innerHTML = 'TECH_VERIFIED';
+                 } else {
+
+                 }
+             }
+         });
+
+    $(".setOrderNumber").click(function(event){
+        var orderNo = $(this).attr('data-value');
+        var index = $(this).attr('data-id');
+        //alert(orderNo+"====="+index);
+        getOrderDetails(index,orderNo);
+    });
+
+    $(".correctBarcode").click(function(event){
+        var orderNo = $(this).attr('data-value');
+        var index = $(this).attr('data-id');
+
+        correctBarcode(index,orderNo);
+    });
+
+    /*Print JSPR by Prashant SOF */
+    $(".print_jspr_report").click(function(event){
+        //alert("myfunction");
+        var orderNo = $(this).attr('data-value');
+        var index = $(this).attr('data-id');
+        //alert(index);
+        var lab = "Print :"+orderNo+"<input type='hidden' name='l_id' value="+index+" readonly>";
+        $("#sample_heading").html(lab);
+        $("#save").html('Print PDF');
+        $("#fluid").html(' ');
+        $("#barcode").html(' ');
+        $("#specimen").html(' ');
+        items=	Orders.get(+index);
+
+        const map = new Map();
+        items.forEach((item)=>{
+            console.log(item)
+            const key = item.fluidType;
+            const collection = map.get(key);
+            if(item.department==='MICROBIOLOGY'){
+             if (!collection) {
+                 map.set(key, [item]);
+             } else {
+                 collection.push(item);
+             }
+            }
+        });
+        //console.log(map);
+        var tr="";
+        for(let key of map.keys()){
+            tr += "<tr><td><ul>";
+            var ite = map.get(key);
+            var isAnyFluidTypeBarcodePending = false;
+            for(i=0;i<ite.length;i++ ){
+                tr+="<li>";
+                if(ite[i].status=="PRINTED" || ite[i].status=="AUTHORIZED"){
+                    tr+="<label class='checkbox checkbox-outline-danger'><input type='checkbox' checked name='i_id' value='"+ite[i].id+"'";
+                    if(ite[i].barcode==null || ite[i].barcode==""){
+                        tr+="checked";
+                    }
+                    console.log("barcode val:"+ite[i].barcode)
+                    tr+="readonly=''/>";
+                    console.log("status: "+JSON.stringify(ite[i]));
+                    isAnyFluidTypeBarcodePending = true;
+                }
+
+                    tr+="<b>"+ite[i].name+"  ["+ite[i].barcode+"]</b><span class='checkmark'></span></label></li>";
+
+
+                }
+
+            tr+= "</ul></td><td>";
+
+            tr+="</td></tr>";
+
+        }
+        $("#modal-row").html(tr);
+        $("#sampleCollect").attr("action","/report/printJsprReport_new/microbiology");
+            $("#sampleCollect").attr("target","_blank");
+        //$("#form"). attr("th:action", "@{/processopt1}");
+
+    });
+    /*Print JSPR by Prashant  EOF */
+
+</script>

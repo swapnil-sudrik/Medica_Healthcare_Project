@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title th:text="${edit}?'Edit Patient':'Add New Patient'"></title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1 th:text="${edit}?'Edit Patient':'Add New Patient'"></h1>
+        <ul>
+            <li><a onclick="history.back();" style="cursor: pointer;"><i
+                    class="nav-icon i-Video-Tripod"></i></a></li>
+            <!-- <li>Basic</li> -->
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form
+                            method="post"
+                            modelAttribute="patient" th:action="${edit}?@{'/patients/'+ ${patient.id}}:@{/patients}" th:object="${patient}">
+                        <div class="card-title  text-danger row">
+                            <div class="col-6">
+                                <span>All fields marked * are mandatory</span>
+                            </div>
+                            <div align="right" class="col-6">
+                                <button class="btn " name="submit"
+                                        style="background-color: orange" value="save">[[${edit}?Update:Save]]
+                                </button>
+                                <button class="btn btn-success " name="submit"
+                                        th:if="(!${edit})" value="saveAndContinue">Save & Continue
+                                </button>
+                            </div>
+
+
+                        </div>
+                        <div class="card-title mb-3 text-primary">Patient Detail</div>
+
+                        <!--  <ul>
+                        <li class="fontred"th:if="${#fields.hasErrors('mobile_no')}" th:errors="*{mobile_no}"></li>
+                        </ul> -->
+                        <div class="form-group row">
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="Title">Title</label> <span
+                                    class="text-danger">*</span> <select class="form-control"
+                                                                         id="title" name="title" required
+                                                                         th:field="*{title}">
+                                <option Selected value="">Select</option>
+                                <option value="Baby">Baby</option>
+                                <option value="Baby of">Baby of</option>
+                                <option value="Dr">Dr</option>
+                                <option value="Master">Master</option>
+                                <option value="Mr">Mr</option>
+                                <option value="Mrs">Mrs</option>
+                                <option value="Ms">Ms</option>
+                                <option value="Miss">Miss</option>
+                            </select>
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="firstName1">First
+                                    Name</label> <span class="text-danger">*</span> <input class="form-control"
+                                                                                           id="firstName1"
+                                                                                           name="firstName"
+                                                                                           placeholder="Enter your first name"
+                                                                                           required
+                                                                                           th:field="*{firstName}" type="text">
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="MiddleName">Middle
+                                    Name </label> <input class="form-control" id="lastName1"
+                                                         name="lastName" placeholder="Enter your middle name"
+                                                         th:field="*{middleName}" type="text">
+                            </div>
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="lastName1">Last Name</label>
+                                <span class="text-danger">*</span> <input class="form-control"
+                                                                          id="lastName1" name="lastName"
+                                                                          placeholder="Enter your last name"
+                                                                          required
+                                                                          th:field="*{lastName}" type="text">
+                            </div>
+
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="picker1">Gender</label> <span
+                                    class="text-danger">*</span> <select class="form-control"
+                                                                         id="gender" name="gender" required
+                                                                         th:field="*{gender}">
+                                <option value="">Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Male Child">Male Child</option>
+                                <option value="Female Child">Female Child</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            </div>
+
+
+                            <div class="col-md-3 form-group mb-3 ">
+                                <label class="t-font-boldest" for="age">Age</label> <span
+                                    class="text-danger">*</span>
+
+                                <!--  <input type="number" class="form-control"   id="age" placeholder="(year)" max="120" required> -->
+                                <div class="input-group mb-3">
+                                    <input id="agey" max="120" min="0" name="agey" placeholder="Year"
+                                           style="width: 33%" type="number"/> <input
+                                        id="agem" max="11" min="0" name="agem" placeholder="Month"
+                                        style="width: 33%" type="number"/> <input
+                                        id="aged" max="31" min="0" name="aged" placeholder="Day"
+                                        style="width: 33%" type="number"/>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="dob">Date of Birth</label> <span
+                                    class="text-danger">*</span> <input class="form-control" id="dob"
+                                                                        name="birthday" placeholder="Date of Birth"
+                                                                        required
+                                                                        tabindex="-1" th:field="*{birthday}" type="text">
+
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="phone">Mobile #</label> <span
+                                    class="text-danger">*</span> <input class="form-control number"
+                                                                        id="phone"
+                                                                        maxlength="10" minlength="10"
+                                                                        name="mobileNo" placeholder="Enter Mobile #"
+                                                                        th:field="*{mobileNo}"
+                                                                        type="text">
+                                <div class="clear"></div>
+                                <span class="clientmessage"></span>
+                            </div>
+                            <div class="col-md-3 form-group mb-4 ">
+                                <label class="t-font-boldest" for="age">Relation Type</label> <span
+                                    class="text-danger">*</span> <select
+                                    class="form-control" th:field="*{relationWithPatient}"
+                            >
+                                <option value="">select</option>
+                                <option value="D/o">D/o</option>
+                                <option value="S/o">S/o</option>
+                                <option value="W/o">W/o</option>
+                                <option value="H/o">H/o</option>
+                                <option value="F/o">F/o</option>
+                                <option value="M/o">M/o</option>
+                                <option value="C/o">C/o</option>
+
+                            </select>
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="phone">Emergency
+                                    Contact Name</label> <span class="text-danger">*</span> <input
+                                    class="form-control" name="relativeName" placeholder="Enter Relative Name"
+                                    th:field="*{relativeName}" type="text">
+                            </div>
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="phone">Emergency
+                                    Contact Number</label> <input class="form-control number"
+                                                                  id="phone"
+                                                                  maxlength="10"
+                                                                  minlength="10"
+                                                                  name="emergencyContact"
+                                                                  placeholder="Enter Emergency Contact Number" th:field="*{emergencyContact}" type="text">
+                                <div class="clear"></div>
+                                <span class="clientmessage"></span>
+                            </div>
+
+
+                            <div class="col-md-3 form-group mb-3" style="display: none">
+                                <label class="t-font-boldest" for="exampleInputEmail1">
+                                    Email Address </label> <input class="form-control" id="exampleInputEmail1"
+                                                                  name="email" placeholder="Enter email"
+                                                                  th th:field="*{email}" type="email">
+                                <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+                            </div>
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="street">Village /
+                                    Ward</label> <span class="text-danger">*</span> <input class="form-control"
+                                                                                           placeholder="Enter here"
+                                                                                           th:field="*{ward}"
+                                                                                           type="text">
+                            </div>
+
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="street">Block /
+                                    Tehsil</label> <span class="text-danger">*</span> <input class="form-control"
+                                                                                             placeholder="Enter here"
+                                                                                             th:field="*{street}"
+                                                                                             type="text">
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="district">District</label> <select
+                                    class="form-control" id="citylist" th:field="*{district}">
+                                <option
+                                        th:value="${Lab.hospCity}">[[${Lab.hospCity}]]
+                                </option>
+                                <option value="">Select District</option>
+                                <option th:each="cities:${cmlist}" th:value="${cities.cityName}">
+                                    [[${cities.cityName}]]
+                                </option>
+
+                            </select>
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="state">State</label> <select
+                                    class="form-control" id="state" th:field="*{state}">
+                                <option value="0">Select State</option>
+                                <option th:each="states:${state}" th:value="${states.id}">[[${states.state}]]</option>
+
+                            </select>
+                            </div>
+                            <div class="col-md-3 form-group mb-3">
+                                <label class="t-font-boldest" for="phone">NIC UHID</label> <input
+                                    class="form-control" name="oldUhid" placeholder="Enter NIC UHID"
+                                    th:field="*{oldUhid}" type="text">
+                            </div>
+
+
+                            <div class="col-md-12"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <input id="hosp_state" th:value="${hosp_state.hospState}"
+               type="hidden">
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+</body>
+<script type="text/javascript">
+    $("#agey, #agem, #aged").on("change",function(e){
+        var agey =  $("#agey").val();
+        var agem =	$("#agem").val();
+        var aged = 	$("#aged").val();
+        //alert(agem);
+        if(agem ==''){
+            agem = 0;
+            //alert(agem);
+        }
+
+        //alert(agey+'---'+agem+'----'+aged);
+        var montharray = ["0","31","28","31","30","31","30","31","31","30","31","30","31"];
+        var age1234 = Number(agey)/4;
+        var age12345 = Math.trunc(age1234);
+        var age123 = Number(agey*365)+Number(agem*montharray[agem])+Number(aged)+Number(age12345);
+         var month = new Array();
+         month[0] = "01";
+          month[1] = "02";
+          month[2] = "03";
+          month[3] = "04";
+          month[4] = "05";
+          month[5] = "06";
+          month[6] = "07";
+          month[7] = "08";
+          month[8] = "09";
+          month[9] = "10";
+          month[10] = "11";
+          month[11] = "12";
+
+         var dob = new Date(new Date().setDate(new Date().getDate() - age123));
+         dobMonth = '' + (month[dob.getMonth()]),
+        dobDay = '' + dob.getDate(),
+        dobYear = dob.getFullYear();
+
+
+    if (dobDay.length < 2)
+         dobDay = '0' + dobDay;
+
+    $("#dob").val(dobYear+'/'+dobMonth+'/'+dobDay);
+
+    });
+    $(document).ready(function(){
+        $('#dob').pickadate({
+            weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+              labelMonthNext: 'Go to the next month',
+              labelMonthPrev: 'Go to the previous month',
+              labelMonthSelect: 'Pick a month from the dropdown',
+              labelYearSelect: 'Pick a year from the dropdown',
+              formatSubmit: 'yyyy/mm/dd',
+              format: 'yyyy/mm/dd',
+              min: new Date(1920,0,1),
+              max: new Date(),
+              selectYears: 100,
+              selectMonths:true
+            });
+        var today = new Date();
+        var birthday = new Date($("#dob").val());
+
+        var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+        var year_age = Math.floor(differenceInMilisecond / 31536000000);
+        var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+
+        if ((today.getMonth() == birthday.getMonth()) && (today.getDate() == birthday.getDate())) {
+
+        }
+
+        var month_age = Math.floor(day_age/30);
+
+        day_age = day_age % 30;
+
+        if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+            //alert("Invalid birthday - Please try again!");
+        }
+        else {
+            $("#agey").val(year_age);
+            $("#agem").val(month_age);
+            $("#aged").val(day_age);
+          // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+        }
+
+
+
+
+    });
+    $("#dob").on("change",function(e){
+
+
+                var today = new Date();
+                var birthday = new Date($("#dob").val());
+
+                var differenceInMilisecond = today.valueOf() - birthday.valueOf();
+
+                var year_age = Math.floor(differenceInMilisecond / 31536000000);
+                var day_age = Math.floor((differenceInMilisecond % 31536000000) / 86400000);
+
+                if ((today.getMonth() == birthday.getMonth()) && (today.getDate() == birthday.getDate())) {
+
+                }
+
+                var month_age = Math.floor(day_age/30);
+
+                day_age = day_age % 30;
+
+
+                if (isNaN(year_age) || isNaN(month_age) || isNaN(day_age)) {
+                    alert("Invalid birthday - Please try again!");
+                }
+                else {
+                    $("#agey").val(year_age);
+                    $("#agem").val(month_age);
+                    $("#aged").val(day_age);
+                  // alert("You are<br/><span id=\"age\">" + year_age + " years " + month_age + " months " + day_age + " days</span> old");
+                }
+            });
+
+    $("#title").on("change",function(e){
+          if ((document.getElementById('title').value == 'Mr') || (document.getElementById('title').value == 'Master'))
+        {
+            for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+                if (document.getElementById("gender").options[i].value == 'Male') {
+                    document.getElementById("gender").options[i].selected = true;
+                }
+            }
+
+        } else if( (document.getElementById('title').value == 'Ms') || (document.getElementById('title').value == 'Mrs') || (document.getElementById('title').value == 'Miss'))
+        {
+            for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+                if (document.getElementById("gender").options[i].value == 'Female') {
+                    document.getElementById("gender").options[i].selected = true;
+                }
+            }
+
+        } else {
+            for (var i = 0; i < document.getElementById("gender").options.length; i++) {
+                if (document.getElementById("gender").options[i].value == '') {
+                    document.getElementById("gender").options[i].selected = true;
+                }
+            }
+        }
+
+
+               });
+
+
+</script>
+
+</html>

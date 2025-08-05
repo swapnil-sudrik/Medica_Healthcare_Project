@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Save Test Result for Patient</title>
+    <th:block th:include="layout :: headerfiles"></th:block>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .form-container {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .form-section h5 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .btn {
+            min-width: 120px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .input-error {
+            border-color: #ff4d4d !important;
+            background-color: #ffe6e6 !important;
+        }
+        .report-container {
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: #fff;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .report-header .text-left,
+        .report-header .text-right {
+            flex: 0 0 auto; /* Ensures logos are not stretched */
+        }
+
+        .report-header .text-center {
+            flex: 1;  /* Centers the heading */
+        }
+
+        .report-header img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .section-title {
+            background-color: #f2f2f2;
+            padding: 10px;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+            margin-top: 20px;
+        }
+        .info-table, .test-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table td, .test-table th, .test-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .test-table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .report-container {
+                width: 100%;
+                border: none;
+                box-shadow: none;
+                margin: 0;
+            }
+            .report-header img {
+                width: 80px; /* Smaller logo for print */
+            }
+        }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+
+    <div class="container mt-3">
+        <div class="d-flex justify-content-end mb-4">
+            <div class="text-end mt-4">
+                <button onclick="printReport()" class="btn btn-primary no-print">Print Report</button>
+            </div>
+        </div>
+
+        <!-- Patient Test Report -->
+        <div class="report-container" id="report-container">
+            <div class="report-header d-flex justify-content-between align-items-center">
+                <div class="text-left">
+                    <img th:src="@{/static/assets/images/Sickle.jpg}" alt="Sickle Logo" width="100px" height="auto">
+                </div>
+                <div class="text-center mx-4">
+                    <h2>Sickle Test Report</h2>
+                </div>
+                <div class="text-right">
+                    <img th:src="@{/static/assets/images/NHM.jpg}" alt="NHM Logo" width="100px" height="auto">
+                </div>
+            </div>
+
+            <div class="section-title">Patient Details</div>
+            <table class="info-table">
+                <tr>
+                    <td><strong>Patient Name:</strong> [[${patient.firstName}]] [[${patient.lastName}]]</td>
+                    <td><strong>UHID:</strong> [[${patient.getUhid()}]]</td>
+                </tr>
+                <tr>
+                    <td><strong>AGE/GENDER:</strong> [[${patient.age}]] Y <strong>/</strong> [[${patient.gender}]]</td>
+                    <td><strong>DOB:</strong> [[${patient.birthday}]]</td>
+                </tr>
+                <tr>
+                    <td><strong>Registered On:</strong>[[${#dates.format(patient.createdAt, 'dd-MM-yyyy HH:mm:ss')}]]</td>
+                    <td><strong>Relative Name:</strong> [[${patient.relativeName}]]</td>
+                </tr>
+                <tr>
+                    <td><strong>Address:</strong> [[${patient.addressLine1}]], [[${patient.addressLine2}]], [[${patient.district}]], [[${patient.block}]]</td>
+                    <td><strong>Category:</strong> [[${patient.patientCategory}]]</td>
+                </tr>
+            </table>
+
+            <div class="section-title">Test Details</div>
+            <table class="test-table">
+                <thead>
+                <tr>
+                    <th>Test Method</th>
+                    <th>Test Result</th>
+                    <th>Barcode</th>
+                    <th>Status</th>
+                    <th>Authorized Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>[[${latestInvestigation.testMethod}]]</td>
+                    <td>[[${latestInvestigation.testResult}]]</td>
+                    <td>[[${latestInvestigation.barcode}]]</td>
+                    <td>[[${latestInvestigation.status}]]</td>
+                    <td>[[${#dates.format(latestInvestigation.authorizedTime, 'dd-MM-yyyy HH:mm:ss')}]]</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="section-title"><strong>Remarks:</strong></div>
+            <p>[[${latestInvestigation.remark}]]</p>
+
+        </div>
+
+
+        <div th:insert="layout :: search-ui"></div>
+        <footer th:insert="layout :: footer"></footer>
+    </div>
+
+    <script type="text/javascript">
+
+        function printReport() {
+    var printContents = document.getElementById('report-container').innerHTML;
+
+    // Create a new window for printing
+    var printWindow = window.open('', '', 'width=800,height=600');
+
+    // Write the content into the new window
+    printWindow.document.write('<html><head><title>Print Report</title>');
+
+    // Add the necessary styles to the print window
+    printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+
+    // Add the table styles to the print window
+    printWindow.document.write('<style>');
+    printWindow.document.write('table { width: 100%; border-collapse: collapse; }');
+    printWindow.document.write('td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }');
+    printWindow.document.write('th { background-color: #f2f2f2; font-weight: bold; }');
+    printWindow.document.write('.section-title { font-weight: bold; background-color: #f9f9f9; padding: 10px; margin-top: 20px; border: 1px solid #ddd; }');
+    printWindow.document.write('</style>');
+
+    // Write the content of the report
+    printWindow.document.write('<body>' + printContents + '</body></html>');
+
+    // Close the document to make sure all content is written
+    printWindow.document.close();
+
+    // Wait for the content to be loaded before printing
+    printWindow.onload = function() {
+        printWindow.print();
+        printWindow.close();
+    };
+}
+
+    </script>
+</body>
+</html>
+
+
+
+

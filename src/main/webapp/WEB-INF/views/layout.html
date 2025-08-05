@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5" xmlns:th="https://www.thymeleaf.org">
+<head th:fragment="headerfiles">
+    <meta content="width=device-width,initial-scale=1" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta charset="UTF-8"/>
+
+    <title>sickle_app</title>
+
+    <link id="gull-theme" rel="stylesheet"
+          th:href="@{https://fonts.googleapis.com/css?family=Nunito:300,400,400i,600,700,800,900}"/>
+    <link rel="stylesheet" th:href="@{/static/assets/styles/css/themes/lite-purple.min.css}"/>
+    <link rel="stylesheet" th:href="@{/static/assets/styles/vendor/perfect-scrollbar.css}"/>
+    <link rel="stylesheet" th:href="@{/static/assets/styles/vendor/pickadate/default.css}"/>
+    <link rel="stylesheet" th:href="@{/static/assets/styles/vendor/pickadate/default.date.css}"/>
+    <link rel="stylesheet" th:href="@{/static/assets/styles/vendor/pickadate/default.time.css}"/>
+
+    <link rel="stylesheet" th:href="@{/static/select2/css/select2.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/static/assets/styles/css/themes/custom.css}"/>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+        gsap.to("#animated-text", {
+        x: "200%",
+        duration: 8,
+        repeat: -1,
+        ease: "power2.inOut", // Smooth acceleration and deceleration
+        yoyo: true // Ensures smooth movement back and forth
+    });
+});
+    </script>
+</head>
+
+<body class="text-left">
+<div class="" id="preloader" th:fragment="preloader">
+    <div class=""></div>
+</div>
+<!-- Pre Loader end  -->
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div class="main-header" th:fragment="header">
+        <div class="logo">
+            <img th:src="@{/static/assets/images/Sickle.jpg}" alt="Sickle Logo" width="100px" height="auto">
+        </div>
+
+        <div class="menu-toggle">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <div class="d-flex align-items-center" style="flex: 1; text-align: center; overflow: hidden; white-space: nowrap;">
+            <div>
+                <h2 id="animated-text" style="font-size: 24px; display: inline-block; position: relative;">
+                    Medica Demo Application
+                </h2>
+            </div>
+        </div>
+
+        <div style="margin: auto;"></div>
+
+        <div class="header-part-right" style="display: flex; gap: 20px; align-items: center;">
+            <!-- <div class="text-left" ><b>Version [[${session.softwareVersion}]] </b>&nbsp;&nbsp;&nbsp;</div> -->
+            <div class="text-left"><b>Version</b> <b >1.0 </b>
+            </div>
+            <div>
+                <a class="nav-item-hold" th:href="@{/login}">
+                    <i style="font-size: 30px; black: black;" class="ri-logout-circle-line"></i>
+                    <span class="nav-text"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+<!--    sec:authorize="!hasRole('Attendance') && (!hasRole('Manual_inventory') || hasRole('CMS')) && !hasRole('sample_pickup') && !hasRole('Daily_Verified_Data')" th:href="@{/dashboard-v1}">-->
+
+<!--    <div class="side-content-wrap" th:fragment="left-navigation">-->
+<!--        <div class="sidebar-left open rtl-ps-none" data-perfect-scrollbar data-suppress-scroll-x="true">-->
+<!--            <ul class="navigation-left">-->
+
+<!--                <li class="nav-item"-->
+<!--                    <a class="nav-item-hold" th:href="@{/patientsWeb}">-->
+<!--                        <i style="font-size: 24px; green: blue;" class="ri-user-add-fill"></i>-->
+<!--                        <span class="nav-text">Patients</span>-->
+<!--                    </a>-->
+<!--                    <div class="triangle"></div>-->
+<!--                </li>-->
+
+    <div class="side-content-wrap" th:fragment="left-navigation">
+        <div class="sidebar-left open rtl-ps-none" data-perfect-scrollbar data-suppress-scroll-x="true">
+            <ul class="navigation-left">
+
+                <li class="nav-item">
+                    <a class="nav-item-hold" th:href="@{/patientsWeb}">
+                        <i style="font-size: 24px; green: blue;" class="ri-user-add-fill"></i>
+                        <span class="nav-text">Patients</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <li
+                        class="nav-item"
+                        data-item="abha" sec:authorize="hasRole('ABHA_USER')"><a class="nav-item-hold"
+                                                                                 href="#"> <i class="nav-icon i-Administrator"></i> <span
+                        class="nav-text">ABHA</span>
+                </a>
+                    <div class="triangle"></div>
+                </li>
+                <li
+                        class="nav-item"
+                        data-item="worklist"
+                        sec:authorize=" !hasRole('Attendance') && !hasRole('CMS') && !hasRole('CMS_ADMIN') && !hasRole('CMS_HD') && !hasRole('CMS_HD') && (!hasRole('Manual_inventory') || hasRole('CMS')) && !hasRole('sample_pickup') && !hasRole('Daily_Verified_Data')"
+                >
+                    <a class="nav-item-hold" href="#">
+                        <i style="font-size: 24px; green: blue;" class="ri-health-book-fill"></i>
+                        <span
+                                class="nav-text">Lab Work</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li
+                        class="nav-item"
+                        sec:authorize="hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/samplePickupList}"> <i
+                            class="nav-icon i-File-Clipboard-File--Text"></i> <span
+                            class="nav-text">Sample Pickup</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li
+                        class="nav-item"
+                        sec:authorize="hasRole('sample_acknowledgement') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/sampleReceivedList}"> <i
+                            class="nav-icon i-File-Clipboard-File--Text"></i> <span class="nav-text">Sample Acknowledgement</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item" data-item="" sec:authorize="hasRole('Machine_Data_Verification_Console')">
+                    <a class="nav-item-hold" href="" th:href="@{/lis-result-search}"> <i
+                            class="nav-icon i-File-Clipboard-File--Text"></i> <span class="nav-text">Machine Data Verification Console</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+
+                <li class="nav-item" data-item="setup"
+                    sec:authorize="hasRole('Lab_Admin') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" href="#"> <i class="nav-icon i-Suitcase"></i> <span
+                            class="nav-text">Setup</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item"
+                    data-item="inventory" sec:authorize="hasRole('INVENTORY') or hasRole('PROJECT_ADMIN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" href="#">
+                        <i class="nav-icon i-Library"></i>
+                        <span class="nav-text">Inventory</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item"
+                    data-item="purchase" sec:authorize="hasRole('PURCHASE') or hasRole('PROJECT_ADMIN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" href="#">
+                        <i class="nav-icon i-Library"></i>
+                        <span class="nav-text">Purchase</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <!--HRM link start-->
+                <li class="nav-item"
+                    data-item="hrm" sec:authorize="hasRole('HRM') or hasRole('PROJECT_ADMIN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" href="#"> <i class="nav-icon i-Library"></i> <span
+                            class="nav-text">HRM</span> </a>
+                    <div class="triangle"></div>
+                </li>
+
+                <li class="nav-item" data-item="reports"
+                    <a class="nav-item-hold" href="#"> <i class="nav-icon i-Library"></i> <span
+                            class="nav-text">Reports</span> </a>
+                    <div class="triangle"></div>
+                </li>
+
+                <li class="nav-item" data-item="attendance"
+                    sec:authorize="hasRole('Attendance') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/sampleTracking}">
+                        <i class="nav-icon i-Alien"></i>
+                        <span class="nav-text">Attendance</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item"
+                    sec:authorize="hasRole('USER') or hasRole('PROJECT_ADMIN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/DailyLabList}">
+                        <i class="nav-icon i-Library"></i>
+                        <span class="nav-text">Daily Lab Log</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('CANTEEN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/canteen/canteen-invoice}"> <i
+                            class="nav-icon i-File-Clipboard-File--Text"></i> <span class="nav-text">CANTEEN</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('CANTEEN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/canteen/canteen-list}"> <i class="nav-icon i-Library"></i>
+                        <span class="nav-text">CANTEEN MASTER</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('CANTEEN') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/canteen/canteen-InvoiceList}"> <i
+                            class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="nav-text">CANTEEN INVOICE LIST</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <div sec:authorize=" !(hasRole('CMS_Directed')) && !hasRole('sample_pickup')">
+                    <li class="nav-item" sec:authorize="hasRole('CMS') or hasRole('CMS_ADMIN') or hasRole('CMS_HD') ">
+                        <a class="nav-item-hold" th:href="@{/locationLinkPage}"> <i class="nav-icon i-Data-Upload"></i>
+                            <span class="nav-text">Locations</span> </a>
+                        <div class="triangle"></div>
+                    </li>
+                </div>
+
+                <li class="nav-item" sec:authorize="hasRole('DB-BACKUP') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/quality/backupLinkPage}"> <i
+                            class="nav-icon nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="nav-text">DB Backup</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item"
+                    sec:authorize="(hasRole('Equas') or hasRole('Lab_Admin') or hasRole('HUB_SPOKE')) && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/equas-check}"> <i
+                            class="nav-icon nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="nav-text">EQAS</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item"
+                    sec:authorize="(hasRole('Lab_Admin') or hasRole('HUB_SPOKE')) && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/samplebox_list}"> <i
+                            class="nav-icon nav-icon i-Split-Horizontal-2-Window"></i> <span class="nav-text">Box Master List</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('Test_Transfer_To_SuperHub')">
+                    <a class="nav-item-hold" th:href="@{/testTransferToSuperHub}"> <i
+                            class="nav-icon nav-icon i-Split-Horizontal-2-Window"></i> <span class="nav-text">Test Transfer to Super Hub</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasRole('Schedule_Task') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/cms-broadcast-list}"> <i
+                            class="nav-icon nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="nav-text">Broadcast</span> </a>
+                    <div class="triangle"></div>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasRole('Manual_inventory') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/showInventoryReport}"> <i
+                            class="nav-icon i-File-Clipboard-File--Text"></i> <span
+                            class="nav-text">Manual Inventory</span> </a>
+                    <div class="triangle"></div>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('Third_party_ordering') && !hasRole('sample_pickup')">
+                    <a class="nav-item-hold" th:href="@{/getPatient}"> <i
+                            class="nav-icon i-File-Clipboard-File--Text"></i> <span class="nav-text">Third Party Ordering</span>
+                    </a>
+                    <div class="triangle"></div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-left-secondary rtl-ps-none" data-perfect-scrollbar data-suppress-scroll-x="true">
+            <!-- Submenu Dashboards -->
+            <ul class="childNav" data-parent="">
+                <li class="nav-item">
+                    <a class="open" th:href="@{dashboard-v1}"> <i class="nav-icon i-Clock-3"></i> <span
+                            class="item-name">Version 1</span> </a>
+                </li>
+            </ul>
+            <!-- <ul class="childNav" data-parent="patient">
+            <li class="nav-item">
+                <a th:href="@{/patients}">
+                    <i class="nav-icon i-File-Clipboard-Text--Image"></i>
+                    <span class="item-name">Patient List</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="form.layouts.html">
+                    <i class="nav-icon i-Split-Vertical"></i>
+                    <span class="item-name">Form Layouts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="form.input.group.html">
+                    <i class="nav-icon i-Receipt-4"></i>
+                    <span class="item-name">Input Groups</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="form.validation.html">
+                    <i class="nav-icon i-Close-Window"></i>
+                    <span class="item-name">Form Validation</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="smart.wizard.html">
+                    <i class="nav-icon i-Width-Window"></i>
+                    <span class="item-name">Smart Wizard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="tag.input.html">
+                    <i class="nav-icon i-Tag-2"></i>
+                    <span class="item-name">Tag Input</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="editor.html">
+                    <i class="nav-icon i-Pen-2"></i>
+                    <span class="item-name">Rich Editor</span>
+                </a>
+            </li>
+        </ul> -->
+
+            <ul class="childNav" data-parent="billing">
+                <li class="nav-item">
+                    <a th:href="@{/billing}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                            class="item-name">Patient Billing</span> </a>
+                </li>
+            </ul>
+            <ul class="childNav" data-parent="booktest">
+                <li class="nav-item">
+                    <a th:href="@{/booking}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                            class="item-name">Booking Patient</span> </a>
+                </li>
+            </ul>
+            <ul class="childNav" data-parent="worklist">
+                <li class="nav-item" sec:authorize="!hasRole('Test_Transfer_To_Hub')">
+                    <a th:href="@{/worklist}">
+                        <i style="font-size: 14px; green: blue;" class="ri-health-book-fill"></i>
+                        <span
+                                class="item-name">Work Lists</span> </a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasRole('Test_Transfer_To_Hub')">
+                    <a th:href="@{/superhubWorklist}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                            class="item-name">SuperHub Work List</span> </a>
+                </li>
+
+                <li class="nav-item" sec:authorize="!hasRole('Test_Transfer_To_Hub')">
+                    <a th:href="@{/completedWorklist}">
+                        <i style="font-size: 14px; green: blue;"class="ri-dossier-fill"></i>
+                        <span
+                                class="item-name">Completed Work List</span> </a>
+                </li>
+
+
+                <li class="nav-item" sec:authorize="hasRole('Test_Transfer_To_Hub')">
+                    <a th:href="@{/superhubCompletedWorklist}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i>
+                        <span class="item-name">SuperHub Complete WorkList</span> </a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasRole('Test_Transfer_To_Hub')">
+                    <a th:href="@{/sampleTransferConsole}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i>
+                        <span class="item-name">Transfer Console</span> </a>
+                </li>
+                <li class="nav-item" sec:authorize="!hasRole('HUB_SPOKE')" style="display:none;">
+                    <a th:href="@{/sample-rerunWorklist}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                            class="item-name">Sample Re-Run Work List</span> </a>
+                </li>
+
+            </ul>
+
+            <ul class="childNav" data-parent="abha">
+                <span
+                        sec:authorize="hasRole('ABHA_USER')">
+						<div class="accordion" id="accordionExample"
+                             sec:authorize="hasRole('ABHA_USER')">
+							<div class="card ul-card__border-radius">
+								<div class="card-header header-elements-inline">
+									<span class=" ul-collapse__icon--size ul-collapse__right-icon">
+										<a class="text-default collapsed" data-toggle="collapse"
+                                           href="#accordion-item-group1"> M1 ABHA</a>
+									</span>
+								</div>
+
+
+								<div class="collapse " data-parent="#accordionExample"
+                                     id="accordion-item-group1">
+									<div class="card-body">
+										<p>
+											<a sec:authorize="hasRole('ABHA_USER')"
+                                               th:href="@{/patient-new-abha}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">ABHA Registration</span>
+											</a>
+										</p>
+										<p>
+											<a sec:authorize="hasRole('ABHA_USER')"
+                                               th:href="@{/ndhm/patientInit}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">ABHA Search</span>
+											</a>
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="card ul-card__border-radius">
+								<div class="card-header ">
+									<span class=" ul-collapse__icon--size ul-collapse__right-icon ">
+										<a class="text-default" data-toggle="collapse"
+                                           href="#accordion-item-group2">M2 ABHA</a>
+									</span>
+								</div>
+
+								<div class="collapse " data-parent="#accordionExample"
+                                     id="accordion-item-group2">
+									<div class="card-body">
+										<p>
+											<a sec:authorize="hasRole('ABHA_USER')"
+                                               th:href="@{/ndhm/fetch-modes}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">ABHA Consent</span>
+											</a>
+										</p>
+										<p>
+											<a sec:authorize="hasRole('ABHA_USER')"
+                                               th:href="@{/patient-new-abha}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">ABHA Consent List</span>
+											</a>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</span>
+            </ul>
+            <ul class="childNav" data-parent="mis">
+                        <span sec:authorize="!hasRole('CMS') && !hasRole('CMS_ADMIN') && !hasRole('CMS_HD')">
+                            <div class="accordion" id="accordionExample">
+                                <div class="card ul-card__border-radius">
+                                    <div class="card-header header-elements-inline">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default collapsed" data-toggle="collapse"
+                                               href="#accordion-item-group1">
+                                                Patients Detail Reports
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                    <div class="collapse" data-parent="#accordionExample" id="accordion-item-group1">
+                                        <div class="card-body">
+                                            <p>
+                                                <a th:href="@{/patientReport}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Patient's Report</span> </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/returningPatientReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Returning Patient's Report</span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/orderReport?status=Ordered}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Ordered Detail Report</span>
+                                                </a>
+                                            </p>
+                                             <p>
+                                                <a sec:authorize="hasRole('CAMP REPORT')" th:href="@{/orderReportCamp?status=Ordered}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Ordered Detail Report Camp</span>
+                                                </a>
+                                            </p>
+                                                 <p>
+                                                <a th:href="@{/sampleRejectedReport?status=Ordered}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Sample-Rejected Report</span>
+                                                </a>
+                                            </p>
+                                            <!-- <p>
+                                                <a th:href="@{/pathologistReport?status}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Pathologist Detail Report</span>
+                                                </a>
+                                            </p> -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card ul-card__border-radius">
+                                    <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group2">
+                                                Sample Status Reports
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                    <div class="collapse" data-parent="#accordionExample" id="accordion-item-group2">
+                                        <div class="card-body">
+                                            <p>
+                                                <a th:href="@{/orderReport?status=Sample Taken}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Sample Taken Report</span>
+                                                </a>
+                                            </p>
+                                            	<p>
+											<a sec:authorize="!hasRole('ANC_Report')"
+                                               th:href="@{/parameterAnalysisReport}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Parameter Analysis Report</span>
+											</a>
+										</p>
+                                            <p>
+                                                <a sec:authorize="!hasRole('ANC_Report')"
+                                                   th:href="@{/orderReport?status=Reports Generated}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Reports Generated Report</span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/orderReport?status=Reports Authorized}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Reports Authorized Report</span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/orderReport?status=Reports Printed}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Reports Printed Report</span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/orderReport?status=Samples Rejected}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Samples Rejected Report</span>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card ul-card__border-radius">
+                                    <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group3">
+                                                Tests Details Reports
+                                            </a>
+                                        </span>
+                                    </div>
+
+                                    <div class="collapse" data-parent="#accordionExample" id="accordion-item-group3">
+                                        <div class="card-body">
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/dateWiseInvestigationReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Date Wise Investigation </span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/testTatReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Collection to Authorized TAT</span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/spoketestTat2Report}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Received to Authorized TAT</span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/testWiseInvestigationReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Test Wise Count </span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/testWiseFacilityCountReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Test Wise Facility Report </span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/locationWiseCollectionReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Location Wise Collection Report </span>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+							<div class="card ul-card__border-radius" sec:authorize="!hasRole('HUB_SPOKE')">
+								<div class="card-header ">
+									<span class=" ul-collapse__icon--size ul-collapse__right-icon ">
+										<a class="text-default" data-toggle="collapse"
+                                           href="#accordion-item-group4"> Invoice Related Reports </a>
+									</span>
+								</div>
+
+								<div class="collapse " data-parent="#accordionExample"
+                                     id="accordion-item-group4">
+									<div class="card-body">
+										<p>
+											<a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') "
+                                               th:href="@{/testWiseReport}">
+												<i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Verification Report</span>
+											</a>
+										</p>
+
+										<p>
+											<a sec:authorize=" hasRole('Revenue_Estimate_Report') "
+                                               th:href="@{/revenueEstimateReport}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Revenue Estimate Report</span>
+											</a>
+										</p>
+										<p>
+											<a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') "
+                                               th:href="@{/verificationReportDetailAll}">
+												<i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Verification Detail Report </span>
+											</a>
+										</p>
+										<p>
+											<a sec:authorize="!hasRole('ANC_Report')"
+                                               th:href="@{/autoverifyReport}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Auto Verification Detail Report</span>
+											</a>
+										</p>
+										<p>
+											<a sec:authorize="!hasRole('ANC_Report')"
+                                               th:href="@{/testHoldReport}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Test Hold Report</span>
+											</a>
+										</p>
+									</div>
+								</div>
+							</div>
+							<div class="card ul-card__border-radius">
+                                    <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group5">
+                                                Equipment-wise Test Details Reports
+                                            </a>
+                                        </span>
+                                    </div>
+                                      <div class="collapse" data-parent="#accordionExample" id="accordion-item-group5">
+                                        <div class="card-body">
+                                             <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/manualReport}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Manual Reports </span>
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/orderReport?status=Manual Tests}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Manual Tests Detail Report</span>
+                                                </a>
+                                            </p>
+                                            <!-- <p>
+                                               <a th:href="@{/manualTestCountReport}">
+                                                   <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Machine Wise Report</span>
+                                               </a>
+                                           </p> -->
+                                            <p>
+                                            	<a th:href="@{/machineWiseInvestigationReport}">
+													<i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Daily Investigation(Machine wise)</span>
+												</a>
+											</p>
+
+                                        </div>
+                                      </div>
+                                    </div>
+                                 <div class="card ul-card__border-radius" sec:authorize="!hasRole('HUB_SPOKE')">
+                                    <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group6"> Incident Reports</a>
+                                        </span>
+                                    </div>
+
+                                    <div class="collapse" data-parent="#accordionExample" id="accordion-item-group6">
+                                        <div class="card-body">
+                                            <p>
+                                                <a th:href="@{/openIncidentsReport}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Open Incidents Report</span> </a>
+                                            </p>
+                                            <p>
+                                                <a sec:authorize=" hasRole('Lab_Admin')  or hasRole('Lab_Supervisor') or hasRole('Pathologist') or hasRole('HUB_SPOKE')"
+                                                   th:href="@{/IncidentVerify}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Incident Verification Report</span>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card ul-card__border-radius" sec:authorize="!hasRole('HUB_SPOKE')">
+                                    <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group7"> Other Reports</a>
+                                        </span>
+                                    </div>
+
+                                    <div class="collapse" data-parent="#accordionExample" id="accordion-item-group7">
+                                        <div class="card-body">
+                                            <p>
+                                                <a th:href="@{/referredByReport}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Referred By Report</span> </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/smsDeliveryReport}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">SMS Delivery Status Report</span> </a>
+                                            </p>
+                                            <p>
+                                                <a th:href="@{/ncdReport}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">NCD Report</span> </a>
+                                            </p>
+                                            <p>
+											<a
+                                                    th:href="@{/opdIpdDetail}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">OPD IPD Form</span>
+											</a>
+										</p>
+										<p>
+											<a
+                                                    th:href="@{/opdIpdPatientReport}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">OPD IPD Report</span>
+											</a>
+
+
+										</p>
+										<p>
+										<a
+                                                sec:authorize="hasRole('Superhub_Mis_Report')"
+                                                th:href="@{/superhubTestCountReportLocationWise}"> <i
+                                                class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                class="item-name">Superhub Test Count Report Location Wise</span>
+											</a>
+										</p>
+										<p>
+                                                <a sec:authorize="hasRole('Superhub_Mis_Report')"
+                                                   th:href="@{/superhubOrderReport?status=Sample Taken}">
+                                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i>
+                                                    <span class="item-name">Superhub Ordered Detail Report</span>
+                                                </a>
+                                            </p>
+										<p>
+											<a
+                                                    th:href="@{/perDayVialsCountReport}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Vial Count Report</span>
+											</a>
+										</p>
+										<p>
+											<a
+
+                                                    th:href="@{/superhubTestCountReportTestWise}"> <i
+                                                    class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                    class="item-name">Superhub Test Count Report Test Wise</span>
+											</a>
+										</p>
+                                            <!--										<p>-->
+                                            <!--										<a-->
+                                            <!--                                                sec:authorize="!hasRole('Superhub_Mis_Report')"-->
+                                            <!--                                                th:href="@{/hubtosuperhubTestTranseferReportTestWise}"> <i-->
+                                            <!--                                                class="nav-icon i-File-Clipboard-Text&#45;&#45;Image"></i> <span-->
+                                            <!--                                                class="item-name">Superhub Test Count Report Test Wise</span>-->
+                                            <!--											</a>-->
+                                            <!--										</p>-->
+                                            <p>
+													<a th:href="@{/hubtosuperhubTestReTranseferReport}"> <i
+                                                            class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Hub To Superhub Test ReTransfer
+															Report</span>
+													</a>
+												</p>
+
+                                             <p>
+                                                <a sec:authorize="hasRole('Pathologist')" th:href="@{/quality/verificationQuality}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">QC Verify by BMO Report</span> </a>
+                                            </p>
+                                             <p>
+                                                <a sec:authorize="hasRole('Staff_Entry')" th:href="@{/staffEntryList}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Staff Entry Report</span> </a>
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card ul-card__border-radius" sec:authorize="!hasRole('HUB_SPOKE')">
+                                    <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group8"> Stock Inventory Form</a>
+                                        </span>
+                                    </div>
+
+                                    <div class="collapse" data-parent="#accordionExample" id="accordion-item-group8">
+                                        <div class="card-body">
+                                            <p>
+                                                <a th:href="@{/invStockList}"> <i
+                                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Stock Entry Report</span> </a>
+                                            </p>
+
+                                    </div>
+                                </div>
+                                                <li class="nav-item"><a th:href="@{/testTatReportSuperHub}"
+                                                                        sec:authorize=" hasRole('Test_Transfer_To_Hub') ">
+                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">Investigation TAT Report</span>
+                </a></li>
+
+                                                <li class="nav-item"><a th:href="@{/dailySampleAnalysisReport}"
+                                                                        sec:authorize=" hasRole('Test_Transfer_To_Hub') ">
+                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                                        class="item-name">DAILY SAMPLES ANALYSIS REPORT</span>
+                </a></li>
+
+                            </div>
+
+                             </span>
+
+
+                <li class="nav-item">
+                    <a sec:authorize="hasRole('ANC_Report')" th:href="@{/ancOrderDetailReport}"> <i
+                            class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">ANC Ordered Detail Report</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a sec:authorize="hasRole('ANC_Report')" th:href="@{/ancPatientTestReport}"> <i
+                            class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">ANC Patients Tests Report</span>
+                    </a>
+                </li>
+                </span>
+                <span sec:authorize="hasRole('CMS') or hasRole('CMS_ADMIN') or hasRole('CMS_HD')">
+                            <li class="nav-item"
+                                sec:authorize="hasRole('CMS') or hasRole('CMS_ADMIN') or hasRole('CMS_HD')">
+                                <a th:href="@{/dailyReportsCount-cms}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Daily Reports</span> </a>
+                            </li>
+                            <li class="nav-item">
+                                <a sec:authorize=" hasRole('Revenue_Estimate_Report_CMS') "
+                                   th:href="@{/cms-revenueEstimateReport}">
+                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Estimated Revenue Report - Location Wise</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a sec:authorize=" hasRole('Revenue_Estimate_Report_CMS') "
+                                   th:href="@{/cms-revenueEstimateReportTestWise}">
+                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Estimated Revenue Report - Test Wise</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a th:href="@{/cms-EquipmentWiseReport}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Equipment-Wise Load</span> </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a th:href="@{/cms-testCountReportLocation}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Test Count Report - Location Wise</span> </a>
+                            </li>
+
+                            <li class="nav-item" sec:authorize="!hasRole('Coordinator')">
+                                <a th:href="@{/cms-testCountReport}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Test Count Report - Test Wise</span> </a>
+                            </li>
+
+                            <li class="nav-item" sec:authorize="!hasRole('Coordinator')">
+                                <a sec:authorize=" !(hasRole('CMS_Directed'))" th:href="@{/cms-QcStatusReport}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">QC Status</span> </a>
+                            </li>
+
+                            <li class="nav-item" sec:authorize="!hasRole('Coordinator')">
+                                <a sec:authorize=" !(hasRole('CMS_Directed'))"
+                                   th:href="@{/Cms-incident-locationWiseCount}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Open Incidents</span> </a>
+                            </li>
+
+                            <li class="nav-item" sec:authorize="!hasRole('Coordinator')">
+                                <a sec:authorize=" !(hasRole('CMS_Directed'))" th:href="@{/cms/cms-quality-list}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">QC LIST</span> </a>
+                            </li>
+
+                            <li class="nav-item" sec:authorize="hasRole('Payment_Status_Report') ">
+                                <a th:href="@{/payment-list}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Payment Status Report</span> </a>
+                            </li>
+                            <li class="nav-item" sec:authorize="hasRole('User_Attendance_Report') ">
+                                <a th:href="@{/userAttendance-list}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">User Attendance Report</span> </a>
+                            </li>
+                            <li class="nav-item" sec:authorize=" !(hasRole('CMS_Directed')) && !hasRole('Coordinator')">
+                                <a th:href="@{/quality/eqas-log}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                        class="item-name">EQAS Log</span> </a>
+                            </li>
+                            <li class="nav-item" sec:authorize=" !(hasRole('CMS_Directed')) && !hasRole('Coordinator')">
+                                <a th:href="@{/cms-userFeedbackReport}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">User Feedback Report</span> </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/cms-patientCountLocationWise}"> <i
+                                        class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Patient Count Report - LOCATION WISE </span> </a>
+                            </li>
+                            <li class="nav-item"
+                                sec:authorize=" !(hasRole('CMS_Directed')) &&  !hasRole('Coordinator')">
+                                <a th:href="@{/getCalenderList}"> <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                        class="item-name">Scheduled Task Report </span> </a>
+                            </li>
+                            <li class="nav-item">
+                                <a sec:authorize="!hasRole('Coordinator')" th:href="@{/cms-revenueInvoiceReport}">
+                                    <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span class="item-name">Invoice Verification Report - Location Wise</span>
+                                </a>
+                            </li>
+                        </span>
+            </ul>
+
+            <ul class="childNav" data-parent="attendance">
+                <li class="nav-item">
+                    <a th:href="@{/userslistAttendance}"> <i class="nav-icon i-User"></i> <span class="item-name">User List</span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="childNav" data-parent="setup">
+                <!-- <li class="nav-item">
+                    <a th:href="@{/jasper}"> <i class="nav-icon i-Male"></i> <span class="item-name">jasper</span> </a>
+                </li> -->
+                <li class="nav-item" sec:authorize="hasRole('Add_User')">
+                    <a th:href="@{/userslist}"> <i class="nav-icon i-Male"></i> <span class="item-name">Users</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="display:none;">
+                    <a href="/tests"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Test List</span>
+                    </a>
+                </li>
+
+                <li class="nav-item" style="display:none;">
+                    <a href="/testprofile-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Test Profile List</span> </a>
+                </li>
+
+                <li class="nav-item" style="display:none;">
+                    <a href="/rate-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Rate Master List</span>
+                    </a>
+                </li>
+                <!--  <li class="nav-item">
+                     <a href="/test-link"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Test Link Master</span> </a>
+                 </li> -->
+                <li class="nav-item" style="display:none;">
+                    <a href="/host-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Host Master</span>
+                    </a>
+                </li>
+                <li class="nav-item" style="display:none;">
+                    <a href="/range-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Range Master</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/dept-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Dept Master</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/designation-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Designation Master</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/laboratory-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Laboratory Master</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/barcode-generate"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Barcode Generate</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/referedBy-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Referred By </span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/config/settings"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Lable/Input Setting </span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/lab_configuration"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Super Configuration</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/packageMaster_list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Package Master</span> </a>
+                </li>
+
+                <!-- add Micro Organism List under the Setup by Amit -->
+                <li class="nav-item">
+                    <a href="/microOrganism-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Micro Organism List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/machine-master-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Machine Master</span> </a>
+                </li>
+                <li class="nav-item"
+                    sec:authorize="hasRole('machine_wise_range_master')"><a
+                        th:href="@{/machineWiseRangeList}"> <i
+                        class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                        class="item-name">Machine Superhub Reference Range</span>
+                </a></li>
+                <li class="nav-item" style="display:none;">
+                    <a href="/vial-master-list"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Vial Master</span> </a>
+                </li>
+            </ul>
+            <ul class="childNav" data-parent="inventory">
+                <!--  <li class="nav-item">
+                <a href="/vendor-list">
+                    <i class="nav-icon i-Add-File"></i>
+                    <span class="item-name">Vendors Master</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/subcategory-list">
+                    <i class="nav-icon i-Add-File"></i>
+                    <span class="item-name">Sub-Category Master</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/product-list">
+                    <i class="nav-icon i-Add-File"></i>
+                    <span class="item-name">Product Master</span>
+                </a>
+            </li> -->
+                <li class="nav-item">
+                    <a th:href="@{/inventory/requestedIndents}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name"> Indent List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/stockconsume-list}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Consumed Items List</span> </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/inventory/stocklistgrnwise}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">GRN List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/currentstock-list}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Available Stock</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/stockregisterLocation}"> <i
+                            class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Stock Register</span> </a>
+                </li>
+                <!-- <li class="nav-item"><a th:href="@{/inventory/stockregister}">
+
+                    <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                    class="item-name">Stock Register</span>
+            </a></li> -->
+                <li class="nav-item">
+                    <a th:href="@{/inventory/grnlistAddStock}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">GRN Receive</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/getLRList}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Docket /LR List</span> </a>
+                </li>
+            </ul>
+            <ul class="childNav" data-parent="reports">
+                <li class="nav-item">
+                    <a th:href="@{/inventory/nearexpiry}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Near expiry</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/expiredreagent}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Expired Reagent</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/currentstock}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Current Stock</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/bufferstock}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Buffer Stock</span> </a>
+                </li>
+            </ul>
+            <ul class="childNav" data-parent="qualityControl">
+                <li class="nav-item">
+                    <a th:href="@{/quality/quality-list}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">QC Result</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/quality/qc-transfer}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">QC Transfer</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a sec:authorize=" (hasRole('Lj_chart'))" th:href="@{/quality/control-list}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Control Register</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a sec:authorize=" (hasRole('Lj_chart'))" th:href="@{/quality/controlValueMappingList}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Control Value Mapping</span> </a>
+                </li>
+
+                <li class="nav-item">
+                    <div class="card ul-card__border-radius" sec:authorize="(hasRole('Lj_chart'))">
+                        <div class="card-header">
+                                        <span class="ul-collapse__icon--size ul-collapse__right-icon">
+                                            <a class="text-default" data-toggle="collapse"
+                                               href="#accordion-item-group6"> LJ Graph</a>
+                                        </span>
+                        </div>
+
+                        <div class="collapse" data-parent="#accordionExample" id="accordion-item-group6">
+                            <div class="card-body">
+                                <p>
+                                    <a th:href="@{/quality/controlValueChart/1}">
+                                        <i class="nav-icon i-File-Clipboard-Text--Image"></i> <span
+                                            class="item-name">Swelab Alfa</span> </a>
+                                </p>
+                                <p>
+                                    <a th:href="@{/quality/controlValueChart/2}">
+                                        <i class="nav-icon i-File-Clipboard-Text--Image"></i>  <span
+                                            class="item-name">NV50_Serial</span>
+                                    </a>
+                                </p>
+                                <!--                                            <p>-->
+                                <!--                                                <a th:href="@{/quality/controlValueChart/3}">-->
+                                <!--                                                    <i class="nav-icon i-File-Clipboard-Text&#45;&#45;Image"></i> <span-->
+                                <!--                                                        class="item-name">Biosystem BS_240</span>-->
+                                <!--                                                </a>-->
+                                <!--                                            </p>-->
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a sec:authorize=" (hasRole('Lj_chart'))" th:href="@{/quality/lJCVMonitoring}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">CV Monitoring</span> </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" style="font-size: 14px;">
+                        <i class="nav-icon i-Split-Horizontal-2-Window"></i> Calibration
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" th:href="@{/quality/calibration-list}" style="padding: 8px 12px;">
+                            <i class="nav-icon i-File-Clipboard-Text--Image" style="font-size: 12px; margin-right: 4px;"></i>
+                            <span class="item-name" style="font-size: 14px;">Calibration Register</span>
+                        </a>
+                        <a class="dropdown-item" th:href="@{/quality/uploadCalibrationDocument}" style="padding: 8px 12px;">
+                            <i class="nav-icon i-File-Clipboard-Text--Image" style="font-size: 12px; margin-right: 4px;"></i>
+                            <span class="item-name" style="font-size: 14px;">Upload Calibration Document</span>
+                        </a>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a sec:authorize=" (hasRole('Lj_chart'))" th:href="@{/quality/lJBarcodeRegisterList}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Barcode Register</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/quality/equas-list}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">EQAS Register</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/quality/incident-list}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Incident Register</span> </a>
+                </li>
+                <li class="nav-item"
+                    sec:authorize="hasRole('UnauthorizedResultReport')"><a
+                        th:href="@{/quality/lisResultUnauthorizedReport}"> <i
+                        class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                        class="item-name">Unauthorized Result Report</span>
+                </a></li>
+                <li class="nav-item"><a th:href="@{/quality/reference-list}">
+                    <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                        class="item-name">Reference List</span>
+                </a></li>
+
+
+
+
+                <!-- <li class="nav-item"><a th:href="@{/showtransferlist}">
+        <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+        class="item-name">CMS Transfer</span>
+</a></li>
+<li class="nav-item"><a th:href="@{/showdeductionlist}">
+        <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+        class="item-name">CMS Transfer (Deduction)</span>
+</a></li> -->
+            </ul>
+
+            <ul class="childNav" data-parent="purchase">
+                <li class="nav-item">
+                    <a th:href="@{/purchase/receivedIndentsWithoutApproved}"> <i
+                            class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Received Indent List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/purchase/receivedIndents}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Approved Indent List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/purchase/receivedIndentsPo}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Generate PO Indent List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/purchase/purchaseOrders}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Purchase Order List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/inventory/currentStockSciHouse}"> <i
+                            class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">All Stock Available</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/purchase/getIssuedItemList}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Issue List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/purchase/getLRList}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span
+                            class="item-name">Docket /LR List</span> </a>
+                </li>
+                <li class="nav-item">
+                    <a sec:authorize=" (hasRole('InventoryValueReport'))" th:href="@{/inventory/inventoryValueReport}">
+                        <i class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Inventory Value Report</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/purchase/receivedIndentsInactive}"> <i
+                            class="nav-icon i-Split-Horizontal-2-Window"></i> <span class="item-name">Received Indent Inactive List</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/purchase/stockregisterHO}"> <i class="nav-icon i-Split-Horizontal-2-Window"></i>
+                        <span class="item-name">Stock Register</span> </a>
+                </li>
+            </ul>
+            <!-- HRM chilednav start-->
+            <ul class="childNav" data-parent="hrm">
+                <li class="nav-item">
+                    <a href="/employee"> <i class="nav-icon i-Add-File"></i> <span class="item-name">Employee</span>
+                    </a>
+                </li>
+            </ul>
+
+
+            <!-- HRM chilednav end-->
+        </div>
+        <div class="sidebar-overlay"></div>
+    </div>
+    <!--=============== Left side End ================-->
+
+    <!-- ============ Body content start ============= -->
+
+    <!-- ============ Body content End ============= -->
+</div>
+<!--=============== End app-admin-wrap ================-->
+
+<!-- ============ Search UI Start ============= -->
+<div class="search-ui" th:fragment="search-ui">
+    <div class="search-header o-hidden">
+        <img alt="" class="logo float-left" src="static/assets/images/logo.png"/>
+        <button class="search-close btn btn-icon bg-transparent float-right mt-2">
+            <i class="i-Close-Window text-22 text-muted"></i>
+        </button>
+    </div>
+</div>
+<!-- ============ Search UI End ============= -->
+
+<footer th:fragment="footer">
+    <!-- page script tooltip -->
+    <script th:src="@{/static/assets/js/tooltip.script.js}"></script>
+    <!-- common js -->
+    <script th:src="@{/static/assets/js/vendor/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{/static/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/static/assets/js/vendor/perfect-scrollbar.min.js}"></script>
+    <!--For javascript date picker -->
+    <script th:src="@{/static/assets/js/vendor/pickadate/picker.js}"></script>
+    <script th:src="@{/static/assets/js/vendor/pickadate/picker.date.js}"></script>
+    <script th:src="@{/static/assets/js/vendor/pickadate/picker.time.js}"></script>
+
+    <script th:src="@{/static/assets/js/es5/script.min.js}"></script>
+    <script th:src="@{/static/assets/js/es5/sidebar.large.script.min.js}"></script>
+    <!-- page vendor js -->
+
+    <script th:src="@{/static/select2/js/select2.min.js}" type="text/javascript"></script>
+
+    <script th:src="@{/static/assets/js/vendor/sweetalert2.min.js}"></script>
+    <script th:src="@{/static/assets/js/sweetalert.script.js}"></script>
+    <script th:src="@{/static/assets/js/exportToExcel.script.js}"></script>
+
+    <script th:src="@{/static/assets/js/citylist.js}" type="text/javascript"></script>
+
+</footer>
+
+</body>
+</html>

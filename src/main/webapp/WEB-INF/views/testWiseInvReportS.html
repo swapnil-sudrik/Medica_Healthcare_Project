@@ -1,0 +1,55 @@
+<div id="search_data">
+    <div th:fragment="detail">
+        <div class="ExportData table-responsive">
+            <div>
+
+            </div>
+            <table class="display table table-striped table-bordered"
+                   id="multicolumn_ordering_table" style="width: 100%">
+                <thead>
+
+                <tr class="border border-primary">
+                    <th>SI</th>
+
+
+                    <th>Test name</th>
+                    <th>Lab Name</th>
+                    <th>Department</th>
+                    <th>Section</th>
+                    <th>Total Order (<span
+                            th:text="${#aggregates.sum(inv_list.![[4]])}"></span>)
+                    </th>
+                    <th>Completed (<span
+                            th:text="${#aggregates.sum(inv_list.![[5]])}"></span>)
+                    </th>
+                    <th>Pending (<span
+                            th:text="${y1} -${y2}"
+                            th:with="y1 =${#aggregates.sum(inv_list.![[4]])}?${#aggregates.sum(inv_list.![[4]])}:0, y2=${#aggregates.sum(inv_list.![[5]])} ?${#aggregates.sum(inv_list.![[5]])}:0"></span>)
+                    </th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="list,i : ${inv_list}">
+                    <td th:text=${i.count}></td>
+
+                    <td>[[${list[1].Invest_name}]]</td>
+                    <td>[[${list[6]}]]</td>
+                    <td>[[${list[2]}]]</td>
+                    <td>[[${list[3]}]]</td>
+                    <td>[[${list[4]}]]</td>
+                    <td>[[${list[5]}]]</td>
+                    <td>[[${list[4]} - ${list[5]}]]</td>
+
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+</div>
+</div>
+

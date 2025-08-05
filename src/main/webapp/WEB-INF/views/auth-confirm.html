@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <div th:insert="layout :: headerfiles"></div>
+</head>
+<body class="vertical-layout boxed">
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Patient ABHA KYC & Link</h1>
+    </div>
+
+            <div class="main-content-wrap">
+                <form method="get" th:action="@{/app/auth-confirm}">
+                    <div class="page-content">
+                        <div class="card">
+                            <div class="card-header">Patient Confirm Authentication</div>
+                            <div class="card-body">
+                                <div class="row" >
+                                    <div class="col-12 col-md-4" style="display:none">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Transaction Id " th:value="${transactionId}" name="transactionId" id="transactionId" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Enter OTP Number" value="" name="authCode" id="authCode" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none">
+                                        Patient Name
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Patient Name" value="" name="Pname" id="Pname" >
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none">
+                                        Gender
+                                        <div class="dropdown bootstrap-select">
+                                            <select name="gender" id ="gender" title="Gender" class="selectpicker" >
+                                                <option value="">Select</option>
+                                                <option value="F">Female</option>
+                                                <option value="M">Male</option>
+                                            </select>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none">
+                                        Date Of Birth
+                                        <div class="form-group">
+                                            <input type="date" class="form-control"
+                                                   placeholder="Date Of Birth" value="" name="dateOfBirth" id="dateOfBirth" >
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none">
+                                        Type
+                                        <div class="dropdown bootstrap-select">
+                                            <select name="type" id ="type" title="Type" class="selectpicker" >
+                                                <option value="MOBILE">MOBILE</option>
+                                            </select>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none">
+                                        Mobile Number
+                                        <input class="form-control"
+                                               oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                               type="number" maxlength="10" placeholder="Enter mobile Number"
+                                               value="" name="value" id="value" >
+                                        <div class="valid-feedback"></div>
+                                    </div>
+                                    <div class="col-12 col-md-4" id="detail_button" >
+                                        <button type="submit" class="btn btn-info">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <footer th:insert="layout :: footer"></footer>
+    </div>
+</div>
+</body>
+</html>

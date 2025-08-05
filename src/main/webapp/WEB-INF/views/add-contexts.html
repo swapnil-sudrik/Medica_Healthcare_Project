@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:insert="layout :: headerfiles">
+</head>
+<body class="vertical-layout boxed">
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Patient ABHA KYC & Link</h1>
+    </div>
+
+            <div class="main-content-wrap">
+                <form method="get" th:action="@{/app/save-contexts}">
+                    <div class="page-content">
+                        <div class="card">
+                            <div class="card-header">Add Context</div>
+                            <div class="card-body">
+                                <div class="row" >
+
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Patient Reference Number " value="" name="referenceNumber" id="referenceNumber" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Display Patient Reference Number " value="" name="display" id="display" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Care Contexts Reference Number" value="" name="careContextsreferenceNumber" id="careContextsreferenceNumber" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control"
+                                                   placeholder="Display Care Contexts Number" value="" name="careContextsdisplay" id="careContextsdisplay" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none;">
+                                        <div class="form-group">
+												<textarea class="form-control"
+                                                          placeholder="Access Token"  name="accessToken" id="accessToken" required>[[${accesstoken}]]</textarea>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" >
+                                        <button type="submit" class="btn btn-info">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <footer th:insert="layout :: footer"></footer>
+    </div>
+</div>
+</body>
+</html>

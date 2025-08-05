@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Test Profile Master </title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <link href="static/assets/styles/css/themes/lite-purple.min.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/perfect-scrollbar.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/pickadate/classic.css" rel="stylesheet">
+    <link href="static/assets/styles/vendor/pickadate/classic.date.css" rel="stylesheet">
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Test Profile Master</h1>
+        <ul>
+            <li><a href="#">Form</a></li>
+            <li><a href="/testprofile-list">Back</a></li>
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title mb-3">New Test Profile Add &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        <a onClick="addRow('count');"><span class="btn btn-primary" title="Add Row">Add Row </span></a>
+
+                        <a onClick="removeRow('count');"><span class="btn btn-primary"
+                                                               title="Remove Row">Remove Row </span>
+
+                            <input id="count" name="count" type="hidden" value="1"/>
+                        </a></div>
+
+                    <form method="POST" modelAttribute=TestMaster th:action="@{/testsprofilesave}"
+                          th:object="${TestMaster}">
+                        <div class="table-responsive">
+                            <table align="left" border='0'>
+
+                                <tr>
+                                    <td height="5"></td>
+                                </tr>
+                                <tr>
+
+                                    <td colspan="2" valign="top" width="180"><span class="bold"><strong>Investigation Name:</strong></span><span
+                                            class="class-red"> *</span></td>
+
+                                    <td align="left" colspan="2" th:unless="${edit}" valign="top">
+                                        <span></span>
+                                        <select class="mandatory" data-rel="chosen" id="invest_ids"
+                                                name='investigation.id' required>
+                                            <option value="">Select</option>
+
+                                            <option th:each="invests_lists : ${invests_list}"
+                                                    th:text=${invests_lists.invest_name}
+                                                    th:value="${invests_lists.id}"></option>
+
+
+                                        </select>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+                                    <td align="left" colspan="2" th:text="${edit} ? ${invest[0].investigation.invest_name}:''"
+                                        valign="top"></td>
+
+
+                                </tr>
+                                <tr>
+                                    <td height="10"></td>
+                                </tr>
+                            </table>
+
+                            <table class="table-striped table-bordered" width="100%">
+                                <tr>
+                                    <td style="width:20%" valign="top"><strong>Parameter Name </strong></td>
+                                    <td style="width:20%" valign="top"><strong>Loinc Code(for Range Master) </strong>
+                                    </td>
+                                    <td style="width:20%" valign="top"><strong>Test Code(for M/c Integration)</strong>
+                                    </td>
+                                    <td style="width:15%" valign="top"><strong>Default Value</strong></td>
+                                    <td style="width:20%" valign="top"><strong>Unit</strong></td>
+                                    <td align="left" style="width:20%;display:none;" valign="top"><strong>Reference
+                                        Range</strong></td>
+                                    <td align="left" style="width:20%;display:none;" valign="top"><strong>Maximum
+                                        Range</strong></td>
+                                    <td align="left" style="width:20%;display:none;" valign="top"><strong>Minimum
+                                        Range</strong></td>
+                                    <td align="left" style="width:20%" valign="top"><strong>Heading</strong></td>
+                                    <td align="left" style="width:20%" valign="top"><strong>Print Heading</strong></td>
+                                    <td align="left" style="width:20%" valign="top"><strong>Drop Down</strong></td>
+                                    <td align="left" style="width:10%" valign="top"><strong>Drop Down Field</strong>
+                                    </td>
+                                    <td align="left" style="width:10%" valign="top"><strong>Sequence</strong></td>
+                                </tr>
+                                <tr th:each="sl: ${invest}" th:if="${edit}">
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150 mandatory' id='parameter_name1' name='parameter_name' required
+                                               style='height:26px;' th:value="${sl.parameter_name} "
+                                               type='text' value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150 mandatory' id='loinc_code1' name='loinc_code' required
+                                               style='height:26px;' th:value="${sl.loinc_code}"
+                                               type='text' value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150 mandatory' id='test_code1' name='test_code' required
+                                               style='height:26px;' th:value="${sl.test_code}" type='text'
+                                               value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:15%" valign="top">
+                                        <textarea class="size150" name="result" th:value="${sl.result}"> </textarea>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150' id='unit1' name='unit' style='height:26px;' th:value="${sl.unit}"
+                                               type='text' value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:10%" valign="top">
+                                        <textarea class="size150" id="reference_r1" name="reference"
+                                                  th:value="${sl.reference}">[[${sl.reference}]] </textarea>
+                                    </td>
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150' id='max_range' name='max_range' step="any" style='height:26px;text-transform: none;'
+                                               th:value="${sl.max_range}" type='number'
+                                               value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150' id='min_range' name='min_range' step="any" style='height:26px;text-transform: none;'
+                                               th:value="${sl.min_range}" type='number'
+                                               value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+                                    <td valign="top"><select id="heading_1" name="heading"
+                                                             style="width:75px;height:26px" th:value="${sl.heading}">
+                                        <option value="0">No</option>
+                                        <option th:selected="${sl.heading}=='1'" value="1">Yes</option>
+
+
+                                    </select></td>
+                                    <td valign="top"><select id="print_heading_1" name="print_head"
+                                                             style="width:75px;height:26px" th:value="${sl.print_head}">
+                                        <option value="0">No</option>
+                                        <option th:selected="${sl.print_head}=='1'" value="1">Yes</option>
+
+
+                                    </select></td>
+                                    <td valign="top"><!-- <select  style="width:75px;height:26px" name="help_box" id="helpbox_1" th:value="${sl.help_box}">
+                        <option  value="0">No</option>
+                        <option th:selected="${sl.help_box}=='1'" value="1" >Yes</option>
+                    </select> -->
+                                        <select id="helpbox_1" name="help_box" style="width:75px;height:26px"
+                                                th:value="${sl.auto_fill}">
+                                            <option value="0">No</option>
+                                            <option th:selected="${sl.auto_fill}=='1'" value="1">Yes</option>
+                                        </select>
+                                    </td>
+                                    <td valign="top"><!-- <select th:value="${sl.zone_diameter}"  style="width:75px;height:26px" name="zone_diameter" id="Zone_diameter_1" >
+                        <option  value="0">No</option>
+                        <option th:selected="${sl.zone_diameter}=='1'" value="1" >Yes</option>
+                    </select> -->
+                                        <textarea class="size150" id="Zone_diameter_1" name="zone_diameter"
+                                                  required th:value="${sl.auto_fill_array}"> </textarea>
+                                        <input class="size80" id="deriable" name="deriable" size="4" type="hidden"
+                                               value="0">
+                                        <input class="size80" id="normal_range" name="normal_range" size="4"
+                                               type="hidden" value="0">
+                                    </td>
+                                    <td valign="top">
+                                        <input id="sequence_1" name="sequence_by" style="width:100%" th:value="${sl.sequence_by}"
+                                               type="number" value="">
+                                    </td>
+
+
+                                </tr>
+                                <tr th:unless="${edit}">
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150 mandatory' id='parameter_name1' name='parameter_name' required
+                                               style='height:26px;' type='text' value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150 mandatory' id='loinc_code1' name='loinc_code' required
+                                               style='height:26px;' type='text' value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150 mandatory' id='test_code1' name='test_code' required
+                                               style='height:26px;' type='text' value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:15%" valign="top">
+                                        <textarea class="size150" name="result"> </textarea>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <input class='size150' id='unit1' name='unit' style='height:26px; text-transform: none;' type='text'
+                                               value=''>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+
+                                    <td style="width:10%; display:none;" valign="top">
+                                        <textarea class="size150" id="reference_r1" name="reference"> </textarea>
+                                    </td>
+                                    <td style="width:20%;display:none;" valign="top">
+                                        <input class='size150' id='max_range' name='max_range' step="any" style='height:26px;text-transform: none;'
+                                               type='number' value='0'>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+                                    <td style="width:20%;display:none;" valign="top">
+                                        <input class='size150' id='min_range' name='min_range' step="any" style='height:26px;text-transform: none;'
+                                               type='number' value='0'>
+                                        <div class="clear"></div>
+                                        <span class="clientmessage"></span>
+                                    </td>
+                                    <td valign="top"><select id="heading_1" name="heading"
+                                                             style="width:75px;height:26px">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+
+
+                                    </select></td>
+                                    <td valign="top"><select id="print_heading_1" name="print_head"
+                                                             style="width:75px;height:26px">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+
+
+                                    </select></td>
+                                    <td valign="top"><select id="helpbox_1" name="help_box"
+                                                             style="width:75px;height:26px">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+
+
+                                    </select></td>
+                                    <td valign="top"><!-- <select style="width:75px;height:26px" name="zone_diameter" id="Zone_diameter_1">
+                        <option  value="0">No</option>
+                        <option  value="1" >Yes</option>
+                    </select> -->
+                                        <textarea class="size150" id="Zone_diameter_1" name="zone_diameter"> </textarea>
+                                        <input class="size80" id="deriable" name="deriable" size="4" type="hidden"
+                                               value="0">
+                                        <input class="size80" id="normal_range" name="normal_range" size="4"
+                                               type="hidden" value="0">
+                                    </td>
+                                    <td valign="top">
+                                        <input id="sequence_1" name="sequence_by" required style="width:100%"
+                                               type="number" value="1">
+                                    </td>
+
+
+                                </tr>
+
+
+                                <tr>
+                                    <td style="width:20%" valign="top">
+                                        <div id="itemRowsa"></div>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <div id="itemRowsb"></div>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <div id="itemRowsc"></div>
+                                    </td>
+
+                                    <td style="width:12%" valign="top">
+                                        <div id="itemRowsd"></div>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <div id="itemRowse"></div>
+                                    </td>
+
+                                    <td style="width:20%;display:none;" valign="top">
+                                        <div id="itemRowsf"></div>
+                                    </td>
+
+                                    <td style="width:20%;display:none;" valign="top">
+                                        <div id="itemRowsx"></div>
+                                    </td>
+                                    <td style="width:20%;display:none;" valign="top">
+                                        <div id="itemRowsy"></div>
+                                    </td>
+                                    <td style="width:15%" valign="top">
+                                        <div id="itemRowsh"></div>
+                                    </td>
+                                    <td style="width:20%" valign="top">
+                                        <div id="print_head"></div>
+                                    </td>
+                                    <td style="width:15%" valign="top">
+                                        <div id="itemRowsl"></div>
+                                    </td>
+
+                                    <td style="width:20%" valign="top">
+                                        <div id="Zone_diameter2"></div>
+                                    </td>
+                                    <td style="width:20%" valign="top">
+                                        <div id="itemRowssq"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <td valign="top"><span class='bold'><strong>Note's:</strong></span></td>
+                                    <td colspan="6" valign="top"><textarea cols="120" id="notes" name="notes" rows="2"
+                                                                           type="text" value=" "> </textarea></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong>Antibiotic: &nbsp;</strong></td>
+                                    <td></td>
+                                    <td>Yes<input name="antibiotic" type="radio" value="1" width="200"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                    <td></td>
+                                    <td>No<input checked="" name="antibiotic" type="radio" value="0" width="200"></td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <div class="col-md-12">
+                            <button class="btn btn-primary" th:unless="${edit}" type="submit">Submit</button>
+                        </div>
+                </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+<!-- ============ Body content End ============= -->
+</div>
+<!--=============== End app-admin-wrap ================-->
+
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+</body>
+<script type="text/javascript">
+    /*  required condition*/
+
+
+
+        function addRow(frm) {
+
+        var count = document.getElementById(frm).value;
+
+        j = Number(count) + 1;
+
+        var row = "<tr><td id='rowNuma" + j + "'  style='height:68px;'><input type='text' name='parameter_name' id='parameter_name" + j + "' value= ''  class='size150 mandatory' style='height:26px;' required> <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsa').append(row);
+
+        var row11 = "<tr><td id='rowNumb" + j + "' style='height:68px;'><input type='text' name='loinc_code' id='loinc_code" + j + "' value= ''  class='size150 mandatory' style='height:26px;' required> <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsb').append(row11);
+
+        var row111 = "<tr><td id='rowNumc" + j + "' style='height:68px;'><input type='text' name='test_code' id='test_code" + j + "' value= ''  class='size150 mandatory' style='height:26px;' required> <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsc').append(row111);
+
+        var row1 = "<tr><td id='rowNumd" + j + "'><textarea name='result' id='result" + j + "' value= ''  style='resize: both; max-width:570px; overflow: auto; height:63px;'  class='size150'></textarea> <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsd').append(row1);
+
+        var row2 = "<tr><td id='rowNume" + j + "' style='height:68px;'><input type='text' name='unit' id='unit" + j + "' value=''   class='size150' style='height:26px;' > <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowse').append(row2);
+
+        var row3 = "<tr><td id='rowNumf" + j + "'><textarea name='reference' id='reference_r" + j + "' value= ''   style='height:63px;' class='size150'></textarea> <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsf').append(row3);
+
+         var row4 = "<tr><td id='rowNumh" + j + "' style='height:68px;'><select style='width:75px;height:26px' name='heading' id='heading_1" + j + "'  ><option value='0'>No</option><option value='1'>Yes</option></select></td></tr>";
+
+        jQuery('#itemRowsh').append(row4);
+        var row8 = "<tr><td id='print_header" + j + "' style='height:68px;'><select style='width:75px;height:26px' name='print_head' id='print_heading_1" + j + "'  ><option value='0'>No</option><option value='1'>Yes</option></select></td></tr>";
+
+        jQuery('#print_head').append(row8);
+
+        var row5 = "<tr><td style='height:68px;' id='itemRowssq" + j + "' ><input type='number' name='sequence_by' id='sequence_1" + j +"'  value= '" + j + "'   class='size80' style='width:75px;'> <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowssq').append(row5);
+        var row6 = "<tr><td id='rowNuml" + j + "' style='height:68px;'><select style='width:75px;height:26px' name='help_box' id='helpbox" + j + "'  ><option value='0'>No</option><option value='1'>Yes</option></select></td></tr>";
+
+        /* jQuery('#itemRowsl').append(row6);
+        var row7 = "<tr><td id='rowNumm" + j + "' style='height:68px;'><select style='width:75px;height:26px' name='zone_diameter' id='Zone_diameter" + j + "'  ><option value='0'>No</option><option value='1'>Yes</option></select></td></tr>"; */
+
+        jQuery('#itemRowsl').append(row6);
+        var row7 = "<tr><td id='rowNumm" + j + "' style='height:68px;'><textarea class='size150' name='zone_diameter' id='Zone_diameter" + j + "'> </textarea></td></tr>";
+
+        jQuery('#Zone_diameter2').append(row7);
+
+        var row16 = "<tr><td id='rowNumx" + j + "' style='height:68px;width:20%' ><input type='text' name='max_range' id='max_range" + j + "' value=''   class='size120' style='height:26px;' > <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsx').append(row16);
+        var row17 = "<tr><td id='rowNumy" + j + "' style='height:68px; width:20%'><input type='text' name='min_range' id='min_range" + j + "' value=''   class='size120' style='height:26px;' > <div class='clear'></div><span class='clientmessage'></span></td></tr>";
+
+        jQuery('#itemRowsy').append(row17);
+
+        document.getElementById('count').value = j;
+
+    }
+
+
+
+    function removeRow(rnum) {
+
+        var count = document.getElementById(rnum).value;
+
+
+        if (count > '1') {
+
+            jQuery('#rowNuma' + count).remove();
+
+                    jQuery('#rowNumb' + count).remove();
+
+                    jQuery('#rowNumc' + count).remove();
+
+            jQuery('#rowNumd' + count).remove();
+
+            jQuery('#rowNume' + count).remove();
+
+            jQuery('#rowNumf' + count).remove();
+            jQuery('#rowNumx' + count).remove();
+            jQuery('#rowNumy' + count).remove();
+
+                    jQuery('#rowNumh' + count).remove();
+                    jQuery('#itemRowssq' + count).remove();
+                    jQuery('#rowNuml' + count).remove();
+                    jQuery('#rowNumm' + count).remove();
+                    jQuery('#print_header' + count).remove();
+
+            j = Number(count) - 1;
+
+            document.getElementById('count').value = j;
+
+        }
+
+
+    }
+
+    $("#invest_ids").select2({width:'250px'});
+
+</script>
+
+</html>

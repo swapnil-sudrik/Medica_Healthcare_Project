@@ -1,0 +1,115 @@
+<html>
+
+<head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">
+    <title>User Registration Form</title>
+    <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>
+    <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
+</head>
+
+<body>
+<div class="generic-container">
+
+    <div class="well lead">User Registration Form</div>
+    <form:form class="form-horizontal" method="POST" modelAttribute="user" th:object="${user}">
+        <form:input id="id" th:field="*{id}" type="hidden"/>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="firstName">First Name</label>
+                <div class="col-md-7">
+                    <form:input class="form-control input-sm" id="firstName" th:field="*{firstName}" type="text"/>
+                    <div class="has-error">
+                        <form:errors class="help-inline" th:field="*{firstName}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="lastName">Last Name</label>
+                <div class="col-md-7">
+                    <form:input class="form-control input-sm" id="lastName" th:field="*{lastName}" type="text"/>
+                    <div class="has-error">
+                        <form:errors class="help-inline" th:field="*{lastName}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="ssoId">SSO ID</label>
+                <div class="col-md-7">
+                    <c:choose>
+                        <c:when test="${edit}">
+                            <form:input class="form-control input-sm" disabled="true" id="ssoId" path="ssoId"
+                                        type="text"/>
+                        </c:when>
+                        <c:otherwise>
+                            <form:input class="form-control input-sm" id="ssoId" path="ssoId" type="text"/>
+                            <div class="has-error">
+                                <form:errors class="help-inline" path="ssoId"/>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="password">Password</label>
+                <div class="col-md-7">
+                    <form:input class="form-control input-sm" id="password" path="password" type="password"/>
+                    <div class="has-error">
+                        <form:errors class="help-inline" path="password"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="email">Email</label>
+                <div class="col-md-7">
+                    <form:input class="form-control input-sm" id="email" path="email" type="text"/>
+                    <div class="has-error">
+                        <form:errors class="help-inline" path="email"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="userProfiles">Roles</label>
+                <div class="col-md-7">
+                    <form:select class="form-control input-sm" itemLabel="type" itemValue="id" items="${roles}" multiple="true"
+                                 path="userProfiles"/>
+                    <div class="has-error">
+                        <form:errors class="help-inline" path="userProfiles"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-actions floatRight">
+                <c:choose>
+                    <c:when test="${edit}">
+                        <input class="btn btn-primary btn-sm" type="submit" value="Update"/> or <a
+                            href="<c:url value='/list' />">Cancel</a>
+                    </c:when>
+                    <c:otherwise>
+                        <input class="btn btn-primary btn-sm" type="submit" value="Register"/> or <a
+                            href="<c:url value='/list' />">Cancel</a>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+    </form:form>
+</div>
+</body>
+</html>

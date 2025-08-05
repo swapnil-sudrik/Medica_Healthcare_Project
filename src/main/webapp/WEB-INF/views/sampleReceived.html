@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Generate Manifest</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Generate Manifest</h1>
+    </div>
+    <div><a class="btn btn-outline-dark" th:href="@{/sampleReceivedList}">Back</a></div>
+    <div class="separator-breadcrumb border-top"></div>
+    <div id="search_data"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="updateForm" th:action="@{/updateToReceived}" th:method="post">
+                        <div class="row">
+                            <div class="col-2 form-group">
+                                <span>Runner Boy Name</span><br/>
+                                <select class="form-control boyName" name="recName">
+                                    <option data-isdefault="true" value="">--Name--</option>
+                                    <option th:each="staff:${staffNames}"
+                                            th:value="${staff.firstName + ' ' + staff.lastName}">[[${staff.firstName + "
+                                        " + staff.lastName}]]
+                                    </option>
+                                </select>
+                                <span class="text-danger reqMsg">* Required</span>
+                            </div>
+                            <div class="col-2 form-group">
+                                <span>Runner Boy Mobile No.</span><br/>
+                                <input class="form-control boyNo" maxlength="10" minlength="10"
+                                       name="recMobile" placeholder="mobile number.." type="text"/>
+                                <span class="text-danger reqMsg">* Required</span>
+                            </div>
+                            <div class="col-4 form-group">
+                                <span>Box No.</span><br/>
+                                <input class="form-control" id="parcelval" placeholder="box number..." type="text"/>
+                            </div>
+                            <div class="col-4 form-group">
+                                <span>Sample</span><br/>
+                                <input class="form-control" id="sample" maxlength="10" placeholder="sample..." type="text"/>
+                                <div class="repeat text-danger"></div>
+                            </div>
+                        </div>
+
+                        <div class="date">Date : [[${#dates.format(#dates.createNow(), 'dd-MM-yyyy')}]]</div>
+                        <div>
+                            <table class="display table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th>Spoke Name</th>
+                                    <th>Sample No.</th>
+                                    <th>Patient Name</th>
+                                    <th>Test Name</th>
+                                    <th>Status</th>
+                                    <th>Remark</th>
+                                </tr>
+                                </thead>
+                                <tbody class="data-table" id="myTable">
+
+                                </tbody>
+                                <h3 class="repeatMsg text-danger p-2 text-center"></h3>
+                            </table>
+                        </div>
+                        <div class="alert alert-success" role="alert" th:if="${message}" th:text="${message}"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary go_btn" type="button">Submit</button>
+                            </div>
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script th:src="@{/static/assets/js/sampleReceived.js}"></script>
+
+</body>
+
+</html>

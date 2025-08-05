@@ -1,0 +1,110 @@
+<div id="search_data">
+    <div th:fragment="detail">
+        <div class="ExportData table-responsive">
+            <table class="display table table-striped table-bordered" id="multicolumn_ordering_table"
+                   style="width:100%">
+                <thead>
+                <tr class="border border-primary">
+                    <th>SI</th>
+                    <th>Lab Name</th>
+                    <th>Entry Date</th>
+                    <th>Created By</th>
+                    <th>Facility</th>
+                    <th>Patient Name</th>
+                    <th>Age/Gender</th>
+                    <th>Mobile No.</th>
+                    <th>SHUHID</th>
+                    <!--   <th>Hospital UHID</th> -->
+                    <th>Barcode</th>
+                    <th>Test Name</th>
+
+                    <th>Order No.</th>
+                    <th>Sample Collection Time</th>
+                    <th>Sample Collected By</th>
+                    <th>Authorize By</th>
+                    <th>Printed By</th>
+                    <th>Status</th>
+                    <th>Updated By</th>
+                    <th>Rejected By</th>
+                    <th>Authorized Type</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="list,i : ${inv_list}">
+                    <td th:text=${i.count}></td>
+                    <td>[[${list[14]}]]</td>
+                    <td>[[${#dates.format({list[0]} , 'dd-MMM-yyyy hh:mm a')}]]</td>
+                    <td>[[${list[23]}]]</td>
+                    <td>[[${list[26]}]]</td>
+                    <td>[[${list[7]}+' '+${list[8]}+' '+(${list[18]}?${list[18]}:'')+' '+${list[9]}+' '+${list[15]}+' '+
+                        ${list[10]}]]
+                    </td>
+
+
+                    <td class="gender_age"><input th:value="${list[11]}" type="hidden"><span></span>/ [[ ${list[12]}]]
+                    </td>
+                    <td>[[${list[13]}]]</td>
+                    <td>[[${list[1]}+'/ '+ ${#numbers.formatInteger(list[2],6)}]]</td>
+                    <!--  <td>[[${list[16]}]]</td> -->
+                    <td>[[${list[17]}]]</td>
+                    <td>[[${list[3]}]]</td>
+
+
+                    <td th:text="${list[19]}+'' +${#dates.day(list[0])}+${#dates.format(list[0], 'MM')}+${#dates.format(list[0], 'yy')}+'/ '+${#numbers.formatInteger(list[4],8)}"></td>
+
+                    <td>[[${#dates.format({list[5]} , 'dd-MMM-yyyy hh:mm a')} ]]</td>
+                    <td>[[${list[20]}]]</td>
+                    <td>[[${list[25]}]]</td>
+                    <td>[[${list[21]}]]</td>
+                    <td>[[${list[6]}]]</td>
+                    <td>[[${list[24]}]]</td>
+                    <td>[[${list[22]}]]</td>
+                    <td>[[${list[28] == 1 ? 'System_Authorized' : ''}]]</td>
+                    <!--  <td><a th:href="@{'/result-print/'+ ${list[4]}}" ><button type="button" class="btn btn-success btn-rounded m-1" id="patient_detail">Patient Detail</button></a></td> -->
+
+                </tr>
+                </tbody>
+                <!-- <tr>
+                <td colspan="2" align="right">Total</td>
+                 <td><span th:text="${#aggregates.sum(inv_list.![[1]])}" ></span></td>
+
+
+                </tr> -->
+            </table>
+            <script type="text/javascript">
+
+                $(document).ready(function(){
+
+                   var dob= document.getElementsByClassName('gender_age');
+
+                   for(var i=0; i<dob.length; i++){
+                       var childs =dob[i].children;
+                       var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+                       var age_dt = new Date(diff_ms);
+
+                       var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+                       var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+                       var age_month =   Math.floor(age_d/30);
+                       var age_day = age_d % 30;
+
+                       if(age_year != 0){
+                       childs[1].innerHTML = age_year+' Y ';
+                      }else if(age_month != 0){
+                          childs[1].innerHTML =  age_month+' M ';
+                      }else{
+                          childs[1].innerHTML = age_day+' D ';
+                      }
+
+                   }
+
+
+
+               });
+
+
+            </script>
+        </div>
+    </div>
+</div>
+ 

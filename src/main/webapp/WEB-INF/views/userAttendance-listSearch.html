@@ -1,0 +1,44 @@
+<div id="search_data">
+    <div th:fragment="detail">
+
+        <div class="ExportData table-responsive">
+
+            <table class="display table table-striped table-bordered"
+                   id="multicolumn_ordering_table" style="width: 100%">
+                <thead>
+                <tr class="border border-primary">
+                    <th>SI</th>
+                    <!-- <th>Entry Date</th> -->
+                    <th>Location</th>
+                    <th>Lab</th>
+                    <th>User Name</th>
+
+                    <th th:each="res2: ${date_list}"> [[${#dates.format({res2} , 'dd-MM-yy')}]]</th>
+                    <!--  <th>Photo</th> -->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="list,i : ${inv_list}">
+                    <td>[[${i.count}]]</td>
+
+
+                    <td>[[${list.uLocation}]]</td>
+                    <td>[[${list.labName}]]</td>
+                    <td>[[${list.userName}]]</td>
+                    <td th:each="res3: ${list.UserAttendanceCMSReportSub}">[[${res3.active}+' '+${res3.time}]] <a
+                            target="_blank" th:href="@{'/user-img-attend/'+ ${res3.id}}" th:if="${res3.active}==P"><i
+                            class="nav-icon i-Male"></i></a></td>
+                    <!--  <td>[[${list.userName}]]</td> -->
+
+
+                    <!--  <td><a th:href="@{'/result-print/'+ ${list[4]}}" ><button type="button" class="btn btn-success btn-rounded m-1" id="patient_detail">Patient Detail</button></a></td> -->
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+

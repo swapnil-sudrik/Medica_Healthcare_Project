@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Patient Manifest List</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+    <style>
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        @media print
+        {
+            @page
+            {
+                 size: a4;
+                 margin: 0;
+            }
+        }
+
+        .p-r-10 {
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>Patient Manifest List</h1>
+    </div>
+    <div><a class="btn btn-outline-success" th:href="@{/sampleReceived}">Acknowledge Sample</a></div>
+    <div class="separator-breadcrumb border-top"></div>
+    <div id="search_data"></div>
+    <table class="display table table-striped table-bordered"
+           style="width: 100%">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Box Barcode No.</th>
+            <!-- <th>Sample No.</th> -->
+            <th>Status</th>
+            <th>Remark</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody class="data-table">
+        <tr th:each="s, i:${rec}">
+            <td th:text="${#dates.format({s.updatedAt} , 'dd-MMM-yyyy hh:mm a')}"></td>
+            <td th:text="${s.samplePickUp.trackingId}"></td>
+            <!-- <td th:text="${s.barcode}"></td> -->
+            <td th:text="${s.sampleStatus}"></td>
+            <td th:text="${s.sampleRemark}"></td>
+
+            <td>
+                <a class="btn btn-outline-primary" target="_blank"
+                   th:href="@{'/sampleReceivedPrint/'+${s.samplePickUp.id}}" title="print" type="button">Print</a>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+</body>
+
+</html>

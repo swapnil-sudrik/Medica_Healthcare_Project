@@ -1,0 +1,65 @@
+<style>
+
+</style>
+<div th:fragment="detail">
+    <div align="center" id="hospital_header">
+        <!--By default -->
+        <table border="0" cellpadding="0" cellspacing="0"
+               class="black_bottom_border font_13 header" id="header" width="100%">
+            <tbody>
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td align="left"><img
+                        height="95" style="padding-top:15px" th:src="@{/static/assets/images/mp100.png}"></td>
+                <td align="left" valign="top" width="75%">
+                    <table align="left" border="0" cellpadding="0" cellspacing="0"
+                           class="font_14" width="95%">
+                        <tbody style="line-height: 1.2;">
+                        <tr>
+                            <td align="center" class="address_heading" style="font-size: 16px;"
+                                valign="bottom"><strong><br>&nbsp;
+                                [[${lab.hospName}]]</strong></td>
+                        </tr>
+                        <tr>
+                            <!-- <td align="center"><strong>
+                                    CENTRAL PROCESSING LAB </strong></td> -->
+                        </tr>
+                        <tr>
+                            <td align="center" valign="bottom">
+                                [[${lab.hospAddr}]], <br> [[${lab.hospCity}]] ([[${lab.pinCode}]]),
+                                [[${lab.hospPhone}]]
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="CENTER" class="style3" valign="top">
+                                <span style="text-transform: none;" th:if="${lab.hospEmail != ''}">[[${lab.hospEmail}]]  ,</span>
+                                <span style="text-transform: none;" th:if="${lab.hospLicNo != ''}">License No.:[[${lab.hospLicNo}]] ,</span>
+
+                                <span style="text-transform: none;" th:if="${lab.hospLicNo != ''}">[[${lab.hospWebsite}]]</span>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td align="left"><img
+                        height="80" th:src="@{/static/assets/images/nhm100.png}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <script type="text/javascript">
+        /* header should Print or not */
+        function get_header(str) {
+            if (document.getElementById("chk_header").checked == false) {
+                 //$("#hospital_header").css('visibility', 'hidden');
+               document.getElementById("hospital_header").style.display = "none";
+            } else {
+                // $("#hospital_header").css('visibility', 'visible');
+                document.getElementById("hospital_header").style.display = "block";
+            }
+        };
+    </script>
+</div>

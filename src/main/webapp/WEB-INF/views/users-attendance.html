@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>User Attendance</title>
+    <th:block th:include="layout :: headerfiles">
+
+    </th:block>
+    <script th:src="@{/static/assets/js/webcam.min.js}" type="text/javascript"></script>
+
+    <style>
+
+        #my_camera{
+         width: 320px;
+         height: 240px;
+         border: 1px solid black;
+        }
+    </style>
+</head>
+<body class="text-left">
+
+
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>User Attendance</h1>
+        <!--<ul>
+            <li onmouseover="this.style.backgroundColor='green'" onmouseout="this.style.backgroundColor=''"><a href="/employee"><font color="#639">Back</font></a></li>
+            <li>Basic</li>
+           </ul>-->
+        <ul>
+            <li>
+                <a class=" btn btn-dark offset" href="#">
+                    <font color="white"> <span><-Back</span></font>
+                </a></li>
+        </ul>
+    </div>
+
+
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="">
+                <div class="card-body">
+
+
+                    <form enctype="multipart/form-data" id="user_pic_save" method="post"
+                          th:action="@{'/users-attendance/'+ ${usersId}}">
+                        <!--  <ul>
+
+                         </ul> -->
+
+
+                        <!--=========personal information Sof==============-->
+
+
+                        <div class="accordion " id="accordionRightIcon" style="background-color: #fff;">
+                            <div class="card " style="background-color: #fff;">
+                                <div class="card-header header-elements-inline">
+                                    <h6 class="card-title ul-collapse__icon--size ul-collapse__right-icon mb-0">
+                                        <a aria-expanded="false" class="text-default collapsed"
+                                           data-toggle="collapse"
+                                           href="#accordion-item-icon-right-1">
+                                            <span><i class="nav-icon i-Receipt"> </i></span>
+                                            Information</a>
+                                    </h6>
+
+                                </div>
+
+
+                                <div class="collapse show" data-parent="#accordionRightIcon"
+                                     id="accordion-item-icon-right-1" style="">
+                                    <div class="card-body">
+                                        <div class="col-md-12">
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+
+                                                    <div class="row">
+                                                        <!--  <img th:src="@{/static/user_attendance_img/pic_2020_12_25_13_19_15.jpeg}" width="200px" height="200px"> -->
+                                                        <div id="my_camera"></div>
+
+                                                        <input th:onClick="|take_snapshot(${usersId})|" type=button
+                                                               value="Take Snapshot">
+
+                                                        <div id="results"></div>
+                                                        <div id="results2" style="display:none"></div>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div align="right" class="col-md-11">
+                                        <button class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!--===========personal information Eof===============-->
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+</body>
+
+<script language="JavaScript">
+    Webcam.set({
+     width: 320,
+     height: 240,
+     image_format: 'jpeg',
+     jpeg_quality: 90
+    });
+    Webcam.attach( '#my_camera' );
+
+   <!-- Code to handle taking the snapshot and displaying it locally -->
+   function take_snapshot(id) {
+
+
+    // take snapshot and get image data
+    Webcam.snap( function(data_uri) {
+     // display results in page
+     document.getElementById('results').innerHTML =
+     '<img src="'+data_uri+'" />';
+     //alert(data_uri);
+
+
+     var ImageURL = data_uri;
+     // Split the base64 string in data and contentType
+     var block = ImageURL.split(";");
+     // Get the content type of the image
+     var contentType = block[0].split(":")[1];// In this case "image/gif"
+     // get the real base64 content of the file
+     var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
+
+     // Convert it to a blob to upload
+     var blob = b64toBlob(realData, contentType);
+     //alert(JSON.stringify(blob));
+     document.getElementById('results2').innerHTML =
+     '<input type="text" value="'+data_uri+'" name="user_pic"/>';
+    console.log(blob);
+
+
+     } );
+
+
+   }
+
+   function b64toBlob(b64Data, contentType, sliceSize) {
+       contentType = contentType || '';
+       sliceSize = sliceSize || 512;
+
+       var byteCharacters = atob(b64Data);
+       var byteArrays = [];
+
+       for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+           var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+           var byteNumbers = new Array(slice.length);
+           for (var i = 0; i < slice.length; i++) {
+               byteNumbers[i] = slice.charCodeAt(i);
+           }
+
+           var byteArray = new Uint8Array(byteNumbers);
+
+           byteArrays.push(byteArray);
+       }
+
+     var blob = new Blob(byteArrays, {type: contentType});
+     return blob;
+   }
+
+
+</script>
+
+
+</html>

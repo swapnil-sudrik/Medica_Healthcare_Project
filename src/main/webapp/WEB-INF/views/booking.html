@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Book Test for Patient</title>
+    <th:block th:include="layout :: headerfiles"></th:block>
+    <link rel="stylesheet" href="/static/assets/styles/vendor/sweetalert2.min.css">
+    <script th:src="@{/static/assets/js/sweetalert.script.js}"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .form-container {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .form-section h5 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .btn {
+            min-width: 120px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .input-error {
+            border-color: #ff4d4d !important;
+            background-color: #ffe6e6 !important;
+        }
+    </style>
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="container mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="text-center mb-1">Book Test for Patient</h5>
+<!--            <a href="#" th:href="@{/patientsWeb}" class="btn btn-outline-success">Back</a>-->
+        </div>
+        <form th:action="@{'/booking/' + ${patient.id}}" method="post" class="form-container" onsubmit="return validateBarcode()">
+            <div class="row">
+                <!-- Left Section: Patient Details -->
+                <div class="col-md-6 form-section">
+                    <h5>Patient Details</h5>
+                    <div class="mb-3">
+                        <label for="patientName" class="form-label"> <strong>Patient Name</strong> </label>
+                        <input type="text" id="patientName" class="form-control" th:value="${patient.firstName}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="UHID" class="form-label"><strong>UHID</strong> </label>
+                        <input type="text" id="UHID" class="form-control" th:value="${patient.getUhid()}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="DOB" class="form-label"><strong>DOB</strong> </label>
+                        <input type="text" id="DOB" class="form-control" th:value="${patient.getBirthday()}" disabled>
+                    </div>
+                </div>
+
+                <!-- Right Section: Test Method and Result -->
+                <div class="col-md-6 form-section">
+                    <h5>Test Details</h5>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Test Name</strong></label>
+                        <div class="form-check">
+                            <input type="radio" id="hplc" name="testMethod" value="HPLC" class="form-check-input" required checked>
+                            <label for="hplc" class="form-check-label">HPLC</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="barcode" class="form-label" ><strong>Barcode <span style="color: red;">*</span></strong></label>
+                        <input type="text" id="barcode" name="barcode"  maxlength="10" class="form-control" oninput="validateInput()" required>
+                        <span class="error-message" id="barcodeError">* Barcode must be exactly 10 digits.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons Section -->
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary me-2">Save</button>
+                <a th:href="@{/patientsWeb}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div th:insert="layout :: search-ui"></div>
+    <footer th:insert="layout :: footer"></footer>
+</div>
+
+<script type="text/javascript">
+    function validateInput() {
+        const barcodeInput = document.getElementById('barcode');
+        const errorMessage = document.getElementById('barcodeError');
+        barcodeInput.value = barcodeInput.value.replace(/[^\d]/g, '');
+
+        if (barcodeInput.value.length !== 10) {
+            barcodeInput.classList.add('input-error');
+            errorMessage.style.display = 'block';
+        } else {
+            barcodeInput.classList.remove('input-error');
+            errorMessage.style.display = 'none';
+        }
+    }
+
+    function validateBarcode() {
+        const barcodeInput = document.getElementById('barcode').value;
+        const errorMessage = document.getElementById('barcodeError');
+
+        if (barcodeInput.length !== 10) {
+            errorMessage.innerText = "* Barcode must be exactly 10 digits.";
+            errorMessage.style.display = 'block';
+            return false;
+        }
+
+        let isValid = false;
+        $.ajax({
+            url: '/validateBarcode',
+            type: 'GET',
+            data: { barcode: barcodeInput },
+            async: false, // Ensure synchronous execution
+            success: function(response) {
+                if (!response) {
+                    errorMessage.innerText = "Barcode Already Exists or its Duplicate.";
+                    errorMessage.style.display = 'block';
+                    isValid = false;
+                } else {
+                    errorMessage.style.display = 'none';
+                    isValid = true;
+                    showSuccessAlert();  // Call SweetAlert after success
+                }
+            },
+            error: function() {
+                alert("Error checking barcode.");
+            }
+        });
+        return isValid;
+    }
+
+    function showSuccessAlert() {
+        swal({
+            icon: 'success',
+            title: 'Success',
+            text: 'Barcode saved successfully!',
+            confirmButtonClass: 'btn btn-lg btn-success',
+            buttonsStyling: false
+        });
+    }
+</script>
+
+</body>
+</html>

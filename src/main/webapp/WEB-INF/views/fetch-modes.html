@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+    <div th:insert="layout :: headerfiles"></div>
+    <link rel="stylesheet"
+          th:href="@{/static/assets/styles/vendor/sweetalert2.min.css}">
+    <script th:src="@{/static/assets/js/angular.min.js}"></script></head>
+<body class="vertical-layout boxed">
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>ABHA Consent </h1>
+
+    </div>
+
+    <div class="main-content-wrap">
+        <button class="item-link" onclick="window.location.href='/ndhm/collectionPatientList'">
+            <span class="link-text">Consent List</span>
+        </button>
+                <form method="get" th:action="@{/app/auth-initt}">
+
+                    <div class="page-content">
+                        <div class="card">
+                            <div class="card-header"><h5>Patient ABHA KYC & Link</h5></div>
+                            <div class="card-body">
+                                <div class="row" ng-app="ngndhm"
+                                     ng-controller="searchServicesController">
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <span> <b>Enter ABHA Number</b></span>
+                                            <input type="text" class="form-control"
+                                                   placeholder="ABHA Address" value="" name="healthId" id="healthId" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <span> <b>Authentication Method</b></span>
+                                        <div class="dropdown bootstrap-select">
+
+                                            <select name="purpose" id ="purpose" title="Authentication Method" class="form-control" required>
+                                                <option value="Authentication Method">Authentication Method</option>
+                                                <option value="KYC_AND_LINK">KYC_AND_LINK</option>
+
+
+                                            </select>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none;">
+                                        <div class="dropdown bootstrap-select">
+                                            <select name="hipType" id ="hipType" title="Type" class="selectpicker" required>
+                                                <option selected value="HIP">HIP</option>
+                                                <option value="HIU">HIU</option>
+                                            </select>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <input type="hidden" class="form-control"
+                                                   placeholder="HIP / HIU Id " value="SBX_000577" name="hipid" id="hipid" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-md-4" >
+                                        <button type="button" id="confirm_button" class="btn btn-info">Confirm</button>
+                                    </div>
+                                    <div class="col-12 col-md-4" style="display:none" id="authmodesdisplay">
+                                        <div class="dropdown bootstrap-select">
+                                            <select name="authmodes" id ="authmodes" title="Authentication Mode" class="form-control" required>
+                                                <option value="AADHAAR_OTP">AADHAAR_OTP</option>
+                                                <option value="MOBILE_OTP">MOBILE_OTP</option>
+                                            </select>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4" id="detail_button" style="display:none">
+                                        <button type="submit" class="btn btn-info">Send OTP</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        <footer th:insert="layout :: footer"></footer>
+</div>
+<script th:src="@{/static/assets/js/fetch-modes.js}"></script>
+<script th:src="@{/static/assets/js/vendor/sweetalert2.min.js}"></script>
+<script th:src="@{/static/assets/js/sweetalert.script.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+            // Find the Send OTP button by its ID
+            const sendOTPButton = document.querySelector('#detail_button button');
+
+            // Add a click event listener to the Send OTP button
+            sendOTPButton.addEventListener('click', function() {
+                // Display a SweetAlert2 success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'OTP Sent Successfully!',
+                    showConfirmButton: false,
+                    timer: 2000 // Display message for 2 seconds
+                });
+
+                // Disable the button for 50 seconds (50000 milliseconds)
+                sendOTPButton.disabled = true;
+
+                // Re-enable the button after 50 seconds
+                setTimeout(function() {
+                    sendOTPButton.disabled = false;
+                }, 50000); // 50 seconds in milliseconds
+            });
+        });
+</script>
+</body>
+
+</html>

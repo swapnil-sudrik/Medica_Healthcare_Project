@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>LJ Chart</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb">
+        <h1>LJ Chart</h1>
+
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="card-title mb-3">
+                        <span style="font-weight:bold">[[${location}]]</span>
+                    </div>
+                    <div class="card-title mb-3">
+                        LJ Chart for <span style="font-weight:bold">[[${parameter}]]</span>
+                        <span style="font-size:90%">[[${' ('+modality+')   '}]]</span>
+                        <span style="font-size:80%;font-weight:bold;font-style: italic;">
+                             Period:[[${#dates.format({startDate} , 'dd-mm-yyyy')}]] - [[${#dates.format({endDate} , 'dd-mm-yyyy')}]]</span>
+                    </div>
+                    <div class="table-responsive">
+
+                        <table class="display table table-striped table-bordered"
+                               id="alternative_pagination_table"
+                               style="width: 100%">
+                            <thead>
+
+                            <tr>
+
+                                <th>Sum: [[${sum}]]</th>
+                                <th>Mean: [[${mean}]]</th>
+                                <th>Std. Deviation: [[${deviation}]]</th>
+                                <th>Coeff. of Variation: [[${cov}]]</th>
+                            </tr>
+                            </thead>
+                            <thead>
+                            <tr>
+                                <th>SL.</th>
+                                <th>Date</th>
+                                <th>Sample</th>
+                                <th>QC Value</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="list,i : ${qcList}">
+                                <td>[[${i.count}]]</td>
+                                <td>[[${#dates.format({list.qcCreatedAt} , 'dd-MMM-yyyy')}]]</td>
+                                <td>[[${list.sample}]]</td>
+                                <td>[[${list.result}]]</td>
+
+                            </tr>
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+      // Initialize select2
+      $("#tm_id").select2();
+
+      // Read selected option
+
+      function getlist(){
+         // $(".hidelist").show();
+        var tm_id=$('.tm_id').val();
+        var machineId=$('.machineId').val();
+
+
+        // alert(tm_id +"-" +machineId);
+
+        $.ajax({
+            type: "GET",
+            url: "/getAlreadyExistTestWithMachineid",
+            data: "tm_id=" + tm_id + "&machineId=" + machineId,
+            dataType: "html",
+            success: function (data)
+            {
+
+                $("#search_data").html(data);
+
+            }
+        });
+
+    }
+
+
+      $('.search_List').change( function() {
+          getlist();
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Sample Collect</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+    <link href="/static/assets/styles/vendor/sweetalert2.min.css"
+          rel="stylesheet">
+    <style>
+        .btn-margin {
+            margin: 0 2px;
+        }
+
+        .MACHINE {
+            background-color: blue;
+            color: white;
+        }
+
+        .ORDERED {
+            background-color: olivedrab;
+            color: yellow;
+        }
+
+        .CANCELED {
+            color: red;
+        }
+
+        .CANCELED_TEXT {
+            color: red;
+            text-decoration: line-through;
+        }
+
+        .SAMPLE_COLLECTED {
+            background-color: red;
+            color: white;
+        }
+
+        .RESULT_SAVED {
+            background-color: #e0c911;
+            color: blue;
+        }
+
+        .AUTHORIZED {
+            background-color: orange;
+        }
+
+        .PRINTED {
+            background-color: green;
+            color: yellow;
+        }
+
+        .SAMPLE_REJECTED {
+            background-color: #8a2142;
+            color: white;
+        }
+
+        .VERIFIED {
+            background-color: #fcf403;
+        }
+
+        .vial_1 {
+            border-color: purple;
+            color: purple;
+        }
+
+        .vial_2 {
+            border-color: red;
+            color: red;
+        }
+
+        .vial_3 {
+            border-color: grey;
+            color: grey;
+        }
+
+        .vial_4 {
+            border-color: green;
+            color: green;
+        }
+
+        .vial_5 {
+            border-color: #45b3e0;
+            color: #45b3e0;
+        }
+
+        .patientDetail {
+            font-weight: bold;
+            color: rgba(23, 23, 77, .95);
+            font-size: .813rem;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+    </style>
+</head>
+<body class="text-left">
+
+<div th:insert="layout :: preloader"></div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <!--  <div class="breadcrumb">
+            <h1></h1>
+            <ul>
+
+                <li><a th:href="@{/test-new}">New Investigation</a></li>
+                <li>LIS Investigations</li>
+            </ul>
+        </div> -->
+    <!--  <div class="separator-breadcrumb border-top"></div> -->
+
+    <!--  <div class="row mb-4">
+            <div class="col-md-12">
+                <h4>Users</h4>
+                <p>LIS Users</p>
+            </div>
+        </div> -->
+    <!-- end of row -->
+    <div class="alert alert-card alert-success" role="alert"
+         th:if="${message}">
+        <strong class="text-capitalize">Success!</strong> [[${message}]]
+        <button aria-label="Close" class="close" data-dismiss="alert"
+                type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-4"></div>
+        <div class="col-md-6 mb-4">
+            <div class="card text-left">
+
+                <div class="card-body">
+                    <h3 style="text-align: center">Sample Collection</h3>
+
+
+                    <div class="table-responsive">
+                        <form id="sampleCollect" method="post" onsubmit="return validateForm()"
+                              th:action="@{'/sample-collect/'+${barcodeConfig}}">
+                            <div class="modal-header">
+                                <h6 class="modal-title" id="exampleModalCenterTitle" style="text-transform:Uppercase">
+                                    [[${order.patient.firstName+"
+                                    "+order.patient.middleName+" "+order.patient.lastName}]]
+                                    <input id="gender_age" th:value="${order.patient.birthday}" type="hidden">
+                                    <span class="patientDetail" float="right">(
+											[[${order.patient.gender+"/"}]]</span>
+                                    <span class="patientDetail" id="age"></span> <span class="patientDetail">)</span>
+                                </h6>
+                                <h6 class="modal-title" id="exampleModalCenterTitle">
+                                    Order No. :[[${lab.hospCode}+''
+                                    +${#dates.day(order.createdAt)}+${#dates.format(order.createdAt,
+                                    'MM')}+${#dates.format(order.createdAt, 'yy')}+'/
+                                    '+${#numbers.formatInteger(order.id,8)}]]</h6>
+                            </div>
+
+                            <table class="table table-striped ">
+                                <thead>
+                                <tr>
+                                    <th id="fluid" scope="col">Fluid type tests</th>
+                                    <th id="barcode" scope="col" th:if="${!barcodeConfig}">Barcode</th>
+                                    <th id="specimen" scope="col" style='display: none;'>
+                                        Specimen Type
+                                    </th>
+                                </tr>
+                                </thead>
+                                <input name='l_id' readonly th:value="${order.id}" type='hidden'>
+                                <tr th:each="entry, stat : ${maps}">
+                                    <!--
+                                <td th:text="${entry.key}"></td> -->
+                                    <td>
+
+                                        <ul th:each="test : ${entry.value}">
+
+                                            <li th:if="${#strings.equalsIgnoreCase(test.status, 'ORDERED')}">
+                                                <label class='checkbox checkbox-outline-danger'
+                                                       th:each="color : ${vialColor}"
+                                                       th:if="${test.investigation.fluidType == color.vmCode}"
+                                                       th:style="'color:' + ${color.vColor} + ';'">
+                                                    <input checked name='i_id' readonly='' th:value="${test.id}"
+                                                           type='checkbox'/>
+                                                    <b class=""
+                                                       style='background-color: #fff; border: 1px solid; padding: 1px; font-size: 10px; border-radius: 4px;'>
+														<span class=' badge-round-primary m-1'
+                                                              th:style="'background-color:' + ${color.vColor} + ';'">
+															 <i class=' i-Test-Tube'></i>
+														</span>
+                                                        [[${test.investigation.invest_name}]]
+                                                    </b>
+                                                    <span class='checkmark'
+                                                          th:style="'border-color:' + ${color.vColor} + ';'"></span>
+                                                </label>
+                                            </li>
+
+                                        </ul>
+
+                                    </td>
+                                    <td th:if="${!barcodeConfig}">
+                                        <input name='fluidType' th:value="${entry.key}" type='hidden'>
+                                        <input Placeholder="Enter Barcode" name="barcode" type="number" onkeydown="disableArrowKeys(event)" oninput="validateInput(event)" onpaste="validatePaste(event)" maxlength="10">
+                                        <select class='form-control' name='specimen_type' style="display:none">"
+                                            <option value=''>Select</option>
+                                            <option value='TS/NPS/NS'>TS/NPS/NS</option>
+                                            <option value='BAL/ETA'>BAL/ETA</option>
+                                            <option value='Blood in EDTA'>Blood in EDTA</option>
+                                            <option value='Acute sera'>Acute sera</option>
+                                            <option value='Covalescent sera'>Covalescent sera</option>
+                                            <option value='Other'>Other</option>
+                                        </select>
+
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary btn-lg ml-2" id="save" type="submit">
+                                    [[${barcodeConfig}?'Generate Barcode':'Save']]
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+            <!-- end of col -->
+        </div>
+        <!-- end of row -->
+        <div th:insert="layout :: search-ui"></div>
+        <footer th:insert="layout :: footer"></footer>
+
+        <!-- mukesh sen -->
+
+        <!-- mukesh sen -->
+</body>
+<script th:inline="javascript">
+    $(document).on("keydown", "form", function(event) {
+        return event.key != "Enter";
+    });
+
+    function showDetails(str){
+
+        var i = $("#"+str).prop('outerHTML');
+            $(".modal-body").html(i);
+        }
+
+
+
+    /* Mukesh sen SOF */
+
+        function getOrderDetailsPrint(index,orderNo){
+        //var orderNo = $(this).attr('data-value');
+        //var index = $(this).attr('data-id');
+
+        var lab = "Print :"+orderNo+"<input type='hidden' name='l_id' value="+index+" readonly>";
+        $("#sample_heading").html(lab);
+        $("#save").html('Print');
+        $("#fluid").html(' ');
+        $("#barcode").html(' ');
+        $("#specimen").html(' ');
+        items=	Orders.get(+index);
+        const map = new Map();
+        items.forEach((item)=>{
+            //console.log(item);
+            const key = item.fluidType;
+            const collection = map.get(key);
+             if (!collection) {
+                 map.set(key, [item]);
+             } else {
+                 collection.push(item);
+             }
+        });
+        //console.log(map);
+        var tr="";
+        for(let key of map.keys()){
+            tr += "<tr><td><ul>";
+            var ite = map.get(key);
+            var isAnyFluidTypeBarcodePending = false;
+            for(i=0;i<ite.length;i++ ){
+                tr+="<li>";
+                if(ite[i].status=="PRINTED" || ite[i].status=="AUTHORIZED"){
+                    tr+="<label class='checkbox checkbox-outline-danger'><input type='checkbox' checked name='i_id' value='"+ite[i].id+"'";
+                    if(ite[i].barcode==null || ite[i].barcode==""){
+                        tr+="checked";
+                    }
+                    console.log("barcode val:"+ite[i].barcode)
+                    tr+="readonly=''/>";
+                    console.log("status: "+JSON.stringify(ite[i]));
+                    isAnyFluidTypeBarcodePending = true;
+                }
+                    tr+="<b>"+ite[i].name+"  ["+ite[i].barcode+"]</b><span class='checkmark'></span></label></li>";
+                }
+
+            tr+= "</ul></td><td>";
+
+            tr+="</td></tr>";
+
+        }
+        $("#modal-row").html(tr);
+        $("#sampleCollect").attr("action","printSelectedTest/true");
+        //$("#form"). attr("th:action", "@{/processopt1}");
+
+    }
+    /* Mukesh sen EOF */
+
+
+
+    $(document).ready(function(){
+
+        var dob= document.getElementById('gender_age').value ;
+            var diff_ms = Date.now() - new Date(dob).getTime();
+            var age_dt = new Date(diff_ms);
+            var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+            var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+            var age_month =   Math.floor(age_d/30);
+            var age_day = age_d % 30;
+            if(age_year != 0){
+                document.getElementById('age').innerHTML = age_year+' Y ';
+           }else if(age_month != 0){
+               document.getElementById('age').innerHTML =  age_month+' M ';
+           }else{
+               document.getElementById('age').innerHTML = age_day+' D ';
+           }
+    });
+
+
+
+    function validateForm(){
+        var checked = document.querySelectorAll('[name="i_id"]:checked');
+        if(checked.length==0){
+            swal({
+                type: 'warning',
+                title: 'Please select test using checkbox!',
+                text: 'Warning',
+                buttonsStyling: false,
+                confirmButtonClass: 'btn btn-lg btn-warning'
+            });
+
+            return false;
+            }
+        var submit=true;
+        var barcodes = document.querySelectorAll('[name="barcode"]');
+
+        //logic to check that there are no duplicate barcodes filled against tests
+       /*
+       let barcodeValues=[];
+        for(var i=0; i<barcodes.length; i++){
+            barcodeValues.push(barcodes[i].value);
+        }
+
+        function hasUniqueElements(barcodeValues) {
+            let uniqueSet = new Set(barcodeValues);
+            return uniqueSet.size === barcodeValues.length;
+        }
+
+        if(!hasUniqueElements(barcodeValues)){
+             swal({
+                type: 'error',
+                title: 'Duplicate barcodes!',
+                text: 'found in vials',
+                confirmButtonText: 'Dismiss',
+                buttonsStyling: false,
+                confirmButtonClass: 'btn btn-lg btn-danger'
+            });
+            submit=false;
+        }
+        */
+
+        //logic to check duplicate barcodes from the previously registered barcodes
+
+        for(var i=0; i<barcodes.length; i++){
+            var barcode = barcodes[i].value;
+            if(barcode!==""){
+
+                $.ajax({url: "/getBarcode/"+barcode,
+                    dataType: "json",
+
+                    success: function(result) {
+                        if(result.length!=0){
+                            swal({
+                                type: 'error',
+                                title: 'Duplicate barcode!',
+                                text: '['+barcode+']',
+                                confirmButtonText: 'Dismiss',
+                                buttonsStyling: false,
+                                confirmButtonClass: 'btn btn-lg btn-danger'
+                            });
+                            submit=false;
+                        }
+                    },
+                    async: false
+                });
+            }
+        }
+
+   
+
+        //validation for 10 digit barcode
+         /*<![CDATA[*/ var openBarcode =  /*[[${openBarcode}]]*/ null; /*]]>*/
+         //console.log("openBarcode--"+openBarcode);
+         if(openBarcode){
+        for(var i=0; i<barcodes.length; i++){
+            var barcode = barcodes[i].value;
+            var fluidTypes = document.querySelectorAll('[name="fluidType"]');
+            var fluidType = fluidTypes[i].value;
+            if((barcode!=="") && (barcode.length != 10)){
+
+
+                swal({
+                    type: 'error',
+                    title: 'Invalid barcode ! Barcode must be 10 digit.',
+
+                    confirmButtonText: 'Dismiss',
+                    buttonsStyling: false,
+                    confirmButtonClass: 'btn btn-lg btn-danger'
+                });
+                submit=false;
+
+            }
+
+
+
+        }
+
+         }
+        return submit;
+    }
+
+
+
+    $(".setOrderNumber").click(function(event){
+        var orderNo = $(this).attr('data-value');
+        var index = $(this).attr('data-id');
+        //alert(orderNo+"====="+index);
+        getOrderDetails(index,orderNo);
+    });
+    $(".setOrderNumberPrint").click(function(event){
+        var orderNo = $(this).attr('data-value');
+        var index = $(this).attr('data-id');
+        //alert(orderNo+"====="+index);
+        getOrderDetailsPrint(index,orderNo);
+    });
+
+    function disableArrowKeys(event) {
+            if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                event.preventDefault();
+            }
+        }
+
+        $(document).on("keydown", "form", function(event) {
+            return event.key != "Enter";
+        });
+    function disableArrowKeys(event) {
+            if(event.keyCode == 38 || event.keyCode == 40) {
+                event.preventDefault();
+            }
+        }
+
+        function validateInput(event) {
+            let input = event.target.value;
+            if (input.length > 10) {
+                event.target.value = input.slice(0, 10);
+            }
+        }
+
+        function validatePaste(event) {
+            let paste = (event.clipboardData || window.clipboardData).getData('text');
+            if (!/^\d{1,10}$/.test(paste)) {
+                event.preventDefault();
+            }
+        }
+</script>
+</html>
+
+

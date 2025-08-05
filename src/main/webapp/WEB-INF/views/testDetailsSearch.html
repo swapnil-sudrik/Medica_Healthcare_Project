@@ -1,0 +1,51 @@
+<div id="search_data">
+    <div th:fragment="detail">
+
+        <div class="ExportData table-responsive">
+
+            <table class="display table table-striped table-bordered"
+                   id="multicolumn_ordering_table" style="width: 100%">
+                <thead>
+                <tr>
+                    <td colspan="6">
+                        <b th:if="${inv_list.Empty}">No Data Found! </b>
+                        <b th:if="${!inv_list.Empty}">TEST NAME: [[ ${inv_list[0][3]} ]] </b></br>
+
+                        <span>*Note: </br>1). Report is updated thrice daily at 7:59 am, 12:05 pm, and 5:05 pm.
+                            </br>
+                            2).Actual invoice may vary as per verification pendancy.
+                            </br>
+                            3). Amount shown are excluding GST..</span></td>
+                </tr>
+                <tr class="border border-primary">
+                    <th>SI</th>
+                    <th>Lab Name</th>
+
+                    <th class="text-right">No. of Test (<span
+                            th:text="${#aggregates.sum(inv_list.![[1]])}"></span>)
+                    </th>
+
+
+                </tr>
+                </thead>
+                </tbody>
+                <tr th:each="list,i : ${inv_list}">
+                    <td> [[${i.count}]]</td>
+                    <td>
+
+                        [[${list[6]}]]
+                        <!--<a th:href="@{'revenueLocationDetails/labId_new='+${list[7]}}" >[[${list[6]}]]</a>-->
+
+                    </td>
+                    <td align="right">[[${list[1]}]]</td>
+
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+

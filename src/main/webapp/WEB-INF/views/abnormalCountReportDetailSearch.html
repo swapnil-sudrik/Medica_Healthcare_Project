@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
+<head>
+    <title>Report</title>
+    <th:block th:include="layout :: headerfiles">
+    </th:block>
+
+</head>
+<body class="text-left">
+<div th:insert="layout :: preloader">
+</div>
+<div class="app-admin-wrap layout-sidebar-large clearfix">
+    <div th:insert="layout :: header"></div>
+    <div th:insert="layout :: left-navigation"></div>
+</div>
+<!-- ============ Body content start ============= -->
+<div class="main-content-wrap sidenav-open d-flex flex-column">
+    <div class="breadcrumb justify-content-between">
+        <h1>Abnormal Count Detail Report</h1>
+
+    </div>
+    <div class="alert alert-card alert-success" role="alert" th:if="${message}">
+        <strong class="text-capitalize">Success!</strong> [[${message}]]
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="display table table-striped table-bordered" id="alternative_pagination_table" style="width:100%">
+            <thead>
+            <tr class="border border-primary">
+                <th>SI</th>
+                <th>Entry Date</th>
+                <th>Patient Name</th>
+                <th>Age/Gender</th>
+                <th>Mobile No.</th>
+                <th>SHUHID</th>
+                <th>NIC UHID</th>
+                <th>Barcode</th>
+                <th>Test Name</th>
+
+                <th>Order No.</th>
+                <th>Sample Collection Time</th>
+                <th>Status</th>
+                <th>Action</th>
+
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="list,i : ${inv_list}">
+                <td>[[${i.count}]]</td>
+                <td>[[${#dates.format({list.createdAt} , 'dd-MMM-yyyy hh:mm a')}]]</td>
+                <td>[[${list.order.patient.title}+' '+${list.order.patient.firstName}+'
+                    '+(${list.order.patient.middleName}?${list.order.patient.middleName}:'')+'
+                    '+${list.order.patient.lastName}+' '+${list.order.patient.relationWithPatient}+' '+
+                    ${list.order.patient.relativeName}]]
+                </td>
+
+
+                <td class="gender_age"><input th:value="${list.order.patient.birthday}" type="hidden"><span></span>/
+                    [[${list.order.patient.gender}]]
+                </td>
+                <td>[[${list.order.patient.mobileNo}]]</td>
+                <td>[[${list.order.patient.mrn1}+'/ '+ ${#numbers.formatInteger(list.order.patient.mrn2,6)}]]</td>
+                <td>[[${list.order.patient.oldUhid}]]</td>
+                <td>[[${list.barcode}]]</td>
+                <td>[[${list.testName}]]</td>
+
+
+                <td th:text="${lab.hospCode}+'' +${#dates.day(list.createdAt)}+${#dates.format(list.createdAt, 'MM')}+${#dates.format(list.createdAt, 'yy')}+${#numbers.formatInteger(list.order.id,8)}"></td>
+
+                <td>[[${#dates.format({list.sampleTime} , 'dd-MMM-yyyy hh:mm a')} ]]</td>
+                <td>[[${list.status}]]</td>
+                <td><a class="btn-margin" th:href="@{'/PrintReportPatientProfile/'+${list.id}}">
+                    <button class="btn btn-success btn-sm btn-padding-table" data-placement="top" data-toggle="tooltip"
+                            title="Print" type="button">
+                        <span class="ul-btn__icon">Print<i class="i-Billing"></i></span>
+
+                    </button>
+                </a></td>
+
+
+                <!--  <td><a th:href="@{'/result-print/'+ ${list[4]}}" ><button type="button" class="btn btn-success btn-rounded m-1" id="patient_detail">Patient Detail</button></a></td> -->
+
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+
+</div>
+<!-- ============ Body content End ============= -->
+
+<div th:insert="layout :: search-ui"></div>
+<footer th:insert="layout :: footer"></footer>
+
+
+</body>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+       var dob= document.getElementsByClassName('gender_age');
+
+       for(var i=0; i<dob.length; i++){
+           var childs =dob[i].children;
+           var diff_ms = Date.now() - new Date(childs[0].value).getTime();
+           var age_dt = new Date(diff_ms);
+
+           var age_year = Math.abs(age_dt.getUTCFullYear() - 1970);
+           var age_d =  Math.floor((age_dt % 31536000000) / 86400000);
+           var age_month =   Math.floor(age_d/30);
+           var age_day = age_d % 30;
+
+           if(age_year != 0){
+           childs[1].innerHTML = age_year+' Y ';
+          }else if(age_month != 0){
+              childs[1].innerHTML =  age_month+' M ';
+          }else{
+              childs[1].innerHTML = age_day+' D ';
+          }
+
+       }
+
+
+
+   });
+
+
+</script>
+
+</html>
