@@ -17,19 +17,17 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         String logout = (String) request.getAttribute("logout");
         String token = (String) request.getAttribute("token");
 
-        Throwable cause = authException.getCause();
-
-        response.setContentType("application/json");
-        if("INVALID_TOKEN".equals(tokenError)) {
+        if("invalidToken".equals(tokenError)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Invalid Token\"}");
-        } else if ("INVALID_TOKEN".equals(logout)) {
+        } else if ("invalidToken".equals(logout)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Please log in medica healthcare, token is expired.\"}");
-        } else if ("NOT_FOUND".equals(token)) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else if ("notFound".equals(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Token not found in request. please log in in medica healthcare application.\"}");
         }
         else {

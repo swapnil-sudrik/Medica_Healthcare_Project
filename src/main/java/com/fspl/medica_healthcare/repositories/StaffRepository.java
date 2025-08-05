@@ -60,5 +60,18 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
             "GROUP BY s.roles")
     List<RoleSalaryAverageDTO> findAverageSalaryByRoleAndDate(long id, int month, int year);
 
+    @Query("SELECT s FROM Staff s WHERE s.status = 1 AND s.hospital.id = :hospitalId AND s.branch = :branch")
+    List<Staff> findAllActiveByHospitalIdAndBranch(@Param("hospitalId") Long hospitalId, @Param("branch") byte[] branch);
+
+    @Query("SELECT s FROM Staff s WHERE s.status = 1 AND s.hospital.id = :hospitalId AND s.branch = :branch")
+    List<Staff> findByHospitalIdAndBranchAndStatus(Long hospitalId, byte[] branch, int i);
+
+    //Add branch wise logic ...DHIRAJ
+    @Query("SELECT s FROM Staff s WHERE s.hospital.id = :hospitalId AND s.branch = :branch")
+    List<Staff> findAllByHospitalIdAndBranch(@Param("hospitalId") Long hospitalId, @Param("branch") byte[] branch);
+
+    List<Staff> findByRoles(String Roles);
+
+    Optional<Staff> findByIdAndRoles(Long id, String roles);
 
 }

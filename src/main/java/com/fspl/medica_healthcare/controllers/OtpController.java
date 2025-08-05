@@ -10,6 +10,7 @@ import com.fspl.medica_healthcare.services.UserService;
 import com.fspl.medica_healthcare.templets.EmailTemplets;
 import com.fspl.medica_healthcare.utils.ExceptionMessages;
 import com.fspl.medica_healthcare.utils.ExceptionUtils;
+import jakarta.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -30,74 +32,112 @@ public class OtpController {
     @Autowired
     private EmailService emailService;
 
-
     private static final Logger log = Logger.getLogger(OtpController.class);
 
     @PostMapping("/generate/{email}")
-    public ResponseEntity<?> generateOtp(@PathVariable String email){
-            try {
-                if (email.isBlank()){
-                    return ResponseEntity.badRequest().body("Email is required.");
-                }
+    public ResponseEntity<?> generateOtp(@PathVariable String email) {
+        try {
+            if (email.isBlank()) {
+                return ResponseEntity.badRequest().body("Email is required.");
+            }
 
-                if (!email.matches("^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z]+\\.[a-zA-Z]{2,}$")){
-                    return ResponseEntity.badRequest().body("Please enter a valid email");
-                }
+            if (!email.matches("^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z]+\\.[a-zA-Z]{2,}$")) {
+                return ResponseEntity.badRequest().body("Please enter a valid email");
+            }
 
-                Otp preOtp =  otpService.getOtpByEmail(email);
-                if (preOtp !=null){
-                    boolean isDeleted =  otpService.delete(preOtp);
-                    if (!isDeleted){
-                        return ResponseEntity.badRequest().body(ExceptionMessages.SOMETHING_WENT_WRONG);
-                    }
-                }
-                Otp otp = new Otp();
-                Random random = new Random();
-                String generatedOtp = "";
-                for (int i=1; i<=6;i++){
-                    generatedOtp+=(random.nextInt(9));
-                }
-
-                otp.setEmail(email);
-                otp.setOtp(generatedOtp);
-                otp.setCreatedDateTime(LocalDateTime.now());
-                boolean isOtpSaved = otpService.generateOtp(otp);
-                if (isOtpSaved){
-                    Otp newOtp =  otpService.getOtpByEmail(email);
-                    emailService.sendEmail(otp.getEmail(),"OTP verification",getOtpVerificationTemplate(otp.getOtp()));
-                    return ResponseEntity.ok(newOtp);
-                }else {
+            Otp preOtp = otpService.getOtpByEmail(email);
+            if (preOtp != null) {
+                boolean isDeleted = otpService.delete(preOtp);
+                if (!isDeleted) {
                     return ResponseEntity.badRequest().body(ExceptionMessages.SOMETHING_WENT_WRONG);
                 }
-
-            } catch (Exception e) {
-                log.error("An unexpected error occurred during OTP creating for email: \n"+ ExceptionUtils.getStackTrace(e)+"\n"+"For email :\n "+email);
-                return ResponseEntity.badRequest().body(ExceptionMessages.SERVER_DOWN);
             }
+            Otp otp = new Otp();
+            Random random = new Random();
+            String generatedOtp = "";
+            for (int i = 1; i <= 6; i++) {
+                generatedOtp += (random.nextInt(9));
+            }
+
+            otp.setEmail(email);
+            otp.setOtp(generatedOtp);
+            otp.setVerified(false);
+            otp.setCreatedDateTime(LocalDateTime.now());
+            boolean isOtpSaved = otpService.generateOtp(otp);
+            if (isOtpSaved) {
+                emailService.sendEmail(otp.getEmail(), "OTP verification", getOtpVerificationTemplate(otp.getOtp()));
+                return ResponseEntity.ok("OTP is Generated for : " + email);
+            } else {
+                return ResponseEntity.badRequest().body(ExceptionMessages.SOMETHING_WENT_WRONG);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("An unexpected error occurred during OTP creating for email: \n" + ExceptionUtils.getStackTrace(e) + "\n" + "For email :\n " + email);
+            return ResponseEntity.badRequest().body(ExceptionMessages.SERVER_DOWN);
+        }
     }
 
     @PostMapping("/verify/{email}")
-    public ResponseEntity<String> verifyOtp(@PathVariable String email, @RequestBody OtpRequest otpRequest){
+    public ResponseEntity<String> verifyOtp(@PathVariable String email, @RequestBody OtpRequest otpRequest) {
         try {
-            if (email.isBlank()){
+            if (email.isBlank()) {
                 throw new RecordNotFoundException("Email is required.");
             }
-            if (!email.matches("^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z]+\\.[a-zA-Z]{2,}$")){
+            if (!email.matches("^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z]+\\.[a-zA-Z]{2,}$")) {
                 return ResponseEntity.badRequest().body("Please enter a valid email");
             }
             Otp otp = otpService.getOtpByEmail(email);
 
-            if (otp==null){
+            if (otp == null) {
                 return ResponseEntity.badRequest().body("Invalid OTP. Enter Correct OTP");
             }
-            if (!otp.getOtp().equals(otpRequest.getOtp())){
+            if (!otp.getOtp().equals(otpRequest.getOtp())) {
                 return ResponseEntity.badRequest().body("OTP not match. Enter Correct OTP");
+            } else if (otp.getOtp().equals(otpRequest.getOtp())) {
+                otp.setVerified(true);
+                otpService.generateOtp(otp);
+                return ResponseEntity.ok("OTP Successfully Verified!");
+            } else {
+                return ResponseEntity.badRequest().body(ExceptionMessages.SOMETHING_WENT_WRONG);
             }
-            return ResponseEntity.ok("OTP Successfully Verified!");
+
         } catch (Exception e) {
-            log.error("An unexpected error occurred while OTP verify: \n"+ExceptionUtils.getStackTrace(e)+"\n"+"For email :\n "+email);
+            e.printStackTrace();
+            log.error("An unexpected error occurred while OTP verify: \n" + ExceptionUtils.getStackTrace(e) + "\n" + "For email :\n " + email);
             return ResponseEntity.badRequest().body(ExceptionMessages.SERVER_DOWN);
         }
+    }
+
+
+    @PostConstruct
+    public void deleteExpiredOtps() {
+        new Thread(() -> {
+                    System.out.println("OTP Deletion Thread is Running");
+            while (true) {
+                try {
+
+                    // Calculate cutoff time (10 minutes ago)
+                    LocalDateTime cutoff = LocalDateTime.now().minusMinutes(10);
+
+                    // Delete expired OTPs
+                    otpService.deleteExpiredOtp(cutoff);
+
+                    // Log or print
+                    System.err.println("OTP DELETE SUCCESS older than 10 minutes at: " + LocalDateTime.now());
+
+                    // Sleep for 1 minute
+                    Thread.sleep(60 * 1000);
+                } catch (InterruptedException e) {
+                    System.out.println("OTP cleanup thread interrupted");
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception ex) {
+                    // Catch any runtime exceptions to prevent thread crash
+                    ex.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -156,7 +196,7 @@ public class OtpController {
                 "<body>" +
                 "<div class=\"container\">" +
                 "<div class=\"header\">" +
-                "OTP Verification - verify your OTP "+
+                "OTP Verification - verify your OTP " +
                 "</div>" +
                 "<div class=\"body\">" +
                 "<p>Dear User,</p>" +
@@ -172,7 +212,6 @@ public class OtpController {
                 "</body>" +
                 "</html>";
     }
-
 
 
 }

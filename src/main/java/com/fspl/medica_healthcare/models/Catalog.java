@@ -1,16 +1,9 @@
 package com.fspl.medica_healthcare.models;
-
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -20,27 +13,33 @@ public class Catalog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String category;
-
+    @ManyToOne
+    @JsonIgnore
+    private Category category;
 
     private String name;
 
 
-    private Double fees;
+    private double fees;
 
 
     @Lob
     private byte[] description;
 
+    @Lob
+    private byte[] images;
+
     @ManyToOne
     private Hospital hospital;
 
     @ManyToOne
-    private User created;
+    private User createdUser;
 
     @ManyToOne
-    private User modified;
+    private User modifiedUser;
     private LocalDate createdDate;
     private LocalDate modifiedDate;
     private int status;
+
+
 }

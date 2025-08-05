@@ -1,6 +1,7 @@
 package com.fspl.medica_healthcare.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class HospitalizationInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long Id;
-    private Boolean isHospitalized;
+    private boolean isHospitalized;
     private LocalDate dateOfAdmission;
     private LocalDate dateOfDischarge;
 
@@ -27,11 +28,13 @@ public class HospitalizationInfo {
 //    private RoomCharge room;
 
     @ManyToOne
+    @JsonIgnoreProperties(value = {"hospital", "createdUser", "modifiedUser"}) // Ignore to prevent recursion
     private Catalog catalog;
 
-    private BigDecimal nursingCharges;
-    private BigDecimal additionalCharges;
-    private Integer totalDaysAdmitted;
+    private double nursingCharges;
+    private double canteenCharges;
+    private double additionalCharges;
+    private int totalDaysAdmitted;
 
 
     @ManyToOne
@@ -39,6 +42,7 @@ public class HospitalizationInfo {
 
     @ManyToOne
     private User modifiedUser;
+
 
     private LocalDate createdDate;
 

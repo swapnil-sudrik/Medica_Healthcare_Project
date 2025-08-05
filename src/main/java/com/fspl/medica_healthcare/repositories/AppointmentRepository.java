@@ -27,25 +27,22 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT a FROM Appointment a WHERE DATE(a.appointmentDateAndTime) = :appointmentDate")
     List<Appointment> findByAppointmentDate(@Param("appointmentDate") LocalDate appointmentDate);
 
-
-    // Find appointments for a doctor working in a specific branch
-    @Query("SELECT a FROM Appointment a WHERE a.doctor.branch = :branch")
-    //@Query("SELECT a FROM Appointment a WHERE a.doctor.hospital.branch = :branch")
-    // @Query("SELECT a FROM Appointment a WHERE a.hospital.branch = :branch")
-    List<Appointment> findByBranch(@Param("branch") byte[] branch);
-    //List<Appointment> findByBranch(@Param("branch") String branch);
-
-
-    // Find appointments for a given doctor within a specific time range, checking availability with a 15-minute buffer before booking
-    @Query("SELECT a FROM Appointment a WHERE a.doctor = :doctor AND a.appointmentDateAndTime BETWEEN :startTime AND :endTime")
-    List<Appointment> findByDoctorAndAppointmentDateAndTimeBetween(
-            @Param("doctor") User doctor,
-            @Param("startTime") LocalDateTime startTime,
-            @Param("endTime") LocalDateTime endTime);
+    @Query("SELECT a FROM Appointment a WHERE a.createdUser.branch = :branch AND a.hospital.id =:id")
+    List<Appointment> findByBranch(@Param("branch") byte[] branch, long id);
 
 
     //  This is query is used by User
     @Query("SELECT a FROM Appointment a WHERE a.doctor.id= :id")
     List<Appointment> findByDoctor_Id(@Param("id") Long id);
+
+    boolean existsByPatientIdAndAppointmentStatus(Long patientId, AppointmentStatus appointmentStatus);
+
+    @Query("SELECT a FROM Appointment a")
+    List<Appointment> findAllAppointments();
+
+    @Query(value = "SELECT * FROM appointment WHERE id = :id AND hospital_id = :hospitalId", nativeQuery = true)
+    Appointment findAppointmentByIdAndHospital(@Param("id") Long id, @Param("hospitalId") Long hospitalId);
+
+    List<Appointment> findByPatientIdAndHospitalId(Long patientId, Long hospitalId);
 }
 

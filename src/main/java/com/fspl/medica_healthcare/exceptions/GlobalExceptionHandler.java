@@ -18,10 +18,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 import javax.naming.InvalidNameException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -215,11 +213,41 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class})
-    public ResponseEntity<Map<String, String>> HttpMessageNotReadableException( HttpMessageNotReadableException ex) {
+    public ResponseEntity<Map<String, String>> HttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         Map<String, String> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        Throwable cause = ex.getRootCause();
+        if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife) {
+            String fieldName = ife.getPath().stream()
+                    .map(ref -> ref.getFieldName())
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.joining("."));
+
+            response.put(capitalizeFieldName(fieldName), capitalizeFieldName(fieldName)+" is not valid");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else if (cause instanceof com.fasterxml.jackson.databind.exc.MismatchedInputException mismatchedInputException) {
+            String field = mismatchedInputException.getPath().stream().map(ref -> ref.getFieldName()).filter(Objects::nonNull).collect(Collectors.joining("."));
+            if (mismatchedInputException.getMessage().contains("from Object value (token `JsonToken.START_OBJECT`)")) {
+                response.put(capitalizeFieldName(field), capitalizeFieldName(field) + " must be plain text, not an object");
+            }
+            else {
+                int chatAt = field.indexOf(".");
+                field.replace(".", " ");
+                field = field.substring(0, 1).toUpperCase() + field.substring(1, chatAt).toLowerCase() + field.substring(chatAt + 1, chatAt + 2).toUpperCase() + field.substring(chatAt + 2, field.length());
+                response.put(capitalizeFieldName(field), "Invalid data format");
+            }
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
+        } else {
+            response.put("Error", "Invalid date format " + ex.getRootCause().getMessage() +
+                    ". For Date of Birth, it should be 'yyyy-MM-dd'. For Appointment Date and Time, it should be 'yyyy-MM-dd hh:mm a'. Please provide valid dates.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
+    private String capitalizeFieldName(String field) {
+        if (field == null || field.isEmpty()) return field;
+        return Character.toUpperCase(field.charAt(0)) + field.substring(1);
+    }
+
 
 
 

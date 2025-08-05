@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StaffService {
@@ -31,7 +33,8 @@ public class StaffService {
             return false;
         }
     }
-
+    //ORIGINAL API
+    /*
     public Staff findById(long id, User loginUser) {
         try {
             Optional<Staff> staff = staffRepository.findById(id);
@@ -42,6 +45,51 @@ public class StaffService {
             return null;
         }
     }
+     */
+
+    //Add new branchwise logic...
+    public Staff findById(Long id, User loginUser) {
+        Optional<Staff> optionalStaff = staffRepository.findById(id);
+
+        if (optionalStaff.isEmpty()) {
+            return null;
+        }
+
+        Staff staff = optionalStaff.get();
+
+        // Null check
+        if (staff.getHospital() == null || staff.getBranch() == null || loginUser.getHospital() == null) {
+            return null;
+        }
+
+        //  Use == for primitive long comparison
+        boolean isSameHospital = loginUser.getHospital().getId() == staff.getHospital().getId();
+
+        // Get staff branch
+        String staffBranch = new String(staff.getBranch());
+
+        // Get logged-in admin's branches
+        List<String> adminBranches = Arrays.stream(new String(loginUser.getBranch()).split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+
+        // Check if branch allowed
+        boolean isBranchAllowed = adminBranches.contains(staffBranch);
+
+        //  Admin or Master Admin
+        if (isSameHospital && isBranchAllowed) {
+            return staff;
+        }
+
+        //  Master Admin can access any branch
+        if (isSameHospital && adminBranches.size() > 1) {
+            return staff;
+        }
+
+        return null; // access denied
+    }
+
+    //
 
     public Staff findByEmail(String email , User loginUser) {
         try {
@@ -86,6 +134,17 @@ public class StaffService {
             log.error("An unexpected error occurred while getAllActiveStaffByHospitalId(): \n"+e.getMessage() +"\n"+"Logged User :\n "+loginUser);
             return null;
         }
+    }
+
+    //Add branch wise logic...
+    public List<Staff> getAllActiveStaffByHospitalAndBranch(Long hospitalId, byte[] branch) {
+        return staffRepository.findByHospitalIdAndBranchAndStatus(hospitalId, branch, 1);
+    }
+
+
+    //Add branch wise logic
+    public List<Staff> getAllStaffByHospitalAndBranch(Long hospitalId, byte[] branch) {
+        return staffRepository.findAllByHospitalIdAndBranch(hospitalId, branch);
     }
 
     public List<RoleSalaryAverageDTO> getAverageSalaryByRole(User loginUser) {
@@ -163,6 +222,10 @@ public class StaffService {
         staff.setEmail(userDTO.getUsername());
         staff.setName(userDTO.getName());
         staff.setAddress(userDTO.getAddress().getBytes());
+        staff.setCareTaker(userDTO.isCareTaker());
+        staff.setSpecalization(userDTO.getSpecalization());
+        staff.setBookingStatus(userDTO.getBookingStatus());
+        staff.setBookingCharge(userDTO.getBookingCharge());
         if (userDTO.getRoles().equals("ADMIN")) {
             staff.setBranch(null);
         } else {
@@ -170,11 +233,19 @@ public class StaffService {
         }
         staff.setRoles(userDTO.getRoles().toUpperCase());
         staff.setDoctorFee(userDTO.getDoctorFee());
-        if (userDTO.getSalary() == null) {
-            staff.setSalary(BigDecimal.ZERO);
+//        if (userDTO.getSalary() == null) {
+//            staff.setSalary(BigDecimal.ZERO);
+//        } else {
+//            staff.setSalary(userDTO.getSalary());
+//        }
+        if (userDTO.getSalary() == 0.0) {
+            staff.setSalary(0.0);
         } else {
             staff.setSalary(userDTO.getSalary());
         }
         return staff;
     }
+
+
+
 }

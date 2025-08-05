@@ -1,13 +1,17 @@
 package com.fspl.medica_healthcare.dtos;
 
+import com.fspl.medica_healthcare.models.User;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 public class UserDTO {
+
+//    private long id;
 
     @NotBlank(message = "Username is mandatory")
     @Email(message = "Username must be a valid email address")
@@ -19,7 +23,7 @@ public class UserDTO {
     private String username;
 
     //    @NotBlank(message = "Password is mandatory")
-    private String password;
+//    private String password;
 
     @NotBlank(message = "Name is mandatory")
     @Pattern(
@@ -32,22 +36,31 @@ public class UserDTO {
     @Size(max = 100, message = "Address is mandatory")
     private String address;
 
-    //    @NotBlank(message = "Branch is mandatory")
     private String branch;
 
-
-    //    @NotBlank(message = "Role is mandatory")
-//    @Pattern(
-//            regexp = "ADMIN|DOCTOR|RECEPTIONIST|SUPER_ADMIN",
-//            message = "Role is not correct. Allowed values are: ADMIN, DOCTOR, SUPER_ADMIN, RECEPTIONIST"
-//    )
     private String roles;
 
-    private BigDecimal doctorFee;
+    private double doctorFee;
 
-    //    @NotNull(message = "Salary is mandatory")
     @Column(nullable = false, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
-    private BigDecimal salary;
+    private double salary;
+
+    //add staff changes...
+    private boolean careTaker;
+    private String specalization;
+    private int bookingStatus;
+    private  Double bookingCharge;
+    private String type;
+
+    @NotBlank(message = "contact number is mandatory")
+    @Pattern(regexp = "\\d{10}", message = "Contact number must be exactly 10 digits or please put the correct number")
+    private String contactNumber;
+
+    @NotNull(message = "Date of Birth is mandatory")
+    private LocalDate dateOfBirth;
+
+    //////////////////////////////////////////
+
 
 //(10,2) means:
 //            10 → Total digits allowed (both before and after the decimal point).
@@ -56,5 +69,14 @@ public class UserDTO {
 //    DEFAULT 0.00
 //    If no value is provided for salary, the default value will be 0.00.
 //    This ensures that NULL is not inserted if a value is missing.
+
+//    private LocalDate createdDate;
+//    private LocalDate modifiedDate;
+//
+//    private int status;
+//    private UserDTO createdUser;
+//    private UserDTO modifiedUser;
+//    private HospitalResponseDTO hospital;
+//    private StaffDTO staff;
 
 }

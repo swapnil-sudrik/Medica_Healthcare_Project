@@ -29,4 +29,12 @@ public class ExceptionMessages {
     public static final String UPDATE_SUCCESS = " Account update successfully";
     public static final String UPDATE_FAILED = " Account Not Updated. try again!";
     public static final String INVALID_REQUEST = " Requested Id is Invalid";
+    public static final String HOSPITAL_IS_INACTIVE = "Your Hospital is not Active.";
+    public static final String ROLE_IS_NOT_CORRECT = "Provided Role is Incorrect. Available roles : ";
+    public static final String UNAUTHORIZED_BRANCH_ACCESS = "User not found";
+    public static final String UNAUTHORIZED_HOSPITAL_ACCESS = "Hospital not found";
+    public static final String ACCOUNT_LOCKED = "Your Account has been locked for 24 hours. after 24 hours you can login or contact admin";
+    public static final String OTP_NOT_VERIFIED = "OTP is Not Verified. Please Verify OTP First and And Try Again.";
+    public static final String USERNAME_NOT_FOUND = "Username Not Found. Enter Correct Username";
+
 }

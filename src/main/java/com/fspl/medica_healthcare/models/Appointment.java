@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fspl.medica_healthcare.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -41,14 +42,14 @@ public class Appointment {
     @ManyToOne
     private User currentDoctor;
 
-    @NotNull(message = "Appointment date and time cannot be null")
+    /*@NotNull(message = "Appointment date and time cannot be null")
     @JsonFormat(pattern = "dd/MM/yyyy hh:mm a")
-    @Column(name = "appointment_date_and_time", nullable = false)
-    private LocalDateTime appointmentDateAndTime;
+    @Column(name = "appointment_date_and_time", nullable = false)*/
+    private String appointmentDateAndTime;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "next_appointment_date")
-    private LocalDate nextAppointmentDate;
+    private String nextAppointmentDate;
 
     @ManyToOne
     private User createdUser;
@@ -56,10 +57,9 @@ public class Appointment {
     @ManyToOne
     private User modifiedUser;
 
-
     @Column(nullable = false)
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    private LocalDate createdDate;
+    private LocalDate modifiedDate;
 
     @Column(nullable = false)
     private int status; // Default to active
@@ -90,6 +90,7 @@ public class Appointment {
 
     private int missedMailStatus;
     private int reminderMailStatus;
+    private int queueMailStatus;
 
     @OneToOne
     @JsonManagedReference

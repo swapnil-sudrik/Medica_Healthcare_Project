@@ -12,7 +12,6 @@ import lombok.Setter;
 public class HospitalResponseDTO {
     private long id;
 
-//    ^[A-Za-z ]+$
     @Pattern(regexp = "^[A-Za-z ]+$", message = "Hospital Name must contain only alphabetic characters")
     @Size(max = 100, message = "Hospital Name cannot exceed 100 characters")
     @Column(nullable = false)
@@ -32,39 +31,14 @@ public class HospitalResponseDTO {
     @Column(nullable = false, unique = true)
     private String emailId;
 
-    @NotBlank(message = "Hospital Opening time is mandatory")
-    private String openingTime;
-
-    @NotBlank(message = "Hospital Closing time is mandatory")
-    private String closingTime;
-
-    @Lob
-    @JsonIgnore
-    private byte[] letterHead;
-
     @Lob
     private String departments;
 
     @Lob
     private String branch;
 
-    @Pattern(regexp = "^[^\\d]+$", message = "Hospital working day cannot contain numbers")
-    @Size(max = 100, message = "Working days cannot exceed 100 characters")
-    private String workingDays;
-
-
-    @Pattern(regexp = "^[^\\d]+$", message = "Hospital working day cannot contain numbers")
-    @Size(max = 100, message = "Off days cannot exceed 100 characters")
-    private String offDays;
-
     @NotBlank(message = "Number of users is mandatory")
     private String numberOfUsers;
 
     private int status;
-
-    public void setLetterhead(byte[] letterHead) {
-        this.letterHead= letterHead;
-    }
-
-
 }

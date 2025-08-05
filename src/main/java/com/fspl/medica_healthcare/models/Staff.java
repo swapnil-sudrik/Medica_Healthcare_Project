@@ -1,5 +1,6 @@
 package com.fspl.medica_healthcare.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -16,41 +17,28 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Table(name = "staffs")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Staff {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "email is mandatory")
-    @Email(message = "email must be a valid email address")
-    @Pattern(
-            regexp = "^[a-zA-Z][a-zA-Z0-9_.-]*@[a-zA-Z]+\\.[a-zA-Z]{2,}$",
-            message = "email address and should not start with a number or contain invalid domains"
-    )
-    @Size(max = 100, message = "email cannot exceed 100 characters")
-    @Column(nullable = false , unique = true)
     private String email;
 
     private String name;
 
-    @Size(max = 100, message = "Address is mandatory")
-    @Column(nullable = false)
+    @Lob
     private byte[] address;
 
+    @Lob
     private byte[] branch;
 
-    @NotBlank(message = "Role is mandatory")
-    @Column(nullable = false)
     private String roles;
 
-    private BigDecimal doctorFee;
+    private double doctorFee;
 
-
-    //    @NotNull(message = "Salary is mandatory")
     @Column(nullable = false, columnDefinition = "DECIMAL(10,2) DEFAULT 0.00")
-    private BigDecimal salary;
+    private double salary;
 
 //(10,2) means:
 //            10 → Total digits allowed (both before and after the decimal point).
@@ -64,16 +52,28 @@ public class Staff {
 
     @ManyToOne
 //    @JsonBackReference
-    @JsonIgnoreProperties("staff") // Prevent cyclic references
+    @JsonIgnoreProperties({"createdUser", "modifiedUser"}) // Ignore to prevent recursion
     private Hospital hospital;
 
 
     @ManyToOne
+    @JsonIgnoreProperties(value = {"hospital", "createdUser", "modifiedUser", "staff"}, allowSetters = true) // Ignore to prevent recursion
     private User createdUser;
 
     @ManyToOne
+    @JsonIgnoreProperties(value = {"hospital", "createdUser", "modifiedUser", "staff"}, allowSetters = true) // Ignore to prevent recursion
     private User modifiedUser;
 
     private LocalDate createdDate;
     private LocalDate modifiedDate;
+
+    private boolean isCareTaker;
+
+    private String specalization;
+
+    private int bookingStatus;
+
+    private  Double bookingCharge;
+
+    private String type;
 }

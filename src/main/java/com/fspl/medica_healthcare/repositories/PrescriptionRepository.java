@@ -12,8 +12,6 @@ import java.util.Set;
 
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription,Long> {
-   // List<Prescription> findByPatientId(Long patientId);
-
 
     @Query("SELECT p.medicine FROM Prescription p")
     List<List<String>>findAllMedicines();

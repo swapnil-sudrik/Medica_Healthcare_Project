@@ -2,13 +2,11 @@ package com.fspl.medica_healthcare.controllers;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.fspl.medica_healthcare.dtos.UserDTO;
-import com.fspl.medica_healthcare.models.Billing;
-import com.fspl.medica_healthcare.models.Hospital;
-import com.fspl.medica_healthcare.models.Staff;
-import com.fspl.medica_healthcare.models.User;
+import com.fspl.medica_healthcare.models.*;
 import com.fspl.medica_healthcare.services.*;
 import com.fspl.medica_healthcare.templets.EmailTemplets;
 import com.fspl.medica_healthcare.utils.ExceptionMessages;
@@ -37,13 +35,16 @@ public class SuperAdminController {
     private PasswordEncoder encoder;
 
     @Autowired
-    private BillingService billingService;
+    private InvoiceService invoiceService;
 
     @Autowired
     private StaffService staffService;
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private OtpService otpService;
 
     private static final Logger log = Logger.getLogger(SuperAdminController.class);
 
@@ -57,7 +58,8 @@ public class SuperAdminController {
             if (loginUser == null){
                 return ResponseEntity.badRequest().body(ExceptionMessages.SOMETHING_WENT_WRONG);
             }
-            List<Billing> billingList = billingService.getAllHospitalBillsByHospitalId(loginUser);
+//            List<Billing> billingList = billingService.getAllHospitalBillsByHospitalId(loginUser);
+            List<Invoice> billingList = invoiceService.getAllInvoiceByHospitalId(loginUser.getHospital().getId(),loginUser.getBranch());
             if (billingList == null) {
                 return ResponseEntity.ok("No Bills Found.");
             }
@@ -69,53 +71,13 @@ public class SuperAdminController {
             return ResponseEntity.badRequest().body(ExceptionMessages.SERVER_DOWN);
         }
     }
-//    @PostMapping("/addAdmin/{hospitalId}")
-//    @PreAuthorize("hasAuthority('SUPER_ADMIN')")
-//    public ResponseEntity<Map<String, Object>> createAdmin(@PathVariable Long hospitalId, @Valid @RequestBody List<User> users){
-//        User authenticateUser = userService.getAuthenticateUser();
-//        Hospital hospital = hospitalService.getHospitalById(hospitalId);
-//
-//        List<User> savedAdmins = new ArrayList<>();
-//        List<String> errorMessages = new ArrayList<>();
-//
-//        for (User user : users) {
-//            // Check if the username already exists
-//            if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-//                errorMessages.add("User with username " + user.getUsername() + " already exists and was not added.");
-//                continue;
-//            }
-//
 
-    /// /            // Check if the role is restricted
-//            if ("ADMIN".equals(user.getRoles())) {
-//                String userPassword = user.getPassword();
-//            user.setHospitalId(hospital);
-//            user.setRoles(user.getRoles());
-//            user.setCreated(authenticateUser);
-//            user.setModified(authenticateUser);
-//            user.setCreatedDate(LocalDate.now());
-//            user.setModifiedDate(LocalDate.now());
-//            user.setStatus(1);
-//            user.setPassword(encoder.encode(user.getPassword()));
-//            savedAdmins.add(userService.saveUser(user,userPassword));
-//            }else{
-//                errorMessages.add("User with username " + user.getUsername() + " was not added due to restricted role: " + user.getRoles());
-//            }
-//        }
-//        // Prepare response
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("success", savedAdmins);
-//        response.put("errors", errorMessages);
-//        return ResponseEntity.ok(response);    }
-//}
     @PostMapping("/addAdmin/{hospitalId}")
     @PreAuthorize("hasAuthority('SUPER_ADMIN')")
     public ResponseEntity<?> createAdmin(@PathVariable long hospitalId, @Valid @RequestBody UserDTO userDTO) {
         User loginUser = null;
         try {
-            if (userDTO.getPassword() == null) {
-                return ResponseEntity.badRequest().body("Password is required");
-            }
+
             if (userDTO.getRoles() == null) {
                 return ResponseEntity.badRequest().body("Role is required");
             }
@@ -128,6 +90,15 @@ public class SuperAdminController {
             if (hospital == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionMessages.HOSPITAL_NOT_FOUND);
             }
+
+            Otp otp = otpService.getOtpByEmail(userDTO.getUsername());
+            if (otp == null){
+                return ResponseEntity.badRequest().body(ExceptionMessages.OTP_NOT_VERIFIED);
+            }
+            if (!otp.isVerified()) {
+                return ResponseEntity.badRequest().body(ExceptionMessages.OTP_NOT_VERIFIED);
+            }
+
             String role = userDTO.getRoles().toUpperCase(); // Ensure case consistency
 
             if (!role.equals("ADMIN")) {
@@ -141,7 +112,8 @@ public class SuperAdminController {
             }
 
             Staff staff = staffService.userDtoTOStaff(userDTO);
-            staff.setDoctorFee(BigDecimal.valueOf(0));
+//            staff.setDoctorFee(BigDecimal.valueOf(0));
+            staff.setDoctorFee(0.0);
             staff.setBranch(hospital.getBranch());
             staff.setHospital(hospital);
             staff.setStatus(1);
@@ -152,8 +124,17 @@ public class SuperAdminController {
             boolean isSaved = staffService.saveStaff(staff , loginUser);
 
             if (isSaved) {
+
                 Staff savedStaff = staffService.findByEmail(staff.getEmail() , loginUser);
-                String password = userDTO.getPassword();
+
+                String namePart = userDTO.getName().substring(0, Math.min(userDTO.getName().length(), 3));
+                String contactPart = userDTO.getContactNumber().substring(0, 4);
+                String birthDatePart = userDTO.getDateOfBirth().format(DateTimeFormatter.ofPattern("yyyy"));
+                String autoGeneratedPassword = namePart + contactPart + "@" + birthDatePart;
+
+
+                String maskedPassword = maskPassword(autoGeneratedPassword);
+
                 user.setHospital(hospital);
                 user.setStaff(savedStaff);
                 user.setBranch(hospital.getBranch());
@@ -163,11 +144,11 @@ public class SuperAdminController {
                 user.setCreatedDate(LocalDate.now());
                 user.setModifiedDate(LocalDate.now());
                 user.setStatus(1);
-                user.setPassword(encoder.encode(user.getPassword()));
+                user.setPassword(encoder.encode(autoGeneratedPassword));
                 boolean isSavedUser = userService.saveUser(user, loginUser);
                 if (isSavedUser) {
                     User savedUser = userService.findByUsername(user.getUsername());
-                    emailService.sendEmail(savedUser.getUsername(), "Welcome to " + hospital.getName() + " - Your Registration is Complate", UserController.getUserRegistrationSuccessTemplate(hospital.getName(), savedUser.getUsername(), password, savedUser.getRoles(), savedStaff.getId(), savedStaff.getSalary()));
+                    emailService.sendEmail(savedUser.getUsername(), "Welcome to " + hospital.getName() + " - Your Registration is Complate", UserController.getUserRegistrationSuccessTemplate(hospital.getName(), savedUser.getUsername(),maskedPassword, savedUser.getRoles(), savedStaff.getId(), savedStaff.getSalary()));
                     return ResponseEntity.ok(ExceptionMessages.USER_SAVED);
                 } else {
                     return ResponseEntity.ok(ExceptionMessages.USER_NOT_SAVED);
@@ -181,4 +162,14 @@ public class SuperAdminController {
             return ResponseEntity.badRequest().body(ExceptionMessages.SERVER_DOWN);
         }
     }
+
+    private String maskPassword(String password) {
+        if (password == null || password.length() < 4) {
+            return "XXXX";
+        }
+        return password.substring(0, 2) + "X".repeat(password.length() - 4) + password.substring(password.length() - 2);
+    }
+
+
+
 }
