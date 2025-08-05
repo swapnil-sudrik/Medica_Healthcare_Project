@@ -40,6 +40,7 @@ public class HospitalController {
         User loginUser = null;
 
         Hospital savedHospital = null;
+        //Hell check
         try {
             // Fetch the authenticated user from the user service
             loginUser = userService.getAuthenticateUser();
